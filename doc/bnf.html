@@ -1,0 +1,1763 @@
+  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+           "http://www.w3.org/TR/REC-html40/loose.dtd"><HTML>
+<META NAME="GENERATOR" CONTENT="TtH 1.57">                                                     
+<title>BigNum&nbsp;:  Un module portable et efficace <br>
+pour une arithm&#233;tique &#224; pr&#233;cision arbitraire <br>
+&nbsp;&nbsp;<br>
+<p>
+BigNum:  A Portable and Efficient Package <br> for
+Arbitrary-Precision Arithmetic <br> &nbsp;&nbsp;<br></title>
+<H1 align=center>BigNum&nbsp;:  Un module portable et efficace <br>
+pour une arithm&#233;tique &#224; pr&#233;cision arbitraire <br>
+&nbsp;&nbsp;<br>
+<p>
+BigNum:  A Portable and Efficient Package <br> for
+Arbitrary-Precision Arithmetic <br> &nbsp;&nbsp;<br></H1>
+
+
+<H3 align=center>
+<p>
+Jean Claude Herv&#233; <a href="#tthFtNtAAB" name=tthFrefAAB>Digital Equipment Corp., Paris Research Laboratory,
+        85 Av. Victor Hugo.        92500 Rueil-Malmaison, France.</a><br>
+David Salesin <sup>*</sup> <br>
+Jean Vuillemin <sup>*</sup>,
+Fran&#231;ois Morain <a href="#tthFtNtAAC" name=tthFrefAAC>Institut National de Recherche
+        en Informatique et Automatique, 78153, Rocquencourt, France.</a><br>
+Bernard Paul Serpette <sup>\dagger</sup> <br>
+Paul Zimmermann <sup>\dagger</sup> <br>
+ </H3>
+<p>
+
+<H3 align=center></H3> 
+<center>Resum&#233;
+</center>
+<p>
+Nous sp&#233;cifions un module Le-Lisp d'arithm&#233;tique enti&#232;re &#224;
+pr&#233;cision arbitraire, portable, mais n&#233;anmoins efficace. La rapidit&#233;
+d'ex&#233;cution de ce module est assujettie &#224; la r&#233;&#233;criture en langage
+machine du noyau du module; nous fournissons les codes assembleurs pour
+les machines VAX, Mips, 68020 et NS. Ce module est du domaine public pour
+toute utilisation non commerciale.
+ 
+<p>
+
+<center>Abstract
+</center>
+<p>
+We specify a Le-Lisp package for arbitrary-precision integer arithmetic that
+is portable, yet efficient. Making the package run fast on a given computer
+involves re-writing a small kernel of our package in native assembly
+language. We provide such assembly code for VAX, Mips, 68020 and NS
+instruction sets. The package is publicly
+available for non-commercial uses.
+Un rapport d&#233;crivant le m&#234;me module pour le langage C est disponible,
+en anglais, en tant que rapport DEC. Cette implantation &#233;tant
+particuli&#232;rement d&#233;di&#233;e au langage C, la n&#244;tre d&#233;di&#233;e &#224;
+Le-Lisp<a href="#tthFtNtAAD" name=tthFrefAAD><sup>3</sup></a>, certaines
+diff&#233;rences de sp&#233;cifications seront d&#233;crites. L'implantation C sera
+appel&#233;e BigNum.c.
+
+<p>
+      <H2><A NAME="tth_sEc1">
+1</A>&nbsp;&nbsp;Introduction</H2>
+Le d&#233;veloppement d'un module arithm&#233;tique &#224; pr&#233;cision arbitraire,
+devant &#234;tre &#224; la fois efficace et portable, soul&#232;ve deux probl&#232;mes
+principaux&nbsp;:
+
+<UL>
+<p>
+  
+<li> Un module arithm&#233;tique, &#233;crit dans un langage de haut niveau
+    (C, Le-Lisp, Modula2+, ...) est typiquement quatre &#224; dix fois plus
+    lent que le m&#234;me module &#233;crit directement en langage machine.
+  
+<li> La plupart des op&#233;rations arithm&#233;tiques sont acc&#233;l&#233;r&#233;es d'un
+    facteur non n&#233;gligeable lorsque les allocations m&#233;moire sont enlev&#233;es
+    des boucles principales, les r&#233;sultats interm&#233;diaires et finaux
+    utilisant l'espace m&#233;moire r&#233;f&#233;renc&#233; par certains des param&#232;tres des
+    fonctions d'appel.
+</UL>
+<p>
+Pour r&#233;soudre ces probl&#232;mes, nous avons organis&#233; notre logiciel en deux
+niveaux&nbsp;:
+
+<OL type="1">
+<p>
+  
+<li> Un niveau appel&#233; <tt>Bn</tt>, dans lequel chaque fonction traite des
+    entiers non sign&#233;s, sans allocation, et retournant les r&#233;sultats en lieu
+    et place des premiers arguments pass&#233;s &#224; la fonction.
+  
+<li> Un niveau appel&#233; <tt>Bz</tt>, implant&#233; au dessus de <tt>Bn</tt>,
+    sp&#233;cifiant une arithm&#233;tique sign&#233;e et o&#249;, d'une mani&#232;re
+    traditionnelle, est faite l'allocation des r&#233;sultats.
+</OL>
+<p>
+Pour des raisons d'efficacit&#233;, le module <tt>Bn</tt> est lui-m&#234;me
+structur&#233; en deux niveaux&nbsp;:
+
+<UL>
+<p>
+  
+<li> Le noyau <tt>KerN</tt>, contenant les primitives dont le temps
+    d'ex&#233;cution est critique.
+  
+<li> Le reste de <tt>Bn</tt>, dont le code Le-Lisp fait appel au noyau.
+</UL>
+<p>
+Le noyau <tt>KerN</tt> est &#233;crit en C et en Le-Lisp pour des raisons de
+portabilit&#233; et de documentation et peut &#234;tre compil&#233; tel quel.
+N&#233;anmoins, pour obtenir une implantation vraiment efficace sur une machine
+donn&#233;e, <tt>KerN</tt> doit &#234;tre &#233;crit directement en langage machine.
+Nous en proposons les versions pour les machines VAX, Mips, 68020, et NS.
+<tt>KerN</tt> reste de taille raisonnable&nbsp;: 550 lignes de C,
+350 lignes de Le-Lisp, 700 lignes d'assembleur 68020 et 600
+lignes d'assembleur VAX.
+<br>
+<p>
+La partie de <tt>Bn</tt> ne faisant pas partie du noyau est &#233;crite directement
+en Le-Lisp et en C. Une fonction est consid&#233;r&#233;e comme faisant parti du noyau
+s'il est possible de gagner un gain d'efficacit&#233; de plus de 20%, sur un
+test standard, en r&#233;crivant cette fonction en assembleur.
+La connaissance exacte des proc&#233;dures faisant partie de <tt>KerN</tt>
+n'a d'importance que pour les personnes devant porter le module sur une
+nouvelle machine, ou ceux qui ne sont pas satisfaits de l'implantation C
+ou Le-Lisp.
+<br>
+<p>
+Finalement, notons que <tt>Bn</tt> sert de base &#224; d'autres modules
+sp&#233;cialis&#233;s tels qu'arithm&#233;tique rationnelle, polyn&#244;miale ou modulaire.
+
+<p>
+      <H2><A NAME="tth_sEc2">
+2</A>&nbsp;&nbsp;Repr&#233;sentation des nombres</H2>
+Les objets de base trait&#233;s par <tt>KerN</tt> sont les entiers naturels
+repr&#233;sent&#233;s par leurs d&#233;compositions dans une base nomm&#233;e B; ainsi les
+nombres de <tt>KerN</tt> s'&#233;crivent sous la forme&nbsp;:
+
+<centEr><table border=0 align=center><tr><td>
+<Table align=left><tr><td nowrap align=center>
+ N = </td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>n</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+N<sub>i</sub> B<sup>i</sup>&nbsp;.</td></Table>
+</td></table></centEr>
+
+
+Nous faisons la restriction que la base B est une puissance de 2. Il
+existe un entier T tel que&nbsp;: B = 2<sup>T</sup> ou T = log<sub>2</sub>(B), T
+d&#233;termine le nombre de bits n&#233;cessaires pour repr&#233;senter un chiffre N<sub>i</sub>.
+La valeur de l'entier T est disponible par la constante
+<tt>BN_DIGIT_SIZE</tt>.
+<br>
+<p>
+Par la suite nous utiliserons la notion de <em>sous-nombre</em> d'un nombre.
+Le sous-nombre, not&#233; N<sub>nd,nl</sub>, du nombre 
+
+<centEr><table border=0 align=center><tr><td>
+<Table align=left><tr><td nowrap align=center>
+ N = </td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>n</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+N<sub>i</sub> B<sup>i</sup> </td></Table>
+</td></table></centEr>
+
+
+est&nbsp;:
+
+<centEr><table border=0 align=center><tr><td>
+<Table align=left><tr><td nowrap align=center>
+ N<sub>nd,nl</sub> = </td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>nl</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+N<sub>nd+i</sub> B<sup>i</sup>&nbsp;.</td></Table>
+</td></table></centEr>
+
+
+Ceci impose que nd  <font face=symbol>³</font
+> 0, nl  <font face=symbol>³</font
+> 1 et nd + nl  <font face=symbol>£</font
+> n;
+n est appel&#233; la taille du nombre N (par la suite nous noterons
+n = size(N)). Pour le cas particulier nl = 0 nous convenons que tous
+les sous-nombres N<sub>i,0</sub> sont &#233;quivalents &#224; 0.
+On remarquera que le chiffre N<sub>i</sub> est &#233;quivalent au sous-nombre
+N<sub>i,1</sub>.
+<br>
+<p>
+Toutes les primitives supposent, sans le tester, que, si N<sub>i,j</sub> est
+un sous-nombre du nombre <em>N</em> de taille <em>n</em>, alors les
+pr&#233;conditions suivantes sont v&#233;rifi&#233;es&nbsp;: 0  <font face=symbol>£</font
+> i <font face=symbol> &lt; </font
+> n,
+0  <font face=symbol>£</font
+> j  <font face=symbol>£</font
+> n et 0  <font face=symbol>£</font
+> i+j  <font face=symbol>£</font
+> n.
+Aucune de ces pr&#233;conditions ne sont
+explicitement test&#233;es. L'usage de ces routines, hors de ces conditions
+de validit&#233;, peut conduire &#224; des violations de m&#233;moire.
+<br>
+<p>
+Dans l'implantation BigNum.c un sous-nombre N<sub>nd,nl</sub> est converti en
+un autre sous-nombre &#233;quivalent M<sub>0,nl</sub> moyennant l'affectation
+M = N + nd; ceci impose d'une part que le langage permet l'utilisation
+de pointeur &#224; l'int&#233;rieur de tableau de chiffres<a href="#tthFtNtAAE" name=tthFrefAAE><sup>4</sup></a>, et
+d'autre part que l'organisation interne des chiffres dans un nombre soit
+fix&#233;e. Ces restrictions permettent de r&#233;duire (g&#233;n&#233;ralement d'un tiers)
+les param&#232;tres formels des primitives. Ainsi tous les sous-nombres sont
+sp&#233;cifi&#233;s par deux variables (N et nl) au lieu de trois (N, nd et
+nl).
+
+<p>
+      <H2><A NAME="tth_sEc3">
+3</A>&nbsp;&nbsp;Op&#233;ration en place&nbsp;:&nbsp;Bn</H2>
+Dans cette section nous d&#233;crirons les fonctions traitant des entiers non
+sign&#233;s. Dans les exemples les entiers sont imprim&#233;s en hexad&#233;cimal,
+les poids forts &#224; gauche, chaque chiffre &#233;tant encadr&#233; par le caract&#232;re
+<tt>|</tt>. Nous utiliserons une implantation o&#249; <tt>BN_DIGIT_SIZE</tt> vaut
+32.
+
+<p>
+      <H3><A NAME="tth_sEc3.1">
+3.1</A>&nbsp;&nbsp;Addition</H3>
+(<b>BnAddCarry</b> <em>N nd nl r</em>)
+<br>
+<p>
+La fonction <b>BnAddCarry</b> propage en place la retenue <em>r</em>, valant 0
+ou 1,  sur le sous-nombre N<sub>nd,nl</sub> et retourne la retenue sortante. Plus
+formellement la fonction <b>BnAddCarry</b> effectue l'op&#233;ration suivante&nbsp;:
+
+<centEr><table border=0 align=center><tr><td>
+<Table align=left><tr><td nowrap align=center>
+ N<sub>nd,nl</sub> + r = (</td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>nl</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+N<sub>nd+i</sub> B<sup>i</sup>) + r = (</td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>nl</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+N<font face=symbol>¢</font
+><sub>nd+i</sub> B<sup>i</sup>) + r<font face=symbol>¢</font
+>B<sup>nl</sup>&nbsp;.</td></Table>
+</td></table></centEr>
+
+
+La fonction <b>BnAddCarry</b> remplace tous les chiffres N<sub>nd+i</sub> par leurs
+&#233;quivalents N<font face=symbol>¢</font
+><sub>nd+i</sub> et retourne comme r&#233;sultat la retenue r<font face=symbol>¢</font
+> valant
+0 ou 1. Cette retenue vaut 1 si et seulement si le sous-nombre N<sub>nd,nl</sub>
+est &#233;gal &#224; B<sup>nl</sup> - 1 et si la retenue entrante r vaut 1. La longueur
+nl peut-&#234;tre &#233;gale &#224; z&#233;ro, dans ce cas la retenue sortante prend la
+m&#234;me valeur que la retenue entrante.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (setq n (BnCreate 'n 4)) (BnComplement n 0 4) n)
+= |FFFFFFFF|FFFFFFFF|FFFFFFFF|FFFFFFFF|
+? (cons (BnAddCarry n 1 3 0) n)
+= (0 . |FFFFFFFF|FFFFFFFF|FFFFFFFF|FFFFFFFF|)
+? (cons (BnAddCarry n 2 2 1) n)
+= (1 . |00000000|00000000|FFFFFFFF|FFFFFFFF|)
+? (cons (BnAddCarry n 0 3 1) n)
+= (0 . |00000000|00000001|00000000|00000000|)
+? (cons (BnAddCarry n 0 3 1) n)
+= (0 . |00000000|00000001|00000000|00000001|)
+? (cons (BnAddCarry n 0 3 1) n)
+= (0 . |00000000|00000001|00000000|00000002|)
+</pre>
+<p>
+ (<b>BnAdd</b> <em>N nd nl M md ml r</em>)
+<br>
+<p>
+La fonction <b>BnAdd</b> effectue l'addition des deux sous-nombres
+N<sub>nd,nl</sub> et M<sub>md,ml</sub> et de la retenue <em>r</em>, place le
+r&#233;sultat dans le sous-nombre N<sub>nd,ml</sub>, propage la retenue de cette
+addition sur le sous-nombre N<sub>nd+ml,nl-ml</sub> et retourne la retenue
+sortante. Plus formellement la fonction <b>BnAdd</b> effectue l'op&#233;ration
+suivante&nbsp;:
+
+<centEr><table border=0 align=center><tr><td>
+<Table align=left><tr><td nowrap align=center>
+ N<sub>nd,nl</sub> + M<sub>md,ml</sub> + r = (</td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>nl</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+N<sub>nd+i</sub> B<sup>i</sup>) + (</td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>ml</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+M<sub>md+i</sub> B<sup>i</sup>) + r = (</td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>nl</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+N<font face=symbol>¢</font
+><sub>nd+i</sub> B<sup>i</sup>) + r<font face=symbol>¢</font
+>B<sup>nl</sup>&nbsp;.</td></Table>
+</td></table></centEr>
+
+
+La fonction <b>BnAdd</b> remplace tous les chiffres N<sub>nd+i</sub> par leurs
+&#233;quivalents N<font face=symbol>¢</font
+><sub>nd+i</sub> et retourne comme r&#233;sultat la retenue r<font face=symbol>¢</font
+> valant 0
+ou 1. Ceci impose donc que 0  <font face=symbol>£</font
+> r  <font face=symbol>£</font
+> 1 et nl  <font face=symbol>³</font
+> ml. Les deux nombres
+N et M peuvent &#234;tre identiques <a href="#tthFtNtAAF" name=tthFrefAAF><sup>5</sup></a> &#224; la condition que nd  <font face=symbol>£</font
+> md. De m&#234;me la
+longueur ml peut-&#234;tre &#233;gale &#224; z&#233;ro, dans ce cas la forme
+(<b>BnAdd</b> <em>N nd nl M md 0 r</em>) est &#233;quivalente &#224;&nbsp;:
+(<b>BnAddCarry</b> <em>N nd nl r</em>).
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (setq n (BnCreate 'n 4)) (BnComplement n 0 3) n)
+= |00000000|FFFFFFFF|FFFFFFFF|FFFFFFFF|
+? (cons (BnAdd n 0 1 n 1 1 1) n)
+= (1 . |00000000|FFFFFFFF|FFFFFFFF|FFFFFFFF|)
+? (cons (BnAdd n 0 2 n 2 1 0) n)
+= (1 . |00000000|FFFFFFFF|00000000|FFFFFFFE|)
+? (cons (BnAdd n 2 1 n 3 1 1) n)
+= (1 . |00000000|00000000|00000000|FFFFFFFE|)
+? (cons (BnAdd n 0 2 n 0 1 0) n)
+= (0 . |00000000|00000000|00000001|FFFFFFFC|)
+</pre>
+<p>
+       <H3><A NAME="tth_sEc3.2">
+3.2</A>&nbsp;&nbsp;Soustraction</H3>
+(<b>BnComplement</b> <em>N nd nl</em>)
+<br>
+<p>
+La fonction <b>BnComplement</b> remplace tous les chiffres du sous-nombre
+N<sub>nd,nl</sub> par leur compl&#233;ment &#224; la base, ce qui correspond &#224;
+l'inversion logique de tous les bits. Plus formellement la fonction
+<b>BnComplement</b> effectue l'op&#233;ration suivante&nbsp;:
+
+<centEr><table border=0 align=center><tr><td>
+<Table align=left><tr><td nowrap align=center>
+</td><td nowrap align=center>
+<hr NOSHADE>
+N<sub>nd,nl</sub><Br>&nbsp;<br></td><td nowrap align=center>
+ = </td><td nowrap align=center>
+<hr NOSHADE>
+<tabLe border=0><tr><td nowrap align=center>
+</td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>nl</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+N<sub>nd+i</sub> B<sup>i</sup></td></tabLe>&nbsp;<br></td><td nowrap align=center>
+ = </td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>nl</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+</td><td nowrap align=center>
+<hr NOSHADE>
+N<sub>nd+i</sub><Br>&nbsp;<br></td><td nowrap align=center>
+B<sup>i</sup> = </td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>nl</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+(B - N<sub>nd+i</sub> - 1) B<sup>i</sup>&nbsp;.</td></Table>
+</td></table></centEr>
+
+
+La fonction <b>BnComplement</b> ne retourne aucun r&#233;sultat significatif. Aucun
+effet de bord n'est effectu&#233; lorsque la longueur nl vaut 0.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (setq n (BnCreate 'n 4)) (for (i 0 1 3) (BnSetDigit n i i)) n)
+= |00000003|00000002|00000001|00000000|
+? (progn (BnComplement n 1 2) n)
+= |00000003|FFFFFFFD|FFFFFFFE|00000000|
+</pre>
+<p>
+ (<b>BnSubtractBorrow</b> <em>N nd nl r</em>)
+<br>
+<p>
+La fonction <b>BnSubtractBorrow</b> propage en place l'emprunt <em>r</em>, de
+valeur 0 ou 1, sur le sous-nombre N<sub>nd,nl</sub> et retourne l'emprunt
+sortant. Plus formellement la fonction <b>BnSubtractBorrow</b> effectue
+l'op&#233;ration suivante&nbsp;:
+
+<centEr><table border=0 align=center><tr><td>
+<Table align=left><tr><td nowrap align=center>
+ N<sub>nd,nl</sub> + B<sup>nl</sup> + r - 1 = (</td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>nl</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+N<sub>nd+i</sub> B<sup>i</sup>) + B<sup>nl</sup> + r - 1 = (</td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>nl</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+N<font face=symbol>¢</font
+><sub>nd+i</sub> B<sup>i</sup>) + r<font face=symbol>¢</font
+>B<sup>nl</sup>&nbsp;.</td></Table>
+</td></table></centEr>
+
+
+La fonction <b>BnSubtractBorrow</b> remplace tous les chiffres N<sub>nd+i</sub> par
+leurs &#233;quivalents N<font face=symbol>¢</font
+><sub>nd+i</sub> et retourne comme r&#233;sultat l'emprunt sortant
+r<font face=symbol>¢</font
+> valant 0 ou 1. Cet emprunt vaut 0 si et seulement si le sous-nombre
+N<sub>nd,nl</sub> et l'emprunt entrant sont &#233;gaux &#224; 0. La longueur nl
+peut-&#234;tre &#233;gale &#224; z&#233;ro, dans ce cas l'emprunt sortant prend la m&#234;me
+valeur que l'emprunt entrant.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (setq n (BnCreate 'n 4)) n)
+= |00000000|00000000|00000000|00000000|
+? (cons (BnSubtractBorrow n 1 3 1) n)
+= (1 . |00000000|00000000|00000000|00000000|)
+? (cons (BnSubtractBorrow n 2 2 0) n)
+= (0 . |FFFFFFFF|FFFFFFFF|00000000|00000000|)
+? (cons (BnSubtractBorrow n 0 3 0) n)
+= (1 . |FFFFFFFF|FFFFFFFE|FFFFFFFF|FFFFFFFF|)
+? (cons (BnSubtractBorrow n 0 3 0) n)
+= (1 . |FFFFFFFF|FFFFFFFE|FFFFFFFF|FFFFFFFE|)
+? (cons (BnSubtractBorrow n 0 3 0) n)
+= (1 . |FFFFFFFF|FFFFFFFE|FFFFFFFF|FFFFFFFD|)
+</pre>
+<p>
+ (<b>BnSubtract</b> <em>N nd nl M md ml r</em>)
+<br>
+<p>
+La fonction <b>BnSubtract</b> effectue la soustraction des deux
+sous-nombres N<sub>nd,nl</sub> et M<sub>md,ml</sub> et de l'emprunt <em>r</em>, 
+place le r&#233;sultat dans le sous-nombre N<sub>nd,ml</sub>, propage l'emprunt 
+de cette soustraction sur le sous-nombre N<sub>nd+ml,nl-ml</sub> et retourne
+l'emprunt sortant.  Plus formellement la fonction <b>BnSubtract</b>
+effectue l'op&#233;ration suivante&nbsp;:
+
+<centEr><table border=0 align=center><tr><td>
+<Table align=left><tr><td nowrap align=center>
+ N<sub>nd,nl</sub> - M<sub>md,ml</sub> + B<sup>nl</sup> + r - 1 = (</td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>nl</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+N<sub>nd+i</sub> B<sup>i</sup>) - (</td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>ml</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+M<sub>md+i</sub> B<sup>i</sup>) + B<sup>nl</sup> + r - 1 = (</td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>nl</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+N<font face=symbol>¢</font
+><sub>nd+i</sub> B<sup>i</sup>) + r<font face=symbol>¢</font
+>B<sup>nl</sup>&nbsp;.</td></Table>
+</td></table></centEr>
+
+
+La fonction <b>BnSubtract</b> remplace tous les chiffres N<sub>nd+i</sub> par leurs
+&#233;quivalents N<font face=symbol>¢</font
+><sub>nd+i</sub> et retourne comme r&#233;sultat l'emprunt sortant r<font face=symbol>¢</font
+>
+valant 0 ou 1. Ceci impose donc que 0  <font face=symbol>£</font
+> r  <font face=symbol>£</font
+> 1 et nl  <font face=symbol>³</font
+> ml.
+Les deux nombres N et M peuvent &#234;tre identiques &#224; la condition que
+nd  <font face=symbol>£</font
+> md. De m&#234;me la longueur ml peut-&#234;tre &#233;gale &#224; z&#233;ro, dans ce
+cas la forme (<b>BnSubtract</b> <em>N nd nl M md 0 r</em>) est &#233;quivalente &#224;&nbsp;:
+(<b>BnSubtractBorrow</b> <em>N nd nl r</em>).
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (setq n (BnCreate 'n 4)) (BnComplement n 3 1) n)
+= |FFFFFFFF|00000000|00000000|00000000|
+? (cons (BnSubtract n 0 1 n 1 1 0) n)
+= (0 . |FFFFFFFF|00000000|00000000|FFFFFFFF|)
+? (cons (BnSubtract n 0 2 n 2 1 0) n)
+= (1 . |FFFFFFFF|00000000|00000000|FFFFFFFE|)
+? (cons (BnSubtract n 2 1 n 3 1 1) n)
+= (0 . |FFFFFFFF|00000001|00000000|FFFFFFFE|)
+? (cons (BnSubtract n 0 3 n 0 1 0) n)
+= (1 . |FFFFFFFF|00000000|FFFFFFFF|FFFFFFFF|)
+</pre>
+<p>
+       <H3><A NAME="tth_sEc3.3">
+3.3</A>&nbsp;&nbsp;Multiplication</H3>
+(<b>BnMultiplyDigit</b> <em>P pd pl N nd nl M md</em>)
+<br>
+<p>
+La fonction <b>BnMultiplyDigit</b> effectue la multiplication du sous-nombre
+N<sub>nd,nl</sub> par le chiffre M<sub>md</sub> avec accumulation dans le
+sous-nombre P<sub>pd,pl</sub>, et retourne la retenue produite. Plus
+formellement la fonction <b>BnMultiplyDigit</b> effectue l'op&#233;ration
+suivante&nbsp;:
+
+<centEr><table border=0 align=center><tr><td>
+<Table align=left><tr><td nowrap align=center>
+ P<sub>pd,pl</sub> + M<sub>md</sub>&times;N<sub>nd,nl</sub> = (</td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>pl</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+P<sub>pd+i</sub> B<sup>i</sup>) + M<sub>md</sub>(</td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>nl</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+N<sub>nd+i</sub> B<sup>i</sup>) = (</td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>pl</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+P<font face=symbol>¢</font
+><sub>pd+i</sub> B<sup>i</sup>) + r<font face=symbol>¢</font
+>B<sup>pl</sup>&nbsp;.</td></Table>
+</td></table></centEr>
+
+
+La fonction <b>BnMultiplyDigit</b> remplace tous les chiffres P<sub>pd+i</sub> par
+leurs &#233;quivalents P<font face=symbol>¢</font
+><sub>pd+i</sub> et retourne comme r&#233;sultat la retenue sortante
+r<font face=symbol>¢</font
+> valant 0 ou 1. Ceci impose donc que pl<font face=symbol> &gt; </font
+>nl. La longueur nl peut-&#234;tre
+&#233;gale &#224; z&#233;ro, dans ce cas la retenue sortante vaut z&#233;ro et aucun effet
+de bord n'est effectu&#233;. Les deux nombres P et N peuvent &#234;tre identiques
+&#224; la condition que pd  <font face=symbol>£</font
+> nd. Enfin le chiffre M<sub>md</sub> peut-&#234;tre
+n'importe lequel des chiffres de P ou de N. Les cas M<sub>md</sub> = 0 et
+M<sub>md</sub> = 1 sont explicitement test&#233;s pour acc&#233;l&#233;rer les temps de calcul.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (setq n (BnCreate 'n 6)) (BnComplement n 0 4) n)
+= |00000000|00000000|FFFFFFFF|FFFFFFFF|FFFFFFFF|FFFFFFFF|
+? (cons (BnMultiplyDigit n 3 3 n 0 2 n 0) n)
+= (0 . |FFFFFFFF|00000000|00000000|FFFFFFFF|FFFFFFFF|FFFFFFFF|)
+? (cons (BnMultiplyDigit n 3 3 n 0 2 n 0) n)
+= (1 . |FFFFFFFD|FFFFFFFF|00000001|FFFFFFFF|FFFFFFFF|FFFFFFFF|)
+? (cons (BnMultiplyDigit n 3 3 n 0 2 n 0) n)
+= (1 . |FFFFFFFC|FFFFFFFE|00000002|FFFFFFFF|FFFFFFFF|FFFFFFFF|)
+? (cons (BnMultiplyDigit n 0 3 n 0 2 n 3) n)
+= (1 . |FFFFFFFC|FFFFFFFE|00000002|00000001|FFFFFFFF|FFFFFFFD|)
+? (cons (BnMultiplyDigit n 0 2 n 0 1 n 3) n)
+= (1 . |FFFFFFFC|FFFFFFFE|00000002|00000001|00000001|FFFFFFF7|)
+? (cons (BnMultiplyDigit n 0 2 n 0 1 n 3) n)
+= (0 . |FFFFFFFC|FFFFFFFE|00000002|00000001|00000003|FFFFFFE5|)
+</pre>
+<p>
+ (<b>BnMultiply</b> <em>P pd pl N nd nl M md ml</em>)
+<br>
+<p>
+La fonction <b>BnMultiply</b> effectue la multiplication des deux
+sous-nombres N<sub>nd,nl</sub> et M<sub>md,ml</sub> avec accumulation dans le
+sous-nombre P<sub>pd,pl</sub>, et retourne la retenue produite. Plus
+formellement la fonction <b>BnMultiply</b> effectue l'op&#233;ration
+suivante&nbsp;:
+
+<centEr><table border=0 align=center><tr><td>
+<Table align=left><tr><td nowrap align=center>
+ P<sub>pd,pl</sub> + N<sub>nd,nl</sub>&times;M<sub>md,ml</sub> = (</td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>pl</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+P<sub>pd+i</sub> B<sup>i</sup>) + (</td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>nl</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+N<sub>nd+i</sub> B<sup>i</sup>)(</td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>ml</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+M<sub>md+i</sub> B<sup>i</sup>) = (</td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>pl</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+P<font face=symbol>¢</font
+><sub>pd+i</sub> B<sup>i</sup>) + r<font face=symbol>¢</font
+>B<sup>pl</sup>&nbsp;.</td></Table>
+</td></table></centEr>
+
+
+La fonction <b>BnMultiply</b> remplace tous les chiffres P<sub>pd+i</sub> par
+leurs &#233;quivalents P<font face=symbol>¢</font
+><sub>pd+i</sub> et retourne comme r&#233;sultat la retenue sortante
+r<font face=symbol>¢</font
+> valant 0 ou 1. Ceci impose donc que pl <font face=symbol>³</font
+> nl + ml. La longueur nl
+peut-&#234;tre &#233;gale &#224; z&#233;ro, dans ce cas la retenue sortante vaut z&#233;ro et
+aucun effet de bord n'est effectu&#233;. La boucle de calcul &#233;tant effectu&#233;
+sur ml, la fonction est plus performante lorsque nl  <font face=symbol>³</font
+> ml.
+Il n'est pas possible d'effectuer des chevauchements entre les sous-nombres
+P<sub>pd,pl</sub> et N<sub>nd,nl</sub> ou M<sub>md,ml</sub>.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (setq n  (BnCreate 'n 8)) (for (i 0 1 7) (BnSetDigit n i i)) n)
+= |00000007|00000006|00000005|00000004|00000003|00000002|00000001|00000000|
+? (cons (BnMultiply n 4 4 n 0 2 n 2 2) n)
+= (0 . |00000007|00000009|00000007|00000004|00000003|00000002|00000001|00000000|)
+? (progn (BnComplement n 0 4) n)
+= |00000007|00000009|00000007|00000004|FFFFFFFC|FFFFFFFD|FFFFFFFE|FFFFFFFF|
+? (cons (BnMultiply n 4 4 n 0 2 n 2 2) n)
+= (1 . |00000003|00000008|0000000D|00000007|FFFFFFFC|FFFFFFFD|FFFFFFFE|FFFFFFFF|)
+</pre>
+<p>
+ (<b>BnShiftLeft</b> <em>N nd nl M md s</em>)
+<br>
+<p>
+La fonction <b>BnShiftLeft</b> d&#233;cale vers la gauche tous les chiffres du
+sous-nombre N<sub>nd,nl</sub>, les s bits laiss&#233;s vacants d'un
+chiffre sont remplac&#233;s par les s bits sortants du chiffre pr&#233;c&#233;dent,
+les s bits laiss&#233;s vacants du premier chiffre sont remplac&#233;s par des
+z&#233;ros, et les s bits sortants du dernier chiffre sont plac&#233;s,
+cadr&#233;s sur les poids faibles, dans le chiffre M<sub>md</sub>. La fonction
+<b>BnShiftLeft</b> effectue donc une multiplication par 2<sup>s</sup> sur le
+sous-nombre N<sub>nd,nl</sub>. Plus formellement la fonction <b>BnShiftLeft</b>
+effectue l'op&#233;ration suivante&nbsp;:
+
+<centEr><table border=0 align=center><tr><td>
+<Table align=left><tr><td nowrap align=center>
+ 2<sup>s</sup>N<sub>nd,nl</sub> = 2<sup>s</sup>(</td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>nl</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+N<sub>nd+i</sub> B<sup>i</sup>) = (</td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>nl</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+N<font face=symbol>¢</font
+><sub>nd+i</sub> B<sup>i</sup>) + M<font face=symbol>¢</font
+><sub>md</sub>B<sup>nl</sup>&nbsp;.</td></Table>
+</td></table></centEr>
+
+
+La fonction <b>BnShiftLeft</b> remplace tous les chiffres N<sub>nd+i</sub> par leurs
+&#233;quivalents N<font face=symbol>¢</font
+><sub>nd+i</sub> et le chiffre M<sub>md</sub> par M<font face=symbol>¢</font
+><sub>md</sub>. Ceci impose
+donc que 0  <font face=symbol>£</font
+> s <font face=symbol> &lt; </font
+>  <tt>BN_DIGIT_SIZE</tt>. Le cas particulier s = 0 est
+explicitement test&#233; pour acc&#233;l&#233;rer le temps de calcul.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (setq n (BnCreate 'n 4)) (for (i 0 1 3) (BnSetDigit n i i)) n)
+= |00000003|00000002|00000001|00000000|
+? (progn (BnShiftLeft n 1 3 n 0 8) n)
+= |00000300|00000200|00000100|00000000|
+? (progn (BnShiftLeft n 1 3 n 0 16) n)
+= |03000000|02000000|01000000|00000000|
+? (progn (BnShiftLeft n 1 3 n 0 16) n)
+= |00000200|00000100|00000000|00000300|
+</pre>
+<p>
+       <H3><A NAME="tth_sEc3.4">
+3.4</A>&nbsp;&nbsp;Division</H3>
+(<b>BnDivideDigit</b> <em>Q qd R rd N nd nl M md</em>)
+<br>
+<p>
+La fonction <b>BnDivideDigit</b> effectue la division du sous-nombre
+N<sub>nd,nl</sub> par le chiffre M<sub>md</sub>, place le quotient dans le sous-nombre
+Q<sub>qd,nl-1</sub> et le reste dans le chiffre R<sub>rd</sub>. Plus formellement
+l'&#233;quation suivante est satisfaite&nbsp;:
+
+<centEr><table border=0 align=center><tr><td>
+<Table align=left><tr><td nowrap align=center>
+ </td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>nl</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+N<sub>nd+i</sub> B<sup>i</sup> = (</td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>nl-1</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+Q<sub>qd+i</sub> B<sup>i</sup>)&times;M<sub>md</sub> + R<sub>rd</sub>&nbsp;avec&nbsp;0  <font face=symbol>£</font
+> R<sub>rd</sub> <font face=symbol> &lt; </font
+> M<sub>md</sub>&nbsp;.</td></Table>
+</td></table></centEr>
+
+
+La fonction <b>BnDivideDigit</b> impose donc
+que nl <font face=symbol> &gt; </font
+> 1, N<sub>nd+nl-1</sub> <font face=symbol> &lt; </font
+> M<sub>md</sub> et que size(Q)  <font face=symbol>³</font
+> qd+nl-1.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (setq n (BnCreate 'n 4)) (for (i 0 1 3) (BnSetDigit n i i)) n)
+= |00000003|00000002|00000001|00000000|
+? (progn (BnDivideDigit n 0 n 2 n 0 3 n 3) n)
+= |00000003|00000000|AAAAAAAB|00000000|
+? (progn (BnDivideDigit n 0 n 2 n 0 3 n 3) n)
+= |00000003|00000000|38E38E39|00000000|
+? (progn (BnDivideDigit n 0 n 2 n 0 3 n 3) n)
+= |00000003|00000002|12F684BD|AAAAAAAA|
+? (progn (BnDivideDigit n 0 n 2 n 1 2 n 0) n)
+= |00000003|12F684BF|12F684BD|00000003|
+</pre>
+<p>
+ (<b>BnDivide</b> <em>N nd nl M md ml</em>)
+<br>
+<p>
+La fonction <b>BnDivide</b> effectue la division du sous-nombre
+N<sub>nd,nl</sub> par le sous-nombre M<sub>md,ml</sub>, place le quotient dans le
+sous-nombre N<sub>nd+ml,nl-ml</sub> et le reste dans le sous-nombre
+N<sub>nd,ml</sub>. Plus formellement l'&#233;quation suivante est satisfaite&nbsp;:
+
+<centEr><table border=0 align=center><tr><td>
+<Table align=left><tr><td nowrap align=center>
+ </td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>nl</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+N<sub>nd+i</sub> B<sup>i</sup> = (</td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>nl-ml</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+N<font face=symbol>¢</font
+><sub>nd+ml+i</sub> B<sup>i</sup>)&times;(</td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>ml</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+M<sub>md+i</sub> B<sup>i</sup>) + (</td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>ml</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+N<font face=symbol>¢</font
+><sub>nd+i</sub> B<sup>i</sup>) </td></Table>
+</td></table></centEr>
+
+
+
+<centEr><table border=0 align=center><tr><td>
+<Table align=left><tr><td nowrap align=center>
+ avec&nbsp;0  <font face=symbol>£</font
+> </td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>ml</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+N<font face=symbol>¢</font
+><sub>nd+i</sub> B<sup>i</sup> <font face=symbol> &lt; </font
+> </td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>ml</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+M<sub>md+i</sub> B<sup>i</sup>&nbsp;.</td></Table>
+</td></table></centEr>
+
+
+La fonction <b>BnDivide</b> remplace tous les chiffres N<sub>nd+i</sub> par leurs
+&#233;quivalents N<font face=symbol>¢</font
+><sub>nd+i</sub>. Ceci impose donc que nl <font face=symbol> &gt; </font
+> ml et que
+N<sub>nd+nl-1</sub> <font face=symbol> &lt; </font
+> M<sub>md+ml-1</sub>.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (setq n (BnCreate 'n 5)) (for (i 0 1 4) (BnSetDigit n i i)) n)
+= |00000004|00000003|00000002|00000001|00000000|
+? (progn (BnDivide n 0 3 n 3 2) n)
+= |00000004|00000003|7FFFFFFF|00000003|80000003|
+? (progn (BnDivide n 0 2 n 4 1) n)
+= |00000004|00000003|7FFFFFFF|E0000000|00000003|
+? (progn (BnDivide n 2 3 n 0 2) n)
+= |00000004|80000003|7FFFFFF3|E0000000|00000003|
+</pre>
+<p>
+ (<b>BnShiftRight</b> <em>N nd nl M md s</em>)
+<br>
+<p>
+La fonction <b>BnShiftRight</b> d&#233;cale vers la droite tous les chiffres du
+sous-nombre N<sub>nd,nl</sub>, les s bits laiss&#233;s vacants d'un
+chiffre sont remplac&#233;s par les s bits sortants du chiffre suivant,
+les s bits laiss&#233;s vacants du dernier chiffre sont remplac&#233;s par des
+z&#233;ros, et les s bits sortants du premier chiffre sont plac&#233;s,
+cadr&#233;s sur les poids forts, dans le chiffre M<sub>md</sub>. La fonction
+<b>BnShiftRight</b> effectue donc une division par 2<sup>s</sup> sur le sous-nombre
+N<sub>nd,nl</sub>. Plus formellement l'&#233;quation suivante est satisfaite&nbsp;:
+
+<centEr><table border=0 align=center><tr><td>
+<Table align=left><tr><td nowrap align=center>
+ </td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>nl</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+N<sub>nd+i</sub> B<sup>i</sup> = 2<sup>s</sup>(M<font face=symbol>¢</font
+><sub>md</sub>B<sup>-1</sup> + </td><td nowrap align=center>
+<font size="-1">i<font face=symbol> &lt; </font
+>nl</font> <Br><font face=symbol size="+3">å<br></font>
+<font size="-1">i = 0</font>&nbsp;<br></td><td nowrap>
+N<font face=symbol>¢</font
+><sub>nd+i</sub> B<sup>i</sup>)&nbsp;.</td></Table>
+</td></table></centEr>
+
+
+La fonction <b>BnShiftRight</b> remplace tous les chiffres N<sub>nd+i</sub> par leurs
+&#233;quivalents N<font face=symbol>¢</font
+><sub>nd+i</sub> et le chiffre M<sub>md</sub> par M<font face=symbol>¢</font
+><sub>md</sub>. Ceci impose
+donc que 0  <font face=symbol>£</font
+> s <font face=symbol> &lt; </font
+>  <tt>BN_DIGIT_SIZE</tt>. Le cas particulier s = 0 est
+explicitement test&#233; pour acc&#233;l&#233;rer le temps de calcul.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (setq n (BnCreate 'n 4)) (for (i 0 1 3) (BnSetDigit n i i)) n)
+= |00000003|00000002|00000001|00000000|
+? (progn (BnShiftRight n 1 3 n 0 8) n)
+= |00000000|03000000|02000000|01000000|
+? (progn (BnShiftRight n 1 3 n 0 16) n)
+= |00000000|00000300|00000200|00000000|
+? (progn (BnShiftRight n 1 3 n 0 16) n)
+= |00000000|00000000|03000000|02000000|
+</pre>
+<p>
+ Les deux proc&#233;dures suivantes sont utilis&#233;es dans le processus de
+normalisation de la division longue.
+<br>
+<p>
+(<b>BnNumLeadingZeroBitsInDigit</b> <em>N nd</em>)
+<br>
+<p>
+La fonction <b>BnNumLeadingZeroBitsInDigit</b> calcule le nombre de bits nuls
+dans les poids forts du chiffre N<sub>nd</sub>. Plus formellement la fonction
+<b>BnNumLeadingZeroBitsInDigit</b> calcule l'entier k tel que l'&#233;quation
+suivante soit satisfaite&nbsp;:
+
+<centEr><table border=0 align=center><tr><td>
+<Table align=left><tr><td nowrap align=center>
+ </td><td nowrap align=center>
+B<hr NOSHADE>
+ 2<Br></td><td nowrap align=center>
+<font face=symbol> &lt; </font
+> (N<sub>nd</sub> + 1) 2<sup>k</sup>  <font face=symbol>£</font
+> B&nbsp;.</td></Table>
+</td></table></centEr>
+
+
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (setq n (BnCreate 'n 4)) (for (i 0 1 3) (BnSetDigit n i i)) n)
+= |00000003|00000002|00000001|00000000|
+? (BnNumLeadingZeroBitsInDigit n 0)
+= 32
+? (BnNumLeadingZeroBitsInDigit n 1)
+= 31
+? (BnNumLeadingZeroBitsInDigit n 3)
+= 30
+? (progn (BnComplement n 2 1) n)
+= |00000003|FFFFFFFD|00000001|00000000|
+? (BnNumLeadingZeroBitsInDigit n 2)
+= 0
+</pre>
+<p>
+ (<b>BnIsDigitNormalized</b> <em>N nd</em>)
+<br>
+<p>
+La fonction <b>BnIsDigitNormalized</b> retourne 0 si le chiffre N<sub>nd</sub>
+v&#233;rifie&nbsp;:
+
+<centEr><table border=0 align=center><tr><td>
+<Table align=left><tr><td nowrap align=center>
+ 0  <font face=symbol>£</font
+> N<sub>nd</sub> <font face=symbol> &lt; </font
+> </td><td nowrap align=center>
+B<hr NOSHADE>
+ 2<Br></td><td nowrap align=center>
+&nbsp;.</td></Table>
+</td></table></centEr>
+
+
+La fonction <b>BnIsDigitNormalized</b> teste le bit de poids fort du chiffre
+N<sub>nd</sub> et retourne 0 si ce bit a pour valeur 0; dans le cas contraire
+la fonction retourne un entier diff&#233;rent de 0, la valeur exacte de cet
+entier peut d&#233;pendre des machines.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (setq n (BnCreate 'n 4)) (for (i 0 1 3) (BnSetDigit n i i)) n)
+= |00000003|00000002|00000001|00000000|
+? (BnIsDigitNormalized n 0)
+= 0
+? (BnIsDigitNormalized n 1)
+= 0
+? (progn (BnComplement n 0 2) n)
+= |00000003|00000002|FFFFFFFE|FFFFFFFF|
+? (BnIsDigitNormalized n 0)
+= 255
+? (BnIsDigitNormalized n 1)
+= 255
+</pre>
+<p>
+       <H3><A NAME="tth_sEc3.5">
+3.5</A>&nbsp;&nbsp;Comparaisons</H3>
+(<b>BnIsDigitZero</b> <em>N nd</em>)
+<br>
+<p>
+La fonction <b>BnIsDigitZero</b> retourne 0 si le chiffre N<sub>nd</sub> est
+non nul.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (setq n (BnCreate 'n 4)) (for (i 0 1 3) (BnSetDigit n i i)) n)
+= |00000003|00000002|00000001|00000000|
+? (BnIsDigitZero n 0)
+= 255
+? (BnIsDigitZero n 1)
+= 0
+</pre>
+<p>
+ (<b>BnIsZero</b> <em>N nd nl</em>)
+<br>
+<p>
+La fonction <b>BnIsZero</b> retourne 0 si le sous-nombre N<sub>nd,nl</sub> est
+non nul.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (setq n (BnCreate 'n 4)) (for (i 0 1 3) (BnSetDigit n i i)) n)
+= |00000003|00000002|00000001|00000000|
+? (BnIsZero n 0 1)
+= 255
+? (BnIsZero n 0 2)
+= 0
+? (BnIsZero n 1 1)
+= 0
+</pre>
+<p>
+ (<b>BnCompareDigits</b> <em>N nd M md</em>)
+<br>
+<p>
+La fonction <b>BnCompareDigits</b> retourne -1 si le chiffre N<sub>nd</sub> est
+strictement plus petit que le chiffre M<sub>md</sub>, 0 si le chiffre
+N<sub>nd</sub> est &#233;gal au chiffre M<sub>md</sub> et 1 si le chiffre N<sub>nd</sub>
+est strictement sup&#233;rieur au chiffre M<sub>md</sub>.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (setq n (BnCreate 'n 4)) (for (i 0 1 3) (BnSetDigit n i i)) n)
+= |00000003|00000002|00000001|00000000|
+? (BnCompareDigits n 0 n 0)
+= 0
+? (BnCompareDigits n 0 n 1)
+= -1
+? (BnCompareDigits n 1 n 0)
+= 1
+? (progn (BnComplement n 0 2) n)
+= |00000003|00000002|FFFFFFFE|FFFFFFFF|
+? (BnCompareDigits n 0 n 0)
+= 0
+? (BnCompareDigits n 0 n 1)
+= 1
+? (BnCompareDigits n 1 n 0)
+= -1
+</pre>
+<p>
+ (<b>BnCompare</b> <em>N nd nl M md ml</em>)
+<br>
+<p>
+La fonction <b>BnCompare</b> retourne -1 si le sous-nombre N<sub>nd,nl</sub> est
+strictement plus petit que le sous-nombre M<sub>md,ml</sub>, retourne 0 si le
+sous-nombre N<sub>nd,nl</sub> est &#233;gal au sous-nombre M<sub>md,ml</sub> et
+retourne 1 si le sous-nombre N<sub>nd,nl</sub> est strictement sup&#233;rieur
+au sous-nombre M<sub>md,ml</sub>.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (setq n (BnCreate 'n 5)) (for (i 0 1 3) (BnSetDigit n i i)) n)
+= |00000000|00000003|00000002|00000001|00000000|
+? (BnCompare n 2 3 n 2 2)
+= 0
+? (BnCompare n 2 3 n 0 2)
+= 1
+? (BnCompare n 3 2 n 0 2)
+= -1
+? (progn (BnComplement n 0 2) n)
+= |00000000|00000003|00000002|FFFFFFFE|FFFFFFFF|
+? (BnCompare n 0 2 n 0 2)
+= 0
+? (BnCompare n 0 1 n 1 1)
+= 1
+? (BnCompare n 1 1 n 0 1)
+= -1
+? (BnCompare n 2 3 n 0 2)
+= -1
+? (BnCompare n 3 2 n 0 2)
+= -1
+</pre>
+<p>
+ (<b>BnIsDigitOdd</b> <em>N nd</em>)
+<br>
+<p>
+La fonction <b>BnIsDigitOdd</b> retourne la valeur 0 si le chiffre N<sub>nd</sub>
+est pair. Cette fonction test le bit de poids faible du chiffre N<sub>nd</sub>.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (setq n (BnCreate 'n 4)) (for (i 0 1 3) (BnSetDigit n i i)) n)
+= |00000003|00000002|00000001|00000000|
+? (BnIsDigitOdd n 0)
+= 0
+? (BnIsDigitOdd n 1)
+= 255
+? (progn (BnComplement n 0 2) n)
+= |00000003|00000002|FFFFFFFE|FFFFFFFF|
+? (BnIsDigitOdd n 0)
+= 255
+? (BnIsDigitOdd n 1)
+= 0
+</pre>
+<p>
+ (<b>BnNumDigits</b> <em>N nd nl</em>)
+<br>
+<p>
+La fonction <b>BnNumDigits</b> retourne le nombre de chiffres significatifs du
+sous-nombre N<sub>nd,nl</sub>. Cette fonction retourne la valeur 1 pour le
+cas particulier o&#249; le sous-nombre N<sub>nd,nl</sub> vaut 0.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (setq n (BnCreate 'n 4))
+= |00000000|00000000|00000000|00000000|
+? (BnNumDigits n 0 4)
+= 1
+? (progn (BnSetDigit n 1 3) n)
+= |00000000|00000000|00000003|00000000|
+? (BnNumDigits n 0 3)
+= 2
+? (progn (for (i 0 1 3) (BnSetDigit n i i)) n)
+= |00000003|00000002|00000001|00000000|
+? (BnNumDigits n 0 4)
+= 4
+? (BnNumDigits n 2 0)
+= 1
+</pre>
+<p>
+       <H3><A NAME="tth_sEc3.6">
+3.6</A>&nbsp;&nbsp;Fonctions logiques</H3>
+(<b>BnAndDigits</b> <em>N nd N md</em>)
+<br>
+<p>
+La fonction <b>BnAndDigits</b> effectue le <b>et logique</b> entre les chiffres
+N<sub>nd</sub> et M<sub>md</sub>, le chiffre r&#233;sultant est mis &#224; la place du chiffre
+N<sub>nd</sub>.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (setq n (BnCreate 'n 4)) (for (i 0 1 3) (BnSetDigit n i i)) n)
+= |00000003|00000002|00000001|00000000|
+? (progn (BnAndDigits n 3 n 1) n)
+= |00000001|00000002|00000001|00000000|
+? (progn (BnAndDigits n 0 n 2) n)
+= |00000001|00000002|00000001|00000000|
+</pre>
+<p>
+ (<b>BnOrDigits</b> <em>N nd M md</em>)
+<br>
+<p>
+La fonction <b>BnOrDigits</b> effectue le <b>ou logique</b> entre les chiffres
+N<sub>nd</sub> et M<sub>md</sub>, le chiffre r&#233;sultant est mis &#224; la place du chiffre
+N<sub>nd</sub>.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (setq n (BnCreate 'n 4)) (for (i 0 1 3) (BnSetDigit n i i)) n)
+= |00000003|00000002|00000001|00000000|
+? (progn (BnOrDigits n 3 n 1) n)
+= |00000003|00000002|00000001|00000000|
+? (progn (BnOrDigits n 0 n 2) n)
+= |00000003|00000002|00000001|00000002|
+</pre>
+<p>
+ (<b>BnXorDigits</b> <em>N nd M md</em>)
+<br>
+<p>
+La fonction <b>BnXorDigits</b> effectue le <b>ou exclusif logique</b> entre
+les chiffres N<sub>nd</sub> et M<sub>md</sub>, le chiffre r&#233;sultant est mis
+&#224; la place du chiffre N<sub>nd</sub>.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (setq n (BnCreate 'n 4)) (for (i 0 1 3) (BnSetDigit n i i)) n)
+= |00000003|00000002|00000001|00000000|
+? (progn (BnXorDigits n 3 n 1) n)
+= |00000002|00000002|00000001|00000000|
+? (progn (BnXorDigits n 0 n 2) n)
+= |00000002|00000002|00000001|00000002|
+</pre>
+<p>
+       <H3><A NAME="tth_sEc3.7">
+3.7</A>&nbsp;&nbsp;Affectations</H3>
+Les fonctions suivantes permettent de manipuler directement la repr&#233;sentation
+interne des nombres.
+<br>
+<p>
+(<b>BnSetToZero</b> <em>N nd nl</em>)
+<br>
+<p>
+La fonction <b>BnSetToZero</b> remet &#224; z&#233;ro le sous-nombre N<sub>nd,nl</sub>.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (setq n (BnCreate 'n 7)) (for (i 0 1 6) (BnSetDigit n i i)) n)
+= |00000006|00000005|00000004|00000003|00000002|00000001|00000000|
+? (progn (BnSetToZero n 2 4) n)
+= |00000006|00000000|00000000|00000000|00000000|00000001|00000000|
+? (progn (BnSetToZero n 1 0) n)
+= |00000006|00000000|00000000|00000000|00000000|00000001|00000000|
+</pre>
+<p>
+ (<b>BnSetDigit</b> <em>N nd digit</em>)
+<br>
+<p>
+La fonction <b>BnSetDigit</b> permet d'affecter le chiffre N<sub>nd</sub>
+&#224; la valeur enti&#232;re <em>digit</em>.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (setq n (BnCreate 'n 4))
+= |00000000|00000000|00000000|00000000|
+? (progn (BnSetDigit n 3 12) n)
+= |0000000C|00000000|00000000|00000000|
+? (progn (BnSetDigit n 0 255) n)
+= |0000000C|00000000|00000000|000000FF|
+</pre>
+<p>
+ (<b>BnAssign</b> <em>M md N nd nl</em>)
+<br>
+<p>
+La fonction <b>BnAssign</b> transfert le sous-nombre N<sub>nd,nl</sub> dans le
+sous-nombre M<sub>md,nl</sub> avec perte de l'ancien sous-nombre
+M<sub>md,nl</sub>. Le chevauchement des zones de transfert est valide.
+Pour que le sous-nombre M<sub>md,nl</sub> soit valide, la condition suivante
+doit &#234;tre v&#233;rifi&#233;e&nbsp;:
+
+<centEr><table border=0 align=center><tr><td>
+<Table align=left><tr><td nowrap align=center>
+ md + nl  <font face=symbol>£</font
+> size(M)&nbsp;.</td></Table>
+</td></table></centEr>
+
+
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (setq n (BnCreate 'n 7)) (for (i 0 1 6) (BnSetDigit n i i)) n)
+= |00000006|00000005|00000004|00000003|00000002|00000001|00000000|
+? (progn (setq m  (BnCreate 'n 9))
+?        (for (i 0 1 8) (BnSetDigit m i (+ 10 i)))
+?        m)
+= |00000012|00000011|00000010|0000000F|0000000E|0000000D|0000000C|0000000B|0000000A|
+? (progn (BnAssign m 1 n 2 4) m)
+= |00000012|00000011|00000010|0000000F|00000005|00000004|00000003|00000002|0000000A|
+? (progn (BnAssign m 0 m 1 3) m)
+= |00000012|00000011|00000010|0000000F|00000005|00000004|00000004|00000003|00000002|
+? (progn (BnAssign m 3 m 0 6) m)
+= |0000000F|00000005|00000004|00000004|00000003|00000002|00000004|00000003|00000002|
+? (progn (BnAssign m 3 m 0 0) m)
+= |0000000F|00000005|00000004|00000004|00000003|00000002|00000004|00000003|00000002|
+</pre>
+<p>
+       <H3><A NAME="tth_sEc3.8">
+3.8</A>&nbsp;&nbsp;Conversion en fix Le-Lisp</H3>
+En Le-Lisp, il n'est pas forcement possible de d&#233;finir, comme un simple
+entier, l'intervalle repr&#233;sentant les chiffres (i.e. les entiers compris
+entre 0 et B). Le pr&#233;dicat suivant sp&#233;cifie quels sont les chiffres
+pouvant &#234;tre repr&#233;sent&#233;s par entier Le-Lisp. La taille, en nombre de bits,
+des chiffres au del&#224; de laquelle une conversion vers un entier Le-Lisp est
+possible est d&#233;finie par la constante&nbsp;: <tt>BN_WORD_SIZE</tt>. Cette
+constante vaut 15 pour la plupart des machines. L'implantation BigNum.c
+suppose implicitement que les constantes <tt>BN_WORD_SIZE</tt> et
+<tt>BN_DIGIT_SIZE</tt> ont la m&#234;me valeur. Cette restriction permet de passer
+directement les chiffres en param&#232;tres des primitives (au lieu d'utiliser
+deux variables N et nd pour le chiffre N<sub>nd</sub>).
+<br>
+<p>
+(<b>BnDoesDigitFitInWord</b> <em>N nd</em>)
+<br>
+<p>
+La fonction <b>BnDoesDigitFitInWord</b> retourne 0 si le chiffre N<sub>nd</sub>
+ne peut pas &#234;tre converti dans un entier Le-Lisp.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (setq n (BnCreate 'n 4)) (for (i 0 1 3) (BnSetDigit n i i)) n)
+= |00000003|00000002|00000001|00000000|
+? (BnDoesDigitFitInWord n 2)
+= 1
+? (progn (BnComplement n 0 3) n)
+= |00000003|FFFFFFFD|FFFFFFFE|FFFFFFFF|
+? (BnDoesDigitFitInWord n 2)
+= 0
+</pre>
+<p>
+ (<b>BnGetDigit</b> <em>n nd</em>)
+<br>
+<p>
+La fonction <b>BnGetDigit</b> retourne le chiffre N<sub>nd</sub>. Il n'est pas
+v&#233;rifi&#233; que ce dernier puisse &#234;tre repr&#233;sent&#233; par un entier Le-Lisp (se
+r&#233;f&#233;rer &#224; la fonction <b>BnDoesDigitFitInWord</b>).
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (setq n (BnCreate 'n 4)) (for (i 0 1 3) (BnSetDigit n i i)) n)
+= |00000003|00000002|00000001|00000000|
+? (BnGetDigit n 2)
+= 2
+? (progn (BnComplement n 1 2) n)
+= |00000003|FFFFFFFD|FFFFFFFE|00000000|
+? (BnGetDigit n 2)
+= -3.595385e+N8
+</pre>
+<p>
+       <H3><A NAME="tth_sEc3.9">
+3.9</A>&nbsp;&nbsp;Cr&#233;ation et gestion</H3>
+Les fonctions d'ordre plus g&#233;n&#233;ral, du module <tt>Bn</tt> sont&nbsp;:
+<br>
+<p>
+(<b>BnAlloc</b> <em>size</em>)
+<br>
+<p>
+La fonction <b>BnAlloc</b> alloue la place pour un nombre pouvant contenir
+au plus <em>size</em> chiffres. On impose que <em>size</em> soit un nombre
+<em>strictement positif</em>.
+Les valeurs des chiffres du nombre rendu en r&#233;sultat par la fonction
+<b>BnAlloc</b> sont impr&#233;visibles.
+<br>
+<p>
+(<b>BnCreate</b> <em>type size</em>)
+<br>
+<p>
+La fonction <b>BnCreate</b> alloue la place pour un nombre pouvant contenir
+au plus <em>size</em> chiffres, initialise le type de ce nombre &#224;
+<em>type</em> et initialise tous les chiffres du nombre &#224; 0. On impose que
+<em>size</em> soit un nombre <em>strictement positif</em>.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (BnCreate 'n 4)
+= |00000000|00000000|00000000|00000000|
+</pre>
+<p>
+ (<b>BnSetType</b> <em>N type</em>)
+<br>
+<p>
+La fonction <b>BnSetType</b> permet de modifier le champ <em>type</em> du nombre
+N. La sp&#233;cification de <tt>KerN</tt> n'utilise pas pour ses besoins
+propres le type d'un nombre, mais ce champ donne la possibilit&#233; de
+d&#233;finir, dans des librairies de plus haut niveau, des fonctions
+g&#233;n&#233;riques, c'est &#224; dire des fonctions ayant des comportements
+diff&#233;rents selon le type de ses arguments. Par exemple le champ <em>type</em>
+peut contenir le signe d'un nombre.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (BnSetType (BnAlloc 8) 'bar) 'ok)
+= ok
+</pre>
+<p>
+ (<b>BnGetType</b> <em>N</em>)
+<br>
+<p>
+La fonction <b>BnGetType</b> retourne le type associ&#233; au nombre N.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (progn (BnSetType (setq n (BnAlloc 8)) 'foo) (BnGetType n))
+= foo
+? (progn (BnSetType n 'bar) (BnGetType n))
+= bar
+</pre>
+<p>
+ (<b>BnGetSize</b> <em>N</em>)
+<br>
+<p>
+La fonction <b>BnGetSize</b> retourne le nombre de chiffres disponibles dans
+le nombre N. Il n'est pas possible de changer dynamiquement la
+taille d'un nombre; ainsi, pour un m&#234;me nombre, <b>BnGetSize</b> retourne
+toujours la m&#234;me valeur.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (BnGetSize (BnAlloc 8))
+= 8
+</pre>
+<p>
+       <H2><A NAME="tth_sEc4">
+4</A>&nbsp;&nbsp;Allocation des r&#233;sultats&nbsp;:&nbsp;Bz</H2>
+Le niveau <tt>Bz</tt> est conceptuellement plus simple que celui de <tt>Bn</tt>.
+Un nombre z  <font face=symbol>Î</font
+> Z est repr&#233;sent&#233; par un BigNum dont le champ type
+contient le signe de l'entier.
+Les fonctions de <tt>Bz</tt> sont sans effet de bord, et allouent l'espace
+m&#233;moire pour leurs r&#233;sultats. Toutes les fonctions de ce niveau sont
+directement interfac&#233;es avec l'arithm&#233;tique g&#233;n&#233;rique de Le-Lisp.
+
+<p>
+      <H3><A NAME="tth_sEc4.1">
+4.1</A>&nbsp;&nbsp;Fonctions arithm&#233;tiques</H3>
+(<b>BzAbs</b> <em>Z</em>)
+<br>
+<p>
+La fonction <b>BzAbs</b> retourne la valeur absolue du nombre Z.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (BzAbs 1234567890123)
+= 1234567890123
+? (BzAbs -1234567890123)
+= 1234567890123
+? (BzAbs #{0})
+= 0
+</pre>
+<p>
+ (<b>BzSign</b> <em>Z</em>)
+<br>
+<p>
+La fonction <b>BzSign</b> retourne -1 si le nombre Z est strictement
+n&#233;gatif, 0 si ce nombre est nul et 1 si ce nombre est strictement positif.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (BzSign 1234567890123)
+= 1
+? (BzSign -1234567890123)
+= -1
+? (BzSign #{0})
+= 0
+</pre>
+<p>
+ (<b>BzNegate</b> <em>Z</em>)
+<br>
+<p>
+La fonction <b>BzNegate</b> retourne l'oppos&#233; du nombre Z.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (BzNegate 1234567890123)
+= -1234567890123
+? (BzNegate -1234567890123)
+= 1234567890123
+? (BzNegate #{0})
+= 0
+</pre>
+<p>
+ (<b>BzCompare</b> <em>Y Z</em>)
+<br>
+<p>
+La fonction BzCompare retourne -1 si le nombre Y est strictement
+plus petit que le nombre Z, 0 si ces deux nombres sont &#233;gaux et
+1 si le nombre Y et strictement plus grand que le nombre
+Z.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (BzCompare 1234567890123 1234567890123)
+= 0
+? (BzCompare 1234567890123 123456789)
+= 1
+? (BzCompare 1234567890123 -1234567890123)
+= 1
+? (BzCompare -1234567890123 -123456789)
+= -1
+</pre>
+<p>
+ (<b>BzAdd</b> <em>Y Z</em>)
+<br>
+<p>
+La fonction <b>BzAdd</b> retourne un nombre repr&#233;sentant la somme des nombres
+Y et Z.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (BzAdd 1234567890123 123456789)
+= 1234691346912
+? (BzAdd 1234567890123 -1234567890123)
+= 0
+? (BzAdd -1234567890123 -123456789)
+= -1234691346912
+</pre>
+<p>
+ (<b>BzSubtract</b> <em>Y Z</em>)
+<br>
+<p>
+La fonction <b>BzSubtract</b> retourne un nombre repr&#233;sentant la diff&#233;rence
+des nombres Y et Z.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (BzSubtract 1234567890123 123456789)
+= 1234444433334
+? (BzSubtract 1234567890123 -1234567890123)
+= 2469135780246
+? (BzSubtract -1234567890123 -123456789)
+= -1234444433334
+</pre>
+<p>
+ (<b>BzMultiply</b> <em>Y Z</em>)
+<br>
+<p>
+La fonction <b>BzMultiply</b> retourne un nombre repr&#233;sentant le produit
+des nombres Y et Z.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (BzMultiply 1234567890123 123456789)
+= 152415787517090395047
+? (BzMultiply 1234567890123 -1234567890123)
+= -1524157875322755800955129
+? (BzMultiply -1234567890123 -123456789)
+= 152415787517090395047
+</pre>
+<p>
+ (<b>BzDivide</b> <em>Y Z</em>)
+<br>
+<p>
+La fonction <b>BzDivide</b> effectue la division du nombre Y par le
+nombre Z et en retourne le quotient.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (BzDivide 1234567890123 123456789)
+= 10000
+? (BzDivide 1234567890123 -1234567890123)
+= -1
+? (BzDivide -1234567890123 -123456789)
+= 10001
+</pre>
+<p>
+ (<b>BzMod</b> <em>Y Z</em>)
+<br>
+<p>
+La fonction <b>BzMod</b> effectue la division du nombre Y par le
+nombre Z et en retourne le reste.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (BzMod 1234567890123 123456789)
+= 123
+? (BzMod 1234567890123 -1234567890123)
+= 0
+? (BzMod -1234567890123 -123456789)
+= 123456666
+</pre>
+<p>
+       <H3><A NAME="tth_sEc4.2">
+4.2</A>&nbsp;&nbsp;Cr&#233;ation</H3>
+(<b>BzCreate</b> <em>size</em>)
+<br>
+<p>
+La fonction <b>BzCreate</b> alloue la place pour un nombre pouvant contenir
+au plus <em>size</em> chiffres et initialise tous les chiffres du nombre &#224; 0.
+On impose que <em>size</em> soit un nombre <em>strictement positif</em>.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (BzCreate 4)
+= 0
+</pre>
+<p>
+ (<b>BzCopy</b> <em>Z</em>)
+<br>
+<p>
+La fonction <b>BzCopy</b> retourne une copie du nombre Z.
+<br>
+<p>
+<b>Exemple&nbsp;:</b>
+
+<pre>
+? (BzCopy 1234567890123)
+= 1234567890123
+? (BzCopy -1234567890123)
+= -1234567890123
+? (BzCopy #{0})
+= 0
+</pre>
+<p>
+       <H3><A NAME="tth_sEc4.3">
+4.3</A>&nbsp;&nbsp;Lecture et &#233;criture</H3>
+Les nombres de BigNum peuvent &#234;tre lus et &#233;crits comme les petits entiers
+Le-Lisp. N&#233;anmoins certaines restrictions du syst&#232;me d'entr&#233;e-sortie
+de Le-Lisp nous ont contraint &#224; introduire la notation #{Digit*}.
+Les restrictions sont les suivantes&nbsp;:
+
+<OL type="1">
+<p>
+  
+<li>    Les nombres de BigNum ne peuvent pas &#234;tre lus de mani&#232;re standard
+    lorsque la base des nombres en entr&#233;e est diff&#233;rente de dix.
+  
+<li>
+<p>
+    L'impression d'un nombre comportant trop<a href="#tthFtNtAAG" name=tthFrefAAG><sup>6</sup></a> de chiffres peut faire appara&#238;tre des caract&#232;res parasites
+    de fin de ligne. De plus, du fait de la pr&#233;sence de ces caract&#232;res
+    parasites, la relecture d'un nombre, &#224; partir de sa repr&#233;sentation
+    externe, peut provoquer des erreurs.
+</OL>
+<p>
+La notation #{Digit*} permet&nbsp;:
+
+<OL type="1">
+<p>
+  
+<li>    De lire un nombre dans la base en entr&#233;e courante.
+  
+<li>
+<p>
+    D'ignorer les caract&#232;res ne faisant pas parti des chiffres admissibles
+    par la base en entr&#233;e courante. Ceci permet, entre autre, de scinder
+    les grands nombres en plusieurs lignes.
+  
+<li>
+<p>
+    D'imprimer, lorsque la variable Le-Lisp <tt>#:system:print-for-read</tt>
+    est positionn&#233;e, des nombres qui seront ult&#233;rieurement relisible.
+</OL>
+<p>
+Voici une petite session mettant en jeu les diff&#233;rents points &#233;nonc&#233;s
+ci-dessus&nbsp;:
+<br>
+<p>
+
+<pre>
+? 29348092384092384506795626345             ; lecture en standard.
+= 29348092384092384506795626345
+? (ibase 16)                                ; on change de base.
+= 16
+? add                                       ; Pour les petits ca passe.
+= 2781
+? decede                                    ; Pour les gros ca casse.
+= -12578
+? #{decede}                                 ; En fait il faut lire.
+= 14601950
+? (ibase a)                                 ; Repasse en base 10.
+= 10
+? (defun foo ()
+?    ; Ecrit et relit le meme nombre.
+?    (with ((outchan (openo "/tmp/foo")))
+?       (print (** (** (** (** 2 3) 4 ) 5) 6))
+?       (close (outchan)) )
+?    (with ((inchan (openi "/tmp/foo")))
+?       (untilexit eof (print (read)) (print "another")) ))
+= foo
+? (foo)
+234854258277383322788948059678933702737568254890831987070729097153220902511460
+another
+8443463698998384768703031934976
+another
+= 8
+? (setq #:system:print-for-read t)
+= t
+? (foo)
+#{2348542582773833227889480596789337027375682548908319870707290971532209025114
+608443463698998384768703031934976}
+"another"
+= 8
+? #{123 456 ;on met des espaces tous les 3 caracteres
+? 789
+? }
+= #{1234563789}
+? (obase (ibase 16))
+= 16
+? #{123 456 ;on met des espaces tous les 3 caracteres
+? 789
+? }
+= #{123456EDEEACEE3CAACEE789}
+</pre>      <H2><A NAME="tth_sEc5">
+5</A>&nbsp;&nbsp;Remerciements</H2>
+Patrice Bertin, Hans Boehm, Jerome Chailloux, Michel Gangnet and Mark Shand
+ont contribu&#233; &#224; la
+r&#233;alisation de ce module. Qu'ils en soient remerci&#233;s ici.
+
+<p>
+      <H2><A NAME="tth_sEc6">
+6</A>&nbsp;&nbsp;Bibliography</H2>
+
+<p>
+
+<DL compact><dt><b>[Chailloux 87</b></dt><dd>]
+J&#233;r&#244;me Chailloux, Matthieu Devin, Francis Dupont, Jean-Marie Hullot, Bernard Serpette, Jean Vuillemin.
+<em>Le-Lisp version 15.2, le Manuel de r&#233;f&#233;rence.</em>
+Documentation INRIA, Mai 1987.
+
+<p>
+<dt><b>[Knuth</b></dt><dd>]
+D. E. Knuth,
+<em>The Art of Computer Programming, vol. 2, Seminumerical Algorithms.</em>
+Addison Wesley, 1981.
+
+<p>
+</DL>      <H2><A NAME="tth_sEc7">
+7</A>&nbsp;&nbsp;Distribution du module</H2>
+Ce document, et les sources du module BigNum porte la mention
+"Copyright Digital Equipment Corporation &amp; INRIA 1988, 1989".
+Cette documentation et les sources du module BigNum peuvent &#234;tre
+obtenus, en contactant par courrier &#233;lectronique ou postal,:
+
+<pre>
+    Digital P.R.L.,
+    Attn Librarian,
+    85, Avenue Victor Hugo,
+    92563 Rueil Malmaison Cedex. France.          (adresse postale)
+
+    librarian@decprl.dec.com                      (adresse electronique)
+</pre>
+<p>
+  ou,:
+
+<pre>
+    I.N.R.I.A.,
+    A l'attention de B. Serpette,
+    Domaine de Voluceau,
+    78150, Rocquencourt, France.                 (adresse postale)
+
+    serpette@inria.inria.fr                      (adresse electronique)
+</pre>
+<p>
+La documentation et les sources du module BigNum peuvent &#234;tre
+librement reproduites et distribu&#233;es moyennant les conditions
+suivantes&nbsp;:
+
+<UL>
+<p>
+  
+<li> Digital PRL ou l'INRIA doivent &#234;tre avertis de la copie.
+
+<p>
+  
+<li> La mention du <em>copyright</em> ne doit en aucun cas &#234;tre enlev&#233;e
+    de la documentation et des sources.
+
+<p>
+  
+<li> Tout travail incorporant le module BigNum devra mentionner
+    explicitement l'utilisation de ce module et son origine en incluant cette
+    phrase&nbsp;: <em>Ce travail utilise le module BigNum d&#233;velopp&#233;
+    conjointement par l'INRIA et Digital PRL.</em>
+
+<p>
+  
+<li> Toutes les modifications effectu&#233;es sur le module BigNum devront
+    &#234;tre explicitement notifi&#233;es par la nature de la modification, son
+    auteur et son adresse. Ces notifications ne pourront &#234;tre enlev&#233;es
+    des distributions futures.
+
+<p>
+  
+<li> Tout travail utilisant intensivement le module BigNum peut &#234;tre
+    librement distribu&#233; sous les m&#234;mes conditions de distribution que le
+    module BigNum.
+</UL>
+<p>
+L'INRIA et Digital Equipment Corporation n'offrent aucune garantie, implicite
+ou explicite, sur cette documentation et sur le logiciel qu'elle d&#233;crit, en
+ce qui concerne la diffusabilit&#233; ou l'ad&#233;quation &#224; une utilisation
+particuli&#232;re. l'INRIA et Digital Equipment Corporation ainsi que les
+distributeurs &#224; venir ne seront en aucun cas responsables des dommages
+produits.
+
+<p>
+<hr><H3>Footnotes:</H3>
+
+<p><a name=tthFtNtAAD></a><a href="#tthFrefAAD"><sup>3</sup></a> Le-Lisp est une marque d&#233;pos&#233;e de l'INRIA.
+<p><a name=tthFtNtAAE></a><a href="#tthFrefAAE"><sup>4</sup></a> Addition d'un
+pointeur sur des chiffres et d'un index comme dans l'exemple N + nd.
+<p><a name=tthFtNtAAF></a><a href="#tthFrefAAF"><sup>5</sup></a> Au sens de la fonction <b>eq</b>
+de Le-Lisp&nbsp;: (eq N M).
+<p><a name=tthFtNtAAG></a><a href="#tthFrefAAG"><sup>6</sup></a> Le <em>trop</em> est
+    d&#233;pendant de la valeur de la marge droite et de la taille maximum d'un
+    symbole
+<p><hr><small>File translated from T<sub><font size="-1">E</font></sub>X by <a href="http://hutchinson.belmont.ma.us/tth/">T<sub><font size="-1">T</font></sub>H</a>, version 1.57.</small>
+</HTML>

@@ -1,0 +1,151 @@
+#
+#	Makefile for 'Bignums'	(c) C. Jullien
+#	$Id: Makefile.in,v 1.12 2011-12-05 13:01:57 jullien Exp $
+#
+
+.SUFFIXES: .cpp .lsp .dat $(.SUFFIXES)
+
+CC		= @CC@
+CPP		= @CXX@
+O		= @OBJEXT@
+EXE		= @EXEEXT@
+DEBUG		=
+CFLAGS		= @CFLAGS@ -I. -DHAVE_CONFIG_H
+KRNLIB		= kern.@SOEXT@
+LISP		= clisp
+OBJECT		= bigz.$(O) bign.$(O)
+VERSION		= 1.4.0
+
+BINARIES	= bztest$(EXE) testkern$(EXE) tCBignum$(EXE)
+
+all: $(BINARIES) tests
+
+.c.$(O):
+	@echo $*.c
+	@$(CC) -c $(CFLAGS) $*.c
+
+.cpp.$(O):
+	@echo $*.cpp
+	@$(CPP) -c $(CFLAGS) $*.cpp
+
+# KerN test
+
+testkern.$(O):
+	@$(CC) -c $(CFLAGS) -Itest test/testkern.c
+
+testkern$(EXE): $(OBJECT) testkern.$(O)
+	@$(CC) $(CFLAGS) -o testkern$(EXE) testkern.$(O) bigz.$(O) bign.$(O)
+
+# BZ test
+
+bztest$(EXE): $(OBJECT) bztest.$(O)
+	@$(CC) $(CFLAGS) -o bztest$(EXE) bztest.$O $(OBJECT)
+
+bztest.$(O): test/bztest.c
+	@$(CC) -c $(CFLAGS) -Itest test/bztest.c
+
+# C++ test
+
+tCBignum$(EXE): $(OBJECT) CBignum.$(O) tCBignum.$(O)
+	@$(CPP) $(CFLAGS) -o tCBignum$(EXE) tCBignum.$(O) CBignum.$(O) $(OBJECT)
+
+tCBignum.dat: gentest.lsp
+	@echo generating tests with $(LISP)..
+	@$(LISP) gentest.lsp
+
+tCBignum.$(O): CBignum.h tCBignum.cpp tCBignum.dat
+
+# Misc
+
+tests:
+	./testkern a
+	./bztest
+	./tCBignum
+
+clean:
+	@rm bztest$(EXE) testkern$(EXE) tCBignum$(EXE) *.$(O) *.BAK *~
+
+lint:
+#	set LARCH_PATH=/usr/share/splint/lib
+	@splint -checks \
+		-namechecks \
+	        -exportlocal \
+		-infloopsuncon \
+	        -booltype Boolean \
+	        bign.c
+	@splint -checks \
+		-namechecks \
+		-declundef \
+	        -exportlocal \
+	        -observertrans \
+	        -statictrans \
+	        -compdef \
+	        -nullret \
+	        -nullpass \
+	        -nullderef \
+	        -branchstate \
+	        -temptrans \
+		-retalias \
+	        -usedef \
+	        -booltype Boolean \
+	        bigz.c
+
+MASTER		= \
+		AUTHORS			\
+		COPYING			\
+		ChangeLog		\
+		LICENSE			\
+		NEWS			\
+		README			\
+		bign.c			\
+		bign.h			\
+		bigz.c			\
+		bigz.h			\
+		bzf.c			\
+		CBignum.cpp		\
+		CBignum.h		\
+		conf/config.guess	\
+		conf/config.sub		\
+		conf/COPYING		\
+		conf/install-sh		\
+		config.h.in		\
+		configure		\
+		configure.in		\
+		doc/			\
+		doc/bn.html		\
+		doc/bn.tex		\
+		doc/bnbody.html		\
+		doc/bnbody.tex		\
+		doc/bnf.html		\
+		doc/bnf.tex		\
+		etc/hextable.c		\
+		etc/maxbase10.c		\
+		etc/maxbase10.lsp	\
+		etc/testbits.c		\
+		gentest.lsp		\
+		gnuvar.bat		\
+		lisptests.lsp		\
+		makefile.gnu		\
+		Makefile.in		\
+		makefile.lcc		\
+		makefile.nt		\
+		makefile.tcc		\
+		PRL-RR-2.pdf		\
+		RR-1016.pdf		\
+		tCBignum.cpp		\
+		tCBignum.dat		\
+		test/BntoBnn.h		\
+		test/bztest.c		\
+		test/testkern.c
+
+save:
+	@rm -r -f bignum-$(VERSION).tar.gz
+	@touch bignum-$(VERSION).tar.gz
+	@tar czf bignum-$(VERSION).tar.gz $(MASTER)
+	@mkdir bignum-$(VERSION) \
+		&& cd bignum-$(VERSION) \
+		&& tar xzf ../bignum-$(VERSION).tar.gz \
+		&& cd .. \
+		&& tar czf bignum-$(VERSION).tar.gz bignum-$(VERSION) \
+		&& rm -r -f bignum-$(VERSION)
+	@tar tvzf bignum-$(VERSION).tar.gz

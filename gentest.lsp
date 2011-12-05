@@ -1,0 +1,316 @@
+;;;; -*-Mode:LISP; Package:LISP; Base:10; Syntax:ISLISP -*-
+;;;; Date:	$Id: gentest.lsp,v 1.12 2011-12-03 13:23:21 jullien Exp $
+;;;; Title:	gentest.lsp
+;;;; Author:	C. Jullien
+
+;;;
+;;; Generate C++ test data for CBignum class.
+;;;
+
+;;; usage:
+;;;
+;;; > (load "gentest.lsp")
+;;; > (test)
+;;; > (quit)
+;;;
+
+#+openlisp
+(progn
+       (defglobal *cnt*     0)
+       (defglobal *ftest*   0)
+)
+
+#-openlisp
+(progn
+       (defvar *cnt*     0)
+       (defvar *ftest*   0)
+)
+
+(defun show-op (a1 op a2 res)
+   (incf *cnt*)
+   (if (equal res nil) (setq res 0))
+   (if (equal res t)   (setq res 1))
+   (format t " T(~3d, \"~2a\", CBignum(~a) ~2a CBignum(~a), \"~s\"~68t);~%"
+	     *cnt* op a1 op a2 res))
+
+(defun show-fun1 (a1 op res)
+   (incf *cnt*)
+   (if (equal res nil) (setq res 0))
+   (if (equal res t)   (setq res 1))
+   (format t " T(~3d, \"~8a\", ~2a(CBignum(~a)), \"~s\"~68t);~%"
+	     *cnt* op op a1 res))
+
+(defun show-fun2 (a1 op a2 res)
+   (incf *cnt*)
+   (if (equal res nil) (setq res 0))
+   (if (equal res t)   (setq res 1))
+   (format t " T(~3d, \"~8a\", ~2a(CBignum(~a), CBignum(~a)), \"~s\"~68t);~%"
+	     *cnt* op op a1 a2 res))
+
+(defun function-header ()
+   (format t "void test~s(void);~%~%" *ftest*)
+   (format t "void~%")
+   (format t "test~s(void)~%{~%" *ftest*)
+   (incf *ftest*))
+
+(defun function-footer ()
+   (format t "}~%~%")
+   t)
+
+(defun call-tests ()
+   (format t "void test(void);~%~%")
+   (format t "void~%")
+   (format t "tests(void)~%{~%")
+   (do ((i 0 (1+ i)))
+       ((= i *ftest*) t)
+       (format t "~8ttest~s();~%" i))
+   (function-footer)
+   t)
+
+(defun numeric-operators (X1 X2 Y1 Y2 l1 l2)
+   (function-header)
+   (format t "~%")
+   (format t " X1 = \"~s\";~%" X1)
+   (format t " X2 = \"~s\";~%" X2)
+   (format t " Y1 = \"~s\";~%" Y1)
+   (format t " Y2 = \"~s\";~%" Y2)
+   (format t "~%")
+   (mapc #'(lambda (op name)
+	      (show-op "X1" name "X1" (funcall op X1 X1))
+	      (show-op "X2" name "X2" (funcall op X2 X2))
+	      (show-op "X1" name "Y1" (funcall op X1 Y1))
+	      (show-op "X1" name "Y2" (funcall op X1 Y2))
+	      (show-op "X2" name "Y1" (funcall op X2 Y1))
+	      (show-op "X2" name "Y2" (funcall op X2 Y2))
+	      (show-op "Y1" name "X1" (funcall op Y1 X1))
+	      (show-op "Y1" name "X2" (funcall op Y1 X2))
+	      (show-op "Y2" name "X1" (funcall op Y2 X1))
+	      (show-op "Y2" name "X2" (funcall op Y2 X2)))
+	 l1
+	 l2)
+   (function-footer))
+
+(defun binary-shifts (X1 X2 Y1 Y2 l1 l2)
+   (function-header)
+   (format t "~%")
+   (format t " X1 = \"~s\";~%" X1)
+   (format t " X2 = \"~s\";~%" X2)
+   (format t " Y1 = \"~s\";~%" Y1)
+   (format t " Y2 = \"~s\";~%" Y2)
+   (format t "~%")
+   (mapc #'(lambda (op name)
+	      (show-op "X1" name "Y1" (funcall op X1 Y1))
+	      (show-op "X1" name "Y2" (funcall op X1 Y2))
+	      (show-op "X2" name "Y1" (funcall op X2 Y1))
+	      (show-op "X2" name "Y2" (funcall op X2 Y2)))
+	 l1
+	 l2)
+   (function-footer))
+
+(defun logbitp-test (X1 X2 Y1 Y2 l1 l2)
+   (function-header)
+   (format t "~%")
+   (format t " X1 = \"~s\";~%" X1)
+   (format t " X2 = \"~s\";~%" X2)
+   (format t " Y1 = \"~s\";~%" Y1)
+   (format t " Y2 = \"~s\";~%" Y2)
+   (format t "~%")
+   (mapc #'(lambda (op name)
+	      (show-fun2 "X1" name "Y1" (funcall op X1 Y1))
+	      (show-fun2 "X1" name "Y2" (funcall op X1 Y2))
+	      (show-fun2 "X2" name "Y1" (funcall op X2 Y1))
+	      (show-fun2 "X2" name "Y2" (funcall op X2 Y2)))
+	 l1
+	 l2)
+   (function-footer))
+
+(defun binary-functions (X1 X2 Y1 Y2 l1 l2)
+   (function-header)
+   (format t "~%")
+   (format t " X1 = \"~s\";~%" X1)
+   (format t " X2 = \"~s\";~%" X2)
+   (format t " Y1 = \"~s\";~%" Y1)
+   (format t " Y2 = \"~s\";~%" Y2)
+   (format t "~%")
+   (mapc #'(lambda (op name)
+	      (show-fun2 "X1" name "X1" (funcall op X1 X1))
+	      (show-fun2 "X2" name "X2" (funcall op X2 X2))
+	      (show-fun2 "Y1" name "Y1" (funcall op Y1 Y1))
+	      (show-fun2 "Y2" name "Y2" (funcall op Y2 Y2))
+	      (show-fun2 "X1" name "Y1" (funcall op X1 Y1))
+	      (show-fun2 "X1" name "Y2" (funcall op X1 Y2))
+	      (show-fun2 "X2" name "Y1" (funcall op X2 Y1))
+	      (show-fun2 "X2" name "Y2" (funcall op X2 Y2))
+	      (show-fun2 "Y1" name "X1" (funcall op Y1 X1))
+	      (show-fun2 "Y1" name "X2" (funcall op Y1 X2))
+	      (show-fun2 "Y2" name "X1" (funcall op Y2 X1))
+	      (show-fun2 "Y2" name "X2" (funcall op Y2 X2)))
+	 l1
+	 l2)
+   (function-footer))
+
+(defun unary-functions (X1 X2 Y1 Y2 l1 l2)
+   (function-header)
+   (format t "~%")
+   (format t " X1 = \"~s\";~%" X1)
+   (format t " X2 = \"~s\";~%" X2)
+   (format t " Y1 = \"~s\";~%" Y1)
+   (format t " Y2 = \"~s\";~%" Y2)
+   (format t "~%")
+   (mapc #'(lambda (op name)
+	      (show-fun1 "X1" name (funcall op X1))
+	      (show-fun1 "X2" name (funcall op X2))
+	      (show-fun1 "Y1" name (funcall op Y1))
+	      (show-fun1 "Y2" name (funcall op Y2)))
+	 l1
+	 l2)
+   (function-footer))
+
+(defun test ()
+   (format t "// automatically generated by gentest.lsp~%~%")
+
+   (setq *cnt* 0)
+
+   (binary-shifts 45967 -45967 3 32
+	  (list #'ash)
+	  (list "<<"))
+
+   (binary-shifts 45967 -45967 -3 -32
+	  (list #'ash)
+	  (list "<<"))
+
+   (binary-shifts 1 -1 69 -69
+	  (list #'ash)
+	  (list "<<"))
+
+   (binary-shifts 0 -1 69 -69
+	  (list #'ash)
+	  (list "<<"))
+
+   (logbitp-test 3 64 40 8000000000000000000000
+	  (list #'logbitp)
+	  (list "logbitp"))
+
+   (numeric-operators
+	    ;; small numbers
+	    459 -459 12368 -12368
+	    (list #'+ #'- #'floor #'mod #'*
+		  #'< #'<= #'= #'> #'>=
+		  #'logand #'logior #'logxor)
+	    (list "+" "-" "/"   "%"   "*"
+		  "<" "<=" "==" ">" ">="
+		  "&" "|" "^"))
+
+   (numeric-operators
+	    ;; small numbers
+	    26887 -26887 3 -3
+	    (list #'+ #'- #'floor #'mod #'*
+		  #'< #'<= #'= #'> #'>=
+		  #'logand #'logior #'logxor)
+	    (list "+" "-" "/"   "%"   "*"
+		  "<" "<=" "==" ">" ">="
+		  "&" "|" "^"))
+
+   (numeric-operators
+	    ;; mix small and large number
+	    45967 -45967 12345895678124 -12345895678124
+	    (list #'+ #'- #'floor #'mod #'*
+		  #'< #'<= #'= #'> #'>=
+		  #'logand #'logior #'logxor)
+	    (list "+" "-" "/"   "%"   "*"
+		  "<" "<=" "==" ">" ">="
+		  "&" "|" "^"))
+
+   (numeric-operators
+	    ;; large number only
+	    9734514543535253517 -9734514543535253517 12345895678124 -12345895678124
+	    (list #'+ #'- #'floor #'mod #'*
+		  #'< #'<= #'= #'> #'>=
+		  #'logand #'logior #'logxor)
+	    (list "+" "-" "/"   "%"   "*"
+		  "<" "<=" "==" ">" ">="
+		  "&" "|" "^"))
+
+   (numeric-operators
+	    ;; mix 0/1 and large number
+	    0 1 973451454389535253517 -973451454389535253517
+	    (list #'+ #'- #'*
+		  #'< #'<= #'= #'> #'>=
+		  #'logand #'logior #'logxor)
+	    (list "+" "-" "*"
+		  "<" "<=" "==" ">" ">="
+		  "&" "|" "^"))
+   (numeric-operators
+	    ;; mix 0/1/-1
+	    0 -1 -1 1
+	    (list #'+ #'- #'*
+		  #'< #'<= #'= #'> #'>=
+		  #'logand #'logior #'logxor)
+	    (list "+" "-" "*"
+		  "<" "<=" "==" ">" ">="
+		  "&" "|" "^"))
+
+   (binary-functions
+	   ;; small numbers
+	   459 -459 12368 -12368
+	   (list #'floor #'ceiling #'round #'gcd #'lcm)
+	   (list "floor" "ceiling" "round" "gcd" "lcm"))
+
+   (binary-functions
+	    ;; mix small and large number
+	   45967 -45967 12345895678124 -12345895678124
+	   (list #'floor #'ceiling #'round #'gcd #'lcm)
+	   (list "floor" "ceiling" "round" "gcd" "lcm"))
+
+   (binary-functions
+	   ;; large number only
+	   9734514543535253517 -9734514543535253517 12345895678124 -12345895678124
+	   (list #'floor #'ceiling #'round #'gcd #'lcm)
+	   (list "floor" "ceiling" "round" "gcd" "lcm"))
+
+   (binary-functions
+	   ;; mix 0 / 1 and large number
+	   0 1 8912345895678124 -8912345895678124
+	   (list #'gcd)
+	   (list "gcd"))
+
+   (unary-functions
+	   45967 -45967 12345895678124 -12345895678124
+	   (list #'integer-length)
+	   (list "length"))
+
+   (unary-functions
+	   0 -1 4596712345895678124894 -555555555555555555555555
+	   (list #'integer-length #'evenp #'oddp)
+	   (list "length" "evenp" "oddp"))
+
+   (unary-functions
+	   0 7 8 9
+	   (list #'integer-length #'evenp #'oddp #'isqrt)
+	   (list "length" "evenp" "oddp" "isqrt"))
+
+   (unary-functions
+	   -6 -7 -8 -9
+	   (list #'integer-length #'evenp #'oddp)
+	   (list "length" "evenp" "oddp"))
+
+   (unary-functions
+	   45967 -45967 1234589567812456786 -1234589567812456786
+	   (list #'abs #'lognot #'-)
+	   (list "abs" "~" "-"))
+   (unary-functions
+	   0 1 -1 -2
+	   (list #'lognot)
+	   (list "~"))
+
+   (unary-functions
+	   160000000000 160000000001 159999999999 687653234589567812456786887
+	   (list #'isqrt #'lognot #'-)
+	   (list "isqrt" "~" "-"))
+
+   (call-tests)
+   t)
+
+;;; Generate the tests.
+
+(test)

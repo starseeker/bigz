@@ -1,0 +1,200 @@
+/*
+ * $Id: bigz.h,v 1.38 2011-12-05 10:25:39 jullien Exp $
+ */
+
+/* Copyright Digital Equipment Corporation & INRIA 1988, 1989 */
+
+#if	!defined( __BIGZ_H )
+#define	__BIGZ_H
+
+#include "bign.h"
+
+#if	defined( __cplusplus )
+extern	"C"	{
+#endif
+
+#define	BZ_PURE_FUNCTION		BN_PURE_FUNCTION
+#define	BZ_CONST_FUNCTION		BN_CONST_FUNCTION
+
+/*
+ * BigZ.h: Types and structures for clients of BigZ
+ */
+
+#define	BZ_VERSION			"1.4"
+
+/*
+ * BigZ sign
+ */
+
+typedef	int				BzSign;
+
+#define BZ_PLUS				1
+#define BZ_ZERO				0
+#define BZ_MINUS			-1
+
+/*
+ * BigZ compare result
+ */
+
+typedef	BigNumCmp			BzCmp;
+
+#define BZ_LT				BN_LT
+#define BZ_EQ				BN_EQ
+#define BZ_GT				BN_GT
+
+#define	BZ_FORCE_SIGN			1
+
+/*
+ * BigZ number
+ */
+
+struct BigZHeader	{
+	BigNumLength	Size;
+	BzSign		Sign;
+};
+
+struct BigZStruct	{
+	struct BigZHeader Header;
+	BigNumDigit 	  Digits[ 16 ];
+};
+
+typedef struct BigZStruct * __BigZ;
+
+/*
+ *	macros of bigz.c
+ */
+
+#if	!defined( BZ_BIGNUM_TYPE )
+#define	BZ_BIGNUM_TYPE
+typedef __BigZ				BigZ;
+#endif
+
+#if	!defined( BZ_CHAR_TYPE )
+#define	BZ_CHAR_TYPE
+typedef char				BzChar;
+#endif
+
+#if	!defined( BZ_INT_TYPE )
+#define	BZ_INT_TYPE
+#if	defined( _WIN64 )
+typedef	__int64				BzInt;
+#else
+typedef	int				BzInt;
+#endif
+#endif
+
+#if	!defined( BZ_UINT_TYPE )
+#define	BZ_UINT_TYPE
+#if	defined( _WIN64 )
+typedef	unsigned __int64		BzUInt;
+#else
+typedef	unsigned int			BzUInt;
+#endif
+#endif
+
+#define	BZ_OPTIMIZE_FOR_BASE10
+
+#if	defined( BZ_OPTIMIZE_FOR_BASE10 )
+/*
+ *	Values should be portable for BigNumDigit size >= 32bit
+ *	64bit ports may increase the two values to optimize even more.
+ */
+#if	!defined( BZ_MAX_BASE10 )
+/*
+ *	Max power of 10 to fix in a BigNumDigit (generally machine word).
+ */
+#define	BZ_MAX_BASE10		((BigNumDigit)1000000000)
+#endif
+#if	!defined( BZ_MAX_BASE10_DIGITS )
+/*
+ *	Max number of digits in base 10 that fit in a BigNumDigit.
+ */
+#define	BZ_MAX_BASE10_DIGITS	9
+#endif
+#endif
+
+#if	!defined( __EXTERNAL_BIGZ_MEMORY )
+#define	__toBzObj(z)			((__BigZ)z)
+#define	BZNULL				((BigZ)0)
+#define	BzAlloc( size )			malloc( size )
+#define	BzStringAlloc( size )		malloc( size * sizeof( BzChar ) )
+#define	BzFree( z )			free( __toBzObj(z) )
+#define	BzFreeString( s )		free( s )
+#endif
+
+#define BzGetSize(z)			(__toBzObj(z)->Header.Size)
+#define BzGetSign(z)			(__toBzObj(z)->Header.Sign)
+#define BzGetDigit(z,n)			(__toBzObj(z)->Digits[n])
+#define BzToBn(z)			(__toBzObj(z)->Digits)
+#define BzSetSize(z,s)			(__toBzObj(z)->Header.Size = (s))
+#define BzSetSign(z,s)			(__toBzObj(z)->Header.Sign = (s))
+#define BzSetDigit(z,n,v)		(__toBzObj(z)->Digits[n]   = (v))
+
+#define BzGetOppositeSign(z)		(-__toBzObj(z)->Header.Sign)
+
+/*
+ *	functions of bigz.c
+ */
+
+extern const char * BzVersion(void) BZ_CONST_FUNCTION;
+extern BigZ	    BzCreate(BigNumLength Size);
+extern BigNumLength BzNumDigits(const BigZ z) BZ_PURE_FUNCTION;
+extern BigNumLength BzLength(const BigZ z) BZ_PURE_FUNCTION;
+extern BigZ	    BzCopy(const BigZ z);
+extern BigZ	    BzNegate(const BigZ z);
+extern BigZ	    BzAbs(const BigZ z);
+extern BzCmp	    BzCompare(const BigZ y, const BigZ z) BZ_PURE_FUNCTION;
+extern BigZ	    BzAdd(const BigZ y, const BigZ z);
+extern BigZ	    BzSubtract(const BigZ y, const BigZ z);
+extern BigZ	    BzMultiply(const BigZ y, const BigZ z);
+extern BigZ	    BzDivide(const BigZ y, const BigZ z, BigZ *r);
+extern BigZ	    BzDiv(const BigZ y, const BigZ z);
+extern BigZ	    BzTruncate(const BigZ y, const BigZ z);
+extern BigZ	    BzFloor(const BigZ y, const BigZ z);
+extern BigZ	    BzCeiling(const BigZ y, const BigZ z);
+extern BigZ	    BzRound(const BigZ y, const BigZ z);
+extern BigZ	    BzMod(const BigZ y, const BigZ z);
+extern BigZ	    BzRem(const BigZ y, const BigZ z);
+extern Boolean	    BzIsEven(const BigZ y) BZ_PURE_FUNCTION;
+extern Boolean	    BzIsOdd(const BigZ y) BZ_PURE_FUNCTION;
+extern BzChar *	    BzToString(const BigZ z, BigNumDigit base, int sign);
+extern BzChar *	    BzToStringBuffer(const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t *len);
+extern BigZ	    BzFromString(const BzChar *s, BigNumDigit base);
+extern BigZ	    BzFromInteger(BzInt i);
+extern BigZ	    BzFromUnsignedInteger(BzUInt i);
+extern BzInt	    BzToInteger(const BigZ z) BZ_PURE_FUNCTION;
+extern int	    BzToIntegerPointer(const BigZ z, BzInt *p);
+extern BzUInt	    BzToUnsignedInteger(const BigZ z) BZ_PURE_FUNCTION;
+extern int	    BzToUnsignedIntegerPointer(const BigZ z, BzUInt *p);
+extern BigZ	    BzFromBigNum(BigNum n, BigNumLength nl);
+extern BigNum	    BzToBigNum(const BigZ z, BigNumLength *nl);
+extern Boolean	    BzTestBit(unsigned int bit, const BigZ z);
+extern BigZ	    BzNot(const BigZ z);
+extern BigZ	    BzAnd(const BigZ y, const BigZ z);
+extern BigZ	    BzOr(const BigZ y, const BigZ z);
+extern BigZ	    BzXor(const BigZ y, const BigZ z);
+extern BigZ	    BzNand(const BigZ x, const BigZ y);
+extern BigZ	    BzNor(const BigZ x, const BigZ y);
+extern BigZ	    BzEqv(const BigZ x, const BigZ y);
+extern BigZ	    BzAndC1(const BigZ x, const BigZ y);
+extern BigZ	    BzAndC2(const BigZ x, const BigZ y);
+extern BigZ	    BzOrC1(const BigZ x, const BigZ y);
+extern BigZ	    BzOrC2(const BigZ x, const BigZ y);
+extern BigZ	    BzAsh(const BigZ y, int n);
+extern BigZ	    BzSqrt(const BigZ z);
+extern BigZ	    BzLcm(const BigZ y, const BigZ z);
+extern BigZ	    BzGcd(const BigZ y, const BigZ z);
+extern BigZ	    BzRandom(const BigZ n);
+extern void	    BzSetRandom(const BigZ n);
+
+#if	defined( BZ_DEBUG )
+extern void	    BzShowBits(BigNumDigit n);
+extern void	    BnDebug(const BzChar *m, const BzChar *bzstr, BigNum n, BigNumLength nl, BzSign sign);
+extern void	    BzDebug(const BzChar *m, const BigZ y);
+#endif
+
+#if	defined( __cplusplus )
+}
+#endif
+
+#endif	/* __BIGZ_H */

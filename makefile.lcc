@@ -1,0 +1,36 @@
+#
+#	Makefile for 'Bignums'	(c) C. Jullien 2009/12/23
+#
+
+.SUFFIXES: .lsp .dat .$(SUFFIXES)
+
+CC	= lcc64
+LD	= lcclnk64
+CFLAGS	= -shadows -I. -Dlint
+OBJECT	= bztest.obj bigz.obj bign.obj
+
+all: bztest.exe testkern.exe
+
+.c.obj:
+	@$(CC) -c $(CFLAGS) $*.c
+
+# KerN test
+
+testkern.exe: bigz.obj bign.obj testkern.obj
+	@$(LD) -o testkern.exe testkern.obj bigz.obj bign.obj
+
+testkern.obj: test\testkern.c
+	@$(CC) -c -Itest $(CFLAGS) test\testkern.c
+
+# BZ test
+
+bztest.exe: $(OBJECT)
+	@$(LD) -o bztest.exe bztest.obj bigz.obj bign.obj
+
+bztest.obj: test\bztest.c
+	@$(CC) -c -Itest $(CFLAGS) test\bztest.c
+
+# Misc
+
+clean:
+	-del *~ *.exe *.obj *.pdb *.ilk *.BAK *.cgl *pure.log *pure.ini /s

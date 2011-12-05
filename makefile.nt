@@ -1,0 +1,165 @@
+#
+#	Makefile for 'Bignums'	(c) C. Jullien
+#	$Id: makefile.nt,v 1.14 2011-12-05 13:01:57 jullien Exp $
+#
+
+.SUFFIXES: .lsp .dat .$(SUFFIXES)
+
+!if "$(CPU)" == ""
+# set CPU from $(CC) version found in path.
+!if [$(CC) 2>&1 | find "x86" > nul] == 0
+CPU		= i386
+!elseif [$(CC) 2>&1 | find "x64" > nul] == 0
+CPU		= AMD64
+!elseif [$(CC) 2>&1 | find "Itanium" > nul] == 0
+CPU		= IA64
+!elseif [$(CC) 2>&1 | find "ARM" > nul] == 0
+CPU		= ARM
+!else
+CPU		= i386
+!endif
+!message Compiling using $(CC) for $(CPU) cpu.
+!endif
+
+CC		= cl
+DEBUG		= -Zi
+ANALYSE		= -analyze:WX-
+CFLAGS		= $(DEBUG) $(ANALYSE) -nologo -W4 -EHsc -Gs -I.
+CLISP		= clisp # ccl
+OLISP		= ..\ntalisp-$(CPU).exe
+OBJECT		= bztest.obj bigz.obj bign.obj
+VERSION		= 1.4.0	
+
+all: bztest.exe testkern.exe tCBignum.exe testbign.lsp
+
+.c.obj:
+	@$(CC) -c $(CFLAGS) -Tp $*.c
+
+.cpp.obj:
+	@$(CC) -c $(CFLAGS) $*.cpp
+
+# KerN test
+
+testkern.exe: bigz.obj bign.obj testkern.obj
+	@$(CC) $(CFLAGS) -Fotestkern testkern.obj bigz.obj bign.obj
+
+testkern.obj: test\testkern.c
+	@$(CC) -c -Itest $(CFLAGS) test\testkern.c
+
+# BZ test
+
+bztest.exe: $(OBJECT)
+	@$(CC) $(CFLAGS) -Fobztest.exe bztest.obj bigz.obj bign.obj
+
+bztest.obj: test\bztest.c
+	@$(CC) -c -I. -Itest $(CFLAGS) test\bztest.c
+
+# C++ test
+
+tCBignum.exe: bigz.obj bign.obj CBignum.obj tCBignum.obj
+	@$(CC) $(CFLAGS) -FotCBignum tCBignum.obj CBignum.obj bigz.obj bign.obj
+
+tCBignum.dat: gentest.lsp
+	@echo generating tests with $(CLISP)..
+	@$(CLISP) gentest.lsp > tCBignum.dat
+	@dos2unix -q tCBignum.dat
+
+tCBignum.obj: CBignum.h tCBignum.dat
+
+testbign.lsp: lisptests.lsp $(OLISP)
+	@$(CLISP) lisptests.lsp | dos2unix > testbign.lsp
+	@dos2unix -q testbign.lsp
+	@copy testbign.lsp $(OPENLISP)\tst\testbign.lsp > nul
+	@$(OLISP) -e "(run-test \"../../tst/testbign.lsp\")"
+
+# Misc
+
+clean:
+	-del *~ *.exe *.obj *.o *.pdb *.ilk *.BAK *.cgl *pure.log *pure.ini /s
+
+lint:
+#	set LARCH_PATH=/usr/share/splint/lib
+#	Very strict rules for kernel
+	@splint -checks \
+		-namechecks \
+	        -exportlocal \
+		-infloopsuncon \
+	        -booltype Boolean \
+	        bign.c
+#	Check bigz.c and (again) bign.c
+	@splint -checks \
+		-namechecks \
+	        -exportlocal \
+		-infloopsuncon \
+	        -booltype Boolean \
+	        -observertrans \
+	        -statictrans \
+	        -compdef \
+	        -nullret \
+	        -nullpass \
+	        -nullderef \
+	        -branchstate \
+	        -temptrans \
+		-retalias \
+	        -usedef \
+	        bigz.c bign.c
+
+MASTER		= \
+		AUTHORS			\
+		COPYING			\
+		ChangeLog		\
+		LICENSE			\
+		NEWS			\
+		README			\
+		bign.c			\
+		bign.h			\
+		bigz.c			\
+		bigz.h			\
+		bzf.c			\
+		CBignum.cpp		\
+		CBignum.h		\
+		conf/config.guess	\
+		conf/config.sub		\
+		conf/COPYING		\
+		conf/install-sh		\
+		config.h.in		\
+		configure		\
+		configure.in		\
+		doc/			\
+		doc/bn.html		\
+		doc/bn.tex		\
+		doc/bnbody.html		\
+		doc/bnbody.tex		\
+		doc/bnf.html		\
+		doc/bnf.tex		\
+		etc/hextable.c		\
+		etc/maxbase10.c		\
+		etc/maxbase10.lsp	\
+		etc/testbits.c		\
+		gentest.lsp		\
+		gnuvar.bat		\
+		lisptests.lsp		\
+		makefile.gnu		\
+		Makefile.in		\
+		makefile.lcc		\
+		makefile.nt		\
+		makefile.tcc		\
+		PRL-RR-2.pdf		\
+		RR-1016.pdf		\
+		tCBignum.cpp		\
+		tCBignum.dat		\
+		test/BntoBnn.h		\
+		test/bztest.c		\
+		test/testkern.c
+
+save:
+	@if exist bignum-$(VERSION).tar.gz del bignum-$(VERSION).tar.gz
+	@touch bignum-$(VERSION).tar.gz
+	@tar -czf bignum-$(VERSION).tar.gz $(MASTER)
+	@mkdir bignum-$(VERSION) \
+		&& cd bignum-$(VERSION) \
+		&& tar xzf ../bignum-$(VERSION).tar.gz \
+		&& cd .. \
+		&& tar czf bignum-$(VERSION).tar.gz bignum-$(VERSION) \
+		&& rm -r -f bignum-$(VERSION)
+	@tar tvzf bignum-$(VERSION).tar.gz
