@@ -1112,13 +1112,13 @@ main(int argc, char **argv)
 	TestEnv realenv, *e = &realenv;
 	int	i, j, nbtest, SizeAllTest;
 
-	int digit_size = BN_DIGIT_SIZE;
-	int word_size  = BN_WORD_SIZE;
+	int digit_size = (int)sizeof(BigNumDigit);
+	int word_size  = (int)sizeof(int *);
 
 	if( digit_size > word_size ) {
 		fprintf(stderr,
-			"BN_DIGIT_SIZE (%d) > BN_WORD_SIZE (%d)\n",
-			BN_DIGIT_SIZE, BN_WORD_SIZE);
+			"BigNumDigit size (%d) > sizeof(void *) (%d)\n",
+			digit_size, word_size);
 		fprintf(stderr,
 			"Verify BnnDoesDigitFitInWord and BnnDivideDigit\n");
 		exit( 0 );
