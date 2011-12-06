@@ -607,8 +607,6 @@ SOEXT
 SHARED
 PIC
 OPTIMS
-LISPCHAR
-CHARSET
 CXX
 AROPTS
 AR
@@ -2253,6 +2251,7 @@ ac_config_headers="$ac_config_headers ./config.h"
 
 
 NAME=bignum
+VERSION=`VERSION bigz.h | sed -e "s/.*\"\(.*\)\"/\1/g"`
 
 # User options
 
@@ -4345,8 +4344,6 @@ case "${CC}" in
 esac
 
 # Option "-mcpu=`uname -m`"
-
-
 
 
 

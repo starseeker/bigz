@@ -1,5 +1,6 @@
 Change log
 
+2011/12/06: Specialize int constant with enum.
 2011/12/05: Add configure scripts.
 2011/12/05: Fix BzTruncate, BzCeiling, BzFloor, BzRound.
 2011/12/03: Event better type checking.

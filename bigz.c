@@ -1,5 +1,5 @@
 /*
- static	const char rcsid[] = "$Id: bigz.c,v 1.58 2011-12-05 07:25:40 jullien Exp $";
+ static	const char rcsid[] = "$Id: bigz.c,v 1.62 2011-12-06 15:01:37 jullien Exp $";
 */
 
 /*
@@ -77,7 +77,8 @@ static int BigHexToDigit[] = {
 		  : 0)
 #endif
 
-static	int	BzStrLen( const BzChar *s ) BN_PURE_FUNCTION;
+static int	BzStrLen( const BzChar *s ) BN_PURE_FUNCTION;
+static BzSign	BzGetOppositeSign( const BigZ z );
 
 #if	defined( BZ_DEBUG )
 static void	BzShowBits( BigNumDigit n );
@@ -112,9 +113,9 @@ BnDebug(const BzChar *m,
 	}
 
 	(void)printf( "\t: BigZ = %s at 0x%p, ", bzstr, n );
-	(void)printf( "digit = %d, word = %d\n",
+	(void)printf( "digit = %d, word = %d bytes\n",
 		      (int)BN_DIGIT_SIZE,
-		      (int)BN_WORD_SIZE );
+		      (int)sizeof( void * ) );
 	(void)printf( "\t: <-- high %02d digit(s) low -->\n", (int)nl );
 
 	if( sign == BZ_ZERO ) {
@@ -272,7 +273,7 @@ BzLength( const BigZ z )
 	switch( BzGetSign( z ) ) {
 	case BZ_MINUS :
 		nl = BnnNumLength( BzToBn( z ), BzNumDigits( z ) );
-		if( BnnIsPower2( BzToBn( z ), BzNumDigits( z ) ) ) {
+		if( BnnIsPower2( BzToBn( z ), BzNumDigits( z ) ) == BN_TRUE ) {
 			return( nl - 1 );
 		} else	{
 			return( nl );
@@ -280,7 +281,7 @@ BzLength( const BigZ z )
 	case BZ_PLUS :
 		return( BnnNumLength( BzToBn( z ), BzNumDigits( z ) ) );
 	default :
-		return( 0 );
+		return( (BigNumLength)0 );
 	}
 }
 
@@ -311,6 +312,19 @@ BzCopy( const BigZ z )
 	return( y );
 }
 
+static BzSign
+BzGetOppositeSign( const BigZ z )
+{
+	switch( BzGetSign( z ) ) {
+	case BZ_MINUS:
+		return( BZ_PLUS );
+	case BZ_ZERO:
+		return( BZ_ZERO );
+	default:
+		return( BZ_MINUS );
+	}
+}
+
 BigZ
 BzNegate( const BigZ z )
 {
@@ -321,7 +335,18 @@ BzNegate( const BigZ z )
 	BigZ	y;
 
 	y = BzCopy( z );
-	BzSetSign( y, BzGetOppositeSign( z ) );
+	
+	switch( BzGetSign( z ) ) {
+	case BZ_MINUS:
+		BzSetSign( y, BZ_PLUS );
+		break;
+	case BZ_ZERO:
+		BzSetSign( y, BZ_ZERO );
+		break;
+	case BZ_PLUS:
+		BzSetSign( y, BZ_MINUS );
+		break;
+	}
 
 	return( y );
 }
@@ -337,15 +362,8 @@ BzAbs( const BigZ z )
 
 	y = BzCopy( z );
 
-	switch( BzGetSign( z ) ) {
-	case BZ_MINUS :
+	if( BzGetSign( z ) == BZ_MINUS ) {
 		BzSetSign( y, BZ_PLUS );
-		break;
-	case BZ_ZERO :
-		BzSetSign( y, BZ_ZERO );
-		break;
-	case BZ_PLUS :
-		break;
 	}
 
 	return( y );
@@ -365,13 +383,11 @@ BzCompare( const BigZ y, const BigZ z )
 	} else	if( BzGetSign( y ) < BzGetSign( z ) ) {
 		return( BZ_LT );
 	} else	if( BzGetSign( y ) == BZ_PLUS ) {
-		return( BnnCompare( BzToBn( y ), BzGetSize( y ),
-				    BzToBn( z ), BzGetSize( z )
-				  ));
+		return( (BzCmp)BnnCompare( BzToBn( y ), BzGetSize( y ),
+					   BzToBn( z ), BzGetSize( z ) ));
 	} else	if( BzGetSign( y ) == BZ_MINUS ) {
-		return( BnnCompare( BzToBn( z ), BzGetSize( z ),
-				    BzToBn( y ), BzGetSize( y )
-				  ));
+		return( (BzCmp)BnnCompare( BzToBn( z ), BzGetSize( z ),
+					   BzToBn( y ), BzGetSize( y ) ));
 	} else	{
 		return( BZ_EQ );
 	}
@@ -395,9 +411,9 @@ BzAdd( const BigZ y, const BigZ z )
 		/*
 		 * Add magnitudes if signs are the same
 		 */
-		switch( BnnCompare( BzToBn( y ), yl, BzToBn( z ), zl ) ) {
-		case BZ_EQ:
-		case BZ_GT:	/* |Y| >= |Z| */
+		switch( BnnCompare( BzToBn(y), yl, BzToBn( z ), zl ) ) {
+		case BN_EQ:
+		case BN_GT:	/* |Y| >= |Z| */
 			if( (n = BzCreate( yl+1 )) != BZNULL ) {
 				BnnAssign( BzToBn( n ), BzToBn( y ), yl );
 				(void)BnnAdd( BzToBn(n),
@@ -409,7 +425,7 @@ BzAdd( const BigZ y, const BigZ z )
 			}
 			break;
 
-		default:	/* BZ_LT: |Y| < |Z| */
+		default:	/* BN_LT: |Y| < |Z| */
 			if( (n = BzCreate( zl+1 )) != BZNULL ) {
 				BnnAssign( BzToBn( n ), BzToBn( z ), zl );
 				(void)BnnAdd( BzToBn(n),
@@ -426,11 +442,11 @@ BzAdd( const BigZ y, const BigZ z )
 		 * Subtract magnitudes if signs are different
 		 */
 		switch( BnnCompare( BzToBn( y ), yl, BzToBn( z ), zl ) ) {
-		case BZ_EQ:	/* Y = -Z */
+		case BN_EQ:	/* Y = -Z */
 			n = BzCreate( (BigNumLength)1 );
 			break;
 
-		case BZ_GT:	/* |Y| > |Z| */
+		case BN_GT:	/* |Y| > |Z| */
 			if( (n = BzCreate (yl)) != BZNULL ) {
 			    BnnAssign( BzToBn( n ), BzToBn( y ), yl );
 			    (void)BnnSubtract( BzToBn(n),
@@ -442,7 +458,7 @@ BzAdd( const BigZ y, const BigZ z )
 			}
 			break;
 
-		default:	/* BZ_LT: |Y| < |Z| */
+		default:	/* BN_LT: |Y| < |Z| */
 			if( (n = BzCreate( zl )) != BZNULL ) {
 			    BnnAssign( BzToBn( n ), BzToBn( z ), zl );
 			    (void)BnnSubtract( BzToBn(n),
@@ -486,19 +502,32 @@ BzMultiply( const BigZ y, const BigZ z )
 	 * Returns Y * Z.
 	 */
 
-	BigZ		n;
-	BigNumLength	yl;
-	BigNumLength	zl;
+	if( BzGetSign( y ) == BZ_ZERO || BzGetSign( z ) == BZ_ZERO ) {
+		return( BzFromInteger( 0 ) );
+	} else	{
+		BigZ		n;
+		BigNumLength	yl;
+		BigNumLength	zl;
 
-	yl = BzNumDigits( y );
-	zl = BzNumDigits( z );
+		yl = BzNumDigits( y );
+		zl = BzNumDigits( z );
 
-	if( (n = BzCreate( yl+zl )) != BZNULL ) {
-	    (void)BnnMultiply(BzToBn(n), yl+zl, BzToBn(y), yl, BzToBn(z), zl);
-	    BzSetSign( n, BzGetSign( y ) * BzGetSign( z ) );
+		if( (n = BzCreate( yl+zl )) != BZNULL ) {
+			(void)BnnMultiply( BzToBn(n),
+					   yl + zl,
+					   BzToBn(y),
+					   yl,
+					   BzToBn(z),
+					   zl );
+			if( BzGetSign( y ) == BzGetSign( z ) ) {
+				BzSetSign( n, BZ_PLUS );
+			} else	{
+				BzSetSign( n, BZ_MINUS );
+			}
+		}
+
+		return( n );
 	}
-
-	return( n );
 }
 
 BigZ
@@ -581,13 +610,15 @@ BzDivide( const BigZ y, const BigZ z, BigZ *r )
 	}
 
 	/*
-	 * Correct the sign of the quotient.
+	 * Set the sign of the quotient.
 	 */
 
 	if( BnnIsZero( BzToBn( q ), ql ) == BN_TRUE ) {
 		BzSetSign( q, BZ_ZERO );
+	} else	if( BzGetSign( y ) == BzGetSign( z ) ) {
+		BzSetSign( q, BZ_PLUS );
 	} else	{
-		BzSetSign( q, BzGetSign( y ) * BzGetSign( z ) );
+		BzSetSign( q, BZ_MINUS );
 	}
 
 	return( q );
@@ -720,8 +751,8 @@ BzRound( const BigZ y, const BigZ z )
 
 	if( BzGetSign( q ) == BZ_PLUS && BzGetSign( r ) != BZ_ZERO ) {
 		BigNumDigit one = BN_ONE;
-		BigZ	roundz;
-		int	sign = BzGetSign( z );
+		BigZ	    roundz;
+		BzSign	    sign = BzGetSign( z );
 
 		BzSetSign( r, BZ_PLUS );
 		BzSetSign( z, BZ_PLUS );
@@ -729,6 +760,23 @@ BzRound( const BigZ y, const BigZ z )
 		roundz = BzAsh( r, 1 );
 
 		switch( BzCompare( roundz, z ) ) {
+		case BZ_LT :
+			break;
+		case BZ_EQ :
+			/*
+			 *	Q > 0, R <> 0, 2*R= Z :
+			 *
+			 * roundz is exactly halfway between two integers,
+			 * choose even number.
+			 */
+			if( BzIsOdd( q ) == BN_TRUE ) {
+				(void)BnnAdd( BzToBn(q),
+					      ql,
+					      &one,
+					      (BigNumLength)1,
+					      BN_NOCARRY );
+			}
+			break;
 		case BZ_GT :
 			/*
 			 *	Q > 0, R <> 0, 2*R>= Z : Q+1 => Q
@@ -738,21 +786,6 @@ BzRound( const BigZ y, const BigZ z )
 				      &one,
 				      (BigNumLength)1,
 				      BN_NOCARRY );
-			break;
-		case BZ_EQ :
-			/*
-			 *	Q > 0, R <> 0, 2*R= Z :
-			 *
-			 * roundz is exactly halfway between two integers,
-			 * choose even number.
-			 */
-			if( BzIsOdd( q ) ) {
-				(void)BnnAdd( BzToBn(q),
-					      ql,
-					      &one,
-					      (BigNumLength)1,
-					      BN_NOCARRY );
-			}
 			break;
 		}
 
@@ -771,19 +804,21 @@ BzRound( const BigZ y, const BigZ z )
 		roundz = BzAsh( r, 1 );
 
 		switch( BzCompare( roundz, z ) ) {
-		case BZ_GT :
-			(void)BnnSubtractBorrow( BzToBn( q ), ql, BN_NOCARRY );
+		case BZ_LT :
 			break;
 		case BZ_EQ :
 			/*
 			 * roundz is exactly halfway between two integers,
 			 * choose even number.
 			 */
-			if( BzIsOdd( q ) ) {
+			if( BzIsOdd( q ) == BN_TRUE ) {
 				(void)BnnSubtractBorrow( BzToBn( q ),
 							 ql,
 							 BN_NOCARRY );
 			}
+			break;
+		case BZ_GT :
+			(void)BnnSubtractBorrow( BzToBn( q ), ql, BN_NOCARRY );
 			break;
 		}
 
@@ -799,7 +834,7 @@ BzRound( const BigZ y, const BigZ z )
 		 *	Q == 0, sign(Y) == sign(Z):
 		 */
 		BigZ	roundz;
-		int	sign = BzGetSign( z );
+		BzSign	sign = BzGetSign( z );
 
 		BzFree( q );
 
@@ -874,7 +909,7 @@ BzRem( const BigZ y, const BigZ z )
 	}
 }
 
-Boolean
+BigNumBool
 BzIsEven( const BigZ y )
 {
 	/*
@@ -884,7 +919,7 @@ BzIsEven( const BigZ y )
 	return( BnnIsDigitEven( BzGetDigit( y, 0 ) ) );
 }
 
-Boolean
+BigNumBool
 BzIsOdd( const BigZ y )
 {
 	/*
@@ -1053,13 +1088,28 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 	} while( BnnIsZero( BzToBn( y ), zl ) == BN_FALSE );
 
     	/*
-	 * Set sign if negative
+	 * Add sign if needed.
 	 */
 
-	if( BzGetSign( z ) < 0 ) {
+	switch( BzGetSign( z ) ) {
+	case BZ_MINUS:
+		/*
+		 * z < 0, always add '-' sign.
+		 */
 		*--s = (BzChar)'-';
-	} else	if( sign == BZ_FORCE_SIGN ) {
-		*--s = (BzChar)'+';
+		break;
+	case BZ_ZERO:
+		/*
+		 * z = 0 -> no sign even if BZ_FORCE_SIGN is passed.
+		 */
+		break;
+	case BZ_PLUS:
+		/*
+		 * z > 0, add '+' only if sign is required.
+		 */
+		if( sign == BZ_FORCE_SIGN ) {
+			*--s = (BzChar)'+';
+		}
 	}
 
 	/*
@@ -1169,7 +1219,7 @@ BzFromString( const BzChar *s, BigNumDigit base )
 	 * Set sign of result
 	 */
 
-	BzSetSign( z, BnnIsZero( BzToBn( z ), zl ) ? BZ_ZERO : sign );
+	BzSetSign( z, (BnnIsZero(BzToBn(z), zl) == BN_TRUE) ? BZ_ZERO : sign );
 
 	/*
 	 * Free temporary BigNums
@@ -1420,7 +1470,7 @@ BzAnd( const BigZ y, const BigZ z )
 		BzSetSign( n, BZ_PLUS );
 		if( (sign & BZ_SIGN1) == 0 ) {
 			while( zl-- != yl ) {
-				BnnAndDigits( BzToBn( n ) + zl, BN_NOCARRY );
+				BnnAndDigits( BzToBn(n) + zl, (BigNumDigit)0 );
 			}
 		}
 		while( yl-- != 0 ) {
@@ -1431,7 +1481,7 @@ BzAnd( const BigZ y, const BigZ z )
 		BzSetSign( n, BZ_PLUS );
 		if( (sign & BZ_SIGN2) == 0 ) {
 			while( zl != yl-- ) {
-				BnnAndDigits( BzToBn( n ) + yl, BN_NOCARRY );
+				BnnAndDigits( BzToBn(n) + yl, (BigNumDigit)0 );
 			}
 		}
 		while( zl-- != 0 ) {
@@ -1499,7 +1549,7 @@ BzOr( const BigZ y, const BigZ z )
 		BzSetSign( n, BZ_PLUS );
 		if( (sign & BZ_SIGN1) != 0 ) {
 			while( zl-- != yl ) {
-				BnnAndDigits( BzToBn( n ) + zl, BN_NOCARRY );
+				BnnAndDigits( BzToBn(n) + zl, (BigNumDigit)0 );
 			}
 		}
 		while( yl-- != 0 ) {
@@ -1510,7 +1560,7 @@ BzOr( const BigZ y, const BigZ z )
 		BzSetSign( n, BZ_PLUS );
 		if( (sign & BZ_SIGN2) != 0 ) {
 			while( zl != yl-- ) {
-				BnnAndDigits( BzToBn( n ) + yl, BN_NOCARRY );
+				BnnAndDigits( BzToBn(n) + yl, (BigNumDigit)0 );
 			}
 		}
 		while( zl-- != 0 ) {
@@ -1619,11 +1669,11 @@ BzXor( const BigZ y, const BigZ z )
 	return( n );
 }
 
-Boolean
+BigNumBool
 BzTestBit( unsigned int bit, const BigZ z )
 {
 	BigNumLength	zl;
-	Boolean		res;
+	BigNumBool	res;
 
 	/*
 	 * Returns  BN_TRUE  iff bit is on (i.e.  2**bit is one).  It
@@ -1644,10 +1694,10 @@ BzTestBit( unsigned int bit, const BigZ z )
 
 		BnnComplement2( BzToBn( y ), yl );
 		BzSetSign( y, BZ_PLUS );
-		res = (Boolean)(((*(BzToBn( y ) + zl)) & (BN_ONE << bit)) != 0);
+		res = (BigNumBool)(((*(BzToBn(y) + zl)) & (BN_ONE<<bit)) != 0);
 		BzFree( y );
 	} else	{
-		res = (Boolean)(((*(BzToBn( z ) + zl)) & (BN_ONE << bit)) != 0);
+		res = (BigNumBool)(((*(BzToBn(z) + zl)) & (BN_ONE<<bit)) != 0);
 	}
 
 	return( res );

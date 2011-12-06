@@ -1,5 +1,5 @@
 /*
- static	const char rcsid[] = "$Id: bign.c,v 1.28 2011-12-05 06:54:38 jullien Exp $";
+ static	const char rcsid[] = "$Id: bign.c,v 1.29 2011-12-06 09:31:19 jullien Exp $";
 */
 
 /*
@@ -140,22 +140,21 @@ BnnNumLeadingZeroBitsInDigit( BigNumDigit d )
 	 * Returns the number of leading zero bits in a digit
 	 */
 
-	BigNumDigit	mask	= (BigNumDigit)(BN_ONE << (BN_DIGIT_SIZE - 1));
-	BigNumLength	p	= 0;
+	BigNumDigit	mask = (BigNumDigit)(BN_ONE << (BN_DIGIT_SIZE - 1));
+	BigNumLength	p;
 
     	if( d == BN_ZERO ) {
 		return( (BigNumLength)BN_DIGIT_SIZE );
 	}
 
-	while( (d & mask) == 0 ) {
-		p++;
+	for( p = 0 ; (d & mask) == 0 ; ++p ) {
 		mask >>= 1;
 	}
 
 	return( p );
 }
 
-Boolean
+BigNumBool
 BnnIsPower2( BigNum nn, BigNumLength nl )
 {
 	/*
@@ -191,17 +190,17 @@ BnnIsPower2( BigNum nn, BigNumLength nl )
 	return( BN_TRUE );
 }
 
-Boolean
+BigNumBool
 BnnIsDigitZero( BigNumDigit d )
 {
 	/*
 	 * Returns BN_TRUE iff digit = 0
 	 */
 
-	return( (Boolean)(d == 0) );
+	return( (BigNumBool)(d == 0) );
 }
 
-Boolean
+BigNumBool
 BnnIsDigitNormalized( BigNumDigit d )
 {
 	/*
@@ -216,7 +215,7 @@ BnnIsDigitNormalized( BigNumDigit d )
 	}
 }
 
-Boolean
+BigNumBool
 BnnIsDigitOdd( BigNumDigit d )
 {
 	/*
@@ -230,7 +229,7 @@ BnnIsDigitOdd( BigNumDigit d )
 	}
 }
 
-Boolean
+BigNumBool
 BnnIsDigitEven( BigNumDigit d )
 {
 	/*
@@ -717,7 +716,7 @@ BnnDivideDigit( BigNum qq, BigNum nn, BigNumLength nl, BigNumDigit d )
 	return( rl >> k );
 }
 
-Boolean
+BigNumBool
 BnnIsZero( BigNum nn, BigNumLength nl )
 {
 	/*
@@ -921,51 +920,47 @@ BnnDivide( BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl )
 		BnnSetToZero( nn, nl );			 /* 0 => R */
 		BnnSetDigit( nn+nl-1, (BigNumLength)1 ); /* 1 => Q */
 		return;
-	}
-
-	/*
-	 * here: n > d
-	 */
-
-	/*
-	 * If divisor is just 1 digit, use a special divide
-	 */
-
-	if( dl == (BigNumLength)1 ) {
+	case BN_GT:	/* n > d */
 		/*
-		 * note: nn+1 = nn+dl
+		 * If divisor is just 1 digit, use a special divide
 		 */
 
-		*nn = BnnDivideDigit( nn+1, nn, nl, *dd );
+		if( dl == (BigNumLength)1 ) {
+			/*
+			 * note: nn+1 = nn+dl
+			 */
 
-		/*
-		 * Otherwise, divide one digit at a time
-		 */
-	} else	{
-		/*
-		 * Normalize
-		 */
+			*nn = BnnDivideDigit( nn+1, nn, nl, *dd );
 
-		nshift = BnnNumLeadingZeroBitsInDigit( *(dd+dl-1) );
-		(void)BnnShiftLeft( dd, dl, nshift );
-		(void)BnnShiftLeft( nn, nl, nshift );
+			/*
+			 * Otherwise, divide one digit at a time
+			 */
+		} else	{
+			/*
+			 * Normalize
+			 */
 
-		/*
-		 * Divide
-		 */
+			nshift = BnnNumLeadingZeroBitsInDigit( *(dd+dl-1) );
+			(void)BnnShiftLeft( dd, dl, nshift );
+			(void)BnnShiftLeft( nn, nl, nshift );
 
-		BnnDivideHelper( nn, nl-1, dd, dl );
+			/*
+			 * Divide
+			 */
 
-		/*
-		 * Unnormalize
-		 */
+			BnnDivideHelper( nn, nl-1, dd, dl );
 
-		(void)BnnShiftRight( dd, dl, nshift );
-		(void)BnnShiftRight( nn, dl, nshift ); 
+			/*
+			 * Unnormalize
+			 */
 
-		/*
-		 * note: unnormalize N <=> unnormalize R (with R < D)
-		 */
+			(void)BnnShiftRight( dd, dl, nshift );
+			(void)BnnShiftRight( nn, dl, nshift ); 
+
+			/*
+			 * note: unnormalize N <=> unnormalize R (with R < D)
+			 */
+		}
 	}
 }
 

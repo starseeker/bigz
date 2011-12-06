@@ -2,7 +2,7 @@
 ;;;; Title:     lisptests.lsp
 ;;;; Author:    C. Jullien
 ;;;; License:   New BSD license
-;;;; CVS:       $Id: lisptests.lsp,v 1.24 2011-12-04 12:30:46 jullien Exp $
+;;;; CVS:       $Id: lisptests.lsp,v 1.25 2011-12-06 09:31:19 jullien Exp $
 
 ;;;
 ;;; Generate automatic non-regression tests for OpenLisp.
@@ -387,12 +387,12 @@
            (print-header f)
            (dolist (arg (cons 10000000000000000003 args))
               (call1 f arg)
-              (call2 f arg 2)
+              (call2 f arg -2)
+              (call2 f arg +2)
               (call2 f arg -10)
               (call2 f arg +10)
               (call2 f arg 'big1+)
               (call2 f arg 'big1-)
-              (call2 f arg +10)
               (call2 f arg -17)
               (call2 f arg +17)
               (call2 f arg -32)

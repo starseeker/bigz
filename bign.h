@@ -1,5 +1,5 @@
 /*
- * $Id: bign.h,v 1.21 2011-12-05 10:25:39 jullien Exp $
+ * $Id: bign.h,v 1.22 2011-12-06 09:31:19 jullien Exp $
 */
 
 /*
@@ -64,31 +64,40 @@ typedef unsigned int		BigNumDigit;
 typedef BigNumDigit *	BigNum;		/* A big number is a digit pointer */
 typedef BigNumDigit	BigNumProduct;	/* The product of two digits	   */
 typedef unsigned int	BigNumLength;	/* The length of a bignum	   */
-typedef int		BigNumCmp;	/* Result of comparison		   */
-typedef unsigned int	BigNumCarry;	/* Either BN_NOCARRY or BN_CARRY   */
-typedef int		Boolean;	/* Boolean type			   */
+
+typedef enum	{
+	BN_FALSE   = 0,
+	BN_TRUE    = 1
+} BigNumBool;
+
+/*
+ *	Results of compare functions
+ */
+
+typedef	enum	{
+	BN_LT      = -1,
+	BN_EQ      = 0,
+	BN_GT      = 1
+} BigNumCmp;
+
+/*
+ *	Carry enum type.
+ */
+
+typedef enum	{
+	BN_NOCARRY = 0,
+	BN_CARRY   = 1
+} BigNumCarry;
 
 /*
  *	sizes
  *
  *	BN_BYTE_SIZE:	number of bits in a byte
- *	BN_WORD_SIZE:	number of bits in an "int" in the target language
  *	BN_DIGIT_SIZE:	number of bits in a digit of a BigNum
  */
 
 #define BN_BYTE_SIZE	8
-#define BN_WORD_SIZE	(sizeof(int*) * BN_BYTE_SIZE)
 #define BN_DIGIT_SIZE	(sizeof(BigNumDigit) * BN_BYTE_SIZE)
-
-/*
- *	Results of compare functions
- *
- *	Note: we don't use "enum" to interface with Modula2+, Lisp, ...
- */
-
-#define BN_LT		((BigNumCmp)-1)
-#define BN_EQ		((BigNumCmp)0)
-#define BN_GT		((BigNumCmp)1)
 
 /*
  *	some constants
@@ -97,12 +106,6 @@ typedef int		Boolean;	/* Boolean type			   */
 #define	BN_ZERO		((BigNumDigit)0)
 #define	BN_ONE		((BigNumDigit)1)
 #define	BN_COMPLEMENT	(~(BigNumDigit)0)
-
-#define	BN_CARRY	((BigNumCarry)1)
-#define	BN_NOCARRY	((BigNumCarry)0)
-
-#define BN_TRUE		((Boolean)1)
-#define BN_FALSE	((Boolean)0)
 
 /*
  *	functions of bign.c
@@ -119,12 +122,12 @@ extern void	    BnnComplement2(BigNum nn, BigNumLength nl);
 extern void	    BnnDivide(BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl);
 extern BigNumDigit  BnnDivideDigit(BigNum qq, BigNum nn, BigNumLength nl, BigNumDigit d);
 extern BigNumDigit  BnnGetDigit(BigNum nn) BN_PURE_FUNCTION;
-extern Boolean	    BnnIsPower2(BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
-extern Boolean	    BnnIsDigitEven(BigNumDigit d) BN_CONST_FUNCTION;
-extern Boolean	    BnnIsDigitOdd(BigNumDigit d) BN_CONST_FUNCTION;
-extern Boolean	    BnnIsDigitNormalized(BigNumDigit d) BN_CONST_FUNCTION;
-extern Boolean	    BnnIsDigitZero(BigNumDigit d) BN_CONST_FUNCTION;
-extern Boolean	    BnnIsZero(BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
+extern BigNumBool   BnnIsPower2(BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
+extern BigNumBool   BnnIsDigitEven(BigNumDigit d) BN_CONST_FUNCTION;
+extern BigNumBool   BnnIsDigitOdd(BigNumDigit d) BN_CONST_FUNCTION;
+extern BigNumBool   BnnIsDigitNormalized(BigNumDigit d) BN_CONST_FUNCTION;
+extern BigNumBool   BnnIsDigitZero(BigNumDigit d) BN_CONST_FUNCTION;
+extern BigNumBool   BnnIsZero(BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
 extern BigNumCarry  BnnMultiply(BigNum pp, BigNumLength pl, BigNum mm, BigNumLength ml, BigNum nn, BigNumLength nl);
 extern BigNumCarry  BnnMultiplyDigit(BigNum pp, BigNumLength pl, BigNum mm, BigNumLength ml, BigNumDigit d);
 extern BigNumLength BnnNumDigits(BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;

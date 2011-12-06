@@ -1,6 +1,6 @@
 #
 #	Makefile for 'Bignums'	(c) C. Jullien
-#	$Id: makefile.nt,v 1.14 2011-12-05 13:01:57 jullien Exp $
+#	$Id: makefile.nt,v 1.15 2011-12-06 09:31:19 jullien Exp $
 #
 
 .SUFFIXES: .lsp .dat .$(SUFFIXES)
@@ -9,21 +9,25 @@
 # set CPU from $(CC) version found in path.
 !if [$(CC) 2>&1 | find "x86" > nul] == 0
 CPU		= i386
+ANALYSE		= -analyze:WX-
 !elseif [$(CC) 2>&1 | find "x64" > nul] == 0
 CPU		= AMD64
+ANALYSE		=
 !elseif [$(CC) 2>&1 | find "Itanium" > nul] == 0
 CPU		= IA64
+ANALYSE		=
 !elseif [$(CC) 2>&1 | find "ARM" > nul] == 0
 CPU		= ARM
+ANALYSE		=
 !else
 CPU		= i386
+ANALYSE		= -analyze:WX-
 !endif
 !message Compiling using $(CC) for $(CPU) cpu.
 !endif
 
 CC		= cl
 DEBUG		= -Zi
-ANALYSE		= -analyze:WX-
 CFLAGS		= $(DEBUG) $(ANALYSE) -nologo -W4 -EHsc -Gs -I.
 CLISP		= clisp # ccl
 OLISP		= ..\ntalisp-$(CPU).exe
@@ -84,14 +88,12 @@ lint:
 		-namechecks \
 	        -exportlocal \
 		-infloopsuncon \
-	        -booltype Boolean \
 	        bign.c
 #	Check bigz.c and (again) bign.c
 	@splint -checks \
 		-namechecks \
 	        -exportlocal \
 		-infloopsuncon \
-	        -booltype Boolean \
 	        -observertrans \
 	        -statictrans \
 	        -compdef \

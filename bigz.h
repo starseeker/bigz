@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.h,v 1.38 2011-12-05 10:25:39 jullien Exp $
+ * $Id: bigz.h,v 1.42 2011-12-06 15:01:37 jullien Exp $
  */
 
 /* Copyright Digital Equipment Corporation & INRIA 1988, 1989 */
@@ -7,7 +7,9 @@
 #if	!defined( __BIGZ_H )
 #define	__BIGZ_H
 
+#if	!defined( __BIGN_H )
 #include "bign.h"
+#endif
 
 #if	defined( __cplusplus )
 extern	"C"	{
@@ -26,39 +28,39 @@ extern	"C"	{
  * BigZ sign
  */
 
-typedef	int				BzSign;
-
-#define BZ_PLUS				1
-#define BZ_ZERO				0
-#define BZ_MINUS			-1
+typedef enum {
+	BZ_MINUS = -1,
+	BZ_ZERO  = 0,
+	BZ_PLUS  = 1
+} BzSign;
 
 /*
  * BigZ compare result
  */
 
-typedef	BigNumCmp			BzCmp;
-
-#define BZ_LT				BN_LT
-#define BZ_EQ				BN_EQ
-#define BZ_GT				BN_GT
-
-#define	BZ_FORCE_SIGN			1
+typedef enum {
+	BZ_LT    = BN_LT,
+	BZ_EQ    = BN_EQ,
+	BZ_GT    = BN_GT
+} BzCmp;
 
 /*
  * BigZ number
  */
 
-struct BigZHeader	{
+struct BigZHeader {
 	BigNumLength	Size;
 	BzSign		Sign;
 };
 
-struct BigZStruct	{
+struct BigZStruct {
 	struct BigZHeader Header;
 	BigNumDigit 	  Digits[ 16 ];
 };
 
 typedef struct BigZStruct * __BigZ;
+
+#define	BZ_FORCE_SIGN			1
 
 /*
  *	macros of bigz.c
@@ -130,8 +132,6 @@ typedef	unsigned int			BzUInt;
 #define BzSetSign(z,s)			(__toBzObj(z)->Header.Sign = (s))
 #define BzSetDigit(z,n,v)		(__toBzObj(z)->Digits[n]   = (v))
 
-#define BzGetOppositeSign(z)		(-__toBzObj(z)->Header.Sign)
-
 /*
  *	functions of bigz.c
  */
@@ -155,8 +155,8 @@ extern BigZ	    BzCeiling(const BigZ y, const BigZ z);
 extern BigZ	    BzRound(const BigZ y, const BigZ z);
 extern BigZ	    BzMod(const BigZ y, const BigZ z);
 extern BigZ	    BzRem(const BigZ y, const BigZ z);
-extern Boolean	    BzIsEven(const BigZ y) BZ_PURE_FUNCTION;
-extern Boolean	    BzIsOdd(const BigZ y) BZ_PURE_FUNCTION;
+extern BigNumBool   BzIsEven(const BigZ y) BZ_PURE_FUNCTION;
+extern BigNumBool   BzIsOdd(const BigZ y) BZ_PURE_FUNCTION;
 extern BzChar *	    BzToString(const BigZ z, BigNumDigit base, int sign);
 extern BzChar *	    BzToStringBuffer(const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t *len);
 extern BigZ	    BzFromString(const BzChar *s, BigNumDigit base);
@@ -168,7 +168,7 @@ extern BzUInt	    BzToUnsignedInteger(const BigZ z) BZ_PURE_FUNCTION;
 extern int	    BzToUnsignedIntegerPointer(const BigZ z, BzUInt *p);
 extern BigZ	    BzFromBigNum(BigNum n, BigNumLength nl);
 extern BigNum	    BzToBigNum(const BigZ z, BigNumLength *nl);
-extern Boolean	    BzTestBit(unsigned int bit, const BigZ z);
+extern BigNumBool   BzTestBit(unsigned int bit, const BigZ z);
 extern BigZ	    BzNot(const BigZ z);
 extern BigZ	    BzAnd(const BigZ y, const BigZ z);
 extern BigZ	    BzOr(const BigZ y, const BigZ z);
