@@ -1,5 +1,5 @@
 //
-// $Id: CBignum.h,v 1.10 2011-12-05 09:33:44 jullien Exp $
+// $Id: CBignum.h,v 1.11 2011-12-06 18:05:33 jullien Exp $
 //
 
 //
@@ -21,7 +21,7 @@ public:
 	CBignum( unsigned int init )  : m_bz( BzFromUnsignedInteger(init) ) {}
 	CBignum( const CBignum& rhs ) : m_bz( BzCopy( rhs.m_bz ) ) {}
 	CBignum( const BigZ init )    : m_bz( BzCopy( init ) ) {}
-	CBignum( const char* init, int base=10 ) : m_bz( BzFromString( (char *)init, base ) ) {}
+	CBignum( const char* init, int base=10 ) : m_bz( BzFromString( init, base ) ) {}
 	CBignum( bool b )	      : m_bz( BzFromInteger( b ? 1 : 0 ) ) {}
 	~CBignum() { BzFree( m_bz ); }
 

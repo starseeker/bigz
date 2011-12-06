@@ -1,5 +1,5 @@
 /*
- static	const char rcsid[] = "$Id: bigz.c,v 1.62 2011-12-06 15:01:37 jullien Exp $";
+ static	const char rcsid[] = "$Id: bigz.c,v 1.64 2011-12-06 18:05:33 jullien Exp $";
 */
 
 /*
@@ -181,7 +181,7 @@ BzVersion( void )
  *	}
  */
 
-static double BzLog[] = {
+static const double BzLog[] = {
 	0.0000000000000000,
         0.0000000000000000, /* log( 1) */
         0.6931471805599453, /* log( 2) */
@@ -632,7 +632,7 @@ BzDiv( const BigZ y, const BigZ z )
 	 */
 
 	BigZ	q;
-	BigZ	r = (BigZ)0;
+	BigZ	r = BZNULL;
 
 	q = BzDivide( y, z, &r );
 	BzFree( r );
@@ -648,7 +648,7 @@ BzTruncate( const BigZ y, const BigZ z )
 	 */
 
 	BigZ		q;
-	BigZ		r = (BigZ)0;
+	BigZ		r = BZNULL;
 	BigNumLength	ql;
 
 	q  = BzDivide( y, z, &r );
@@ -685,7 +685,7 @@ BzFloor( const BigZ y, const BigZ z )
 	 */
 
 	BigZ	q;
-	BigZ	r = (BigZ)0;
+	BigZ	r = BZNULL;
 
 	q = BzDivide( y, z, &r );
 	BzFree( r );
@@ -701,7 +701,7 @@ BzCeiling( const BigZ y, const BigZ z )
 	 */
 
 	BigZ		q;
-	BigZ		r = (BigZ)0;
+	BigZ		r = BZNULL;
 	BigNumLength	ql;
 
 	q  = BzDivide( y, z, &r );
@@ -743,7 +743,7 @@ BzRound( const BigZ y, const BigZ z )
 	 */
 
 	BigZ		q;
-	BigZ		r = (BigZ)0;
+	BigZ		r = BZNULL;
 	BigNumLength	ql;
 
 	q  = BzDivide( y, z, &r );
@@ -871,7 +871,7 @@ BzMod( const BigZ y, const BigZ z )
 	 * Returns Y mod Z.
 	 */
 
-	BigZ	r = (BigZ)0;
+	BigZ	r = BZNULL;
 
 	BzFree( BzDivide( y, z, &r ) );
 
@@ -886,7 +886,7 @@ BzRem( const BigZ y, const BigZ z )
 	 */
 
 	BigZ q;
-	BigZ r = (BigZ)0;
+	BigZ r = BZNULL;
 	BigZ rem;
 
 	q = BzDivide( y, z, &r );
@@ -1347,11 +1347,12 @@ BzFromBigNum( BigNum n, BigNumLength nl )
 	return( z );
 }
 
+
 BigNum
 BzToBigNum( const BigZ z, BigNumLength *nl )
 {
-	BigNum		n;
-	BigNum		m;
+	BigNum          n;
+	BigNum          m;
 	BigNumLength	i;
 
 	if( BzGetSign( z ) == BZ_MINUS ) {

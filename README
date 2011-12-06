@@ -42,4 +42,9 @@ If you have the tools LaTeX, makeindex and aptex, type:
 	make doc	- to build the Postscript files of the documents
 
 You can retrieve the source code on sourceforge using;
+
+SVN:
   svn checkout svn://svn.code.sf.net/p/bigz/code-0/trunk bigz-code-0
+
+GIT:
+  git clone git://git.code.sf.net/p/bigz/code bigz-code

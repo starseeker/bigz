@@ -1,5 +1,5 @@
 /*
- static	const char rcsid[] = "$Id: bign.c,v 1.29 2011-12-06 09:31:19 jullien Exp $";
+ static	const char rcsid[] = "$Id: bign.c,v 1.30 2011-12-06 17:10:05 jullien Exp $";
 */
 
 /*
@@ -499,7 +499,7 @@ BnnSubtract( BigNum mm, BigNumLength ml, BigNum nn, BigNumLength nl, BigNumCarry
 #define LOW(x) 		   (BigNumDigit)(x & ((BN_ONE<<(BN_DIGIT_SIZE / 2)) -1))
 #define HIGH(x) 	   (BigNumDigit)(x >> (BN_DIGIT_SIZE / 2))
 #define L2H(x) 		   (BigNumDigit)(x << (BN_DIGIT_SIZE / 2))
-#define UPDATE_S(c,V,X3)   c += V; if (c < V) X3++;
+#define UPDATE_S(c,V,X3)   c += V; if (c < V) { X3++; }
 
 BigNumCarry
 BnnMultiplyDigit( BigNum pp, BigNumLength pl, BigNum mm, BigNumLength ml, BigNumDigit d )
