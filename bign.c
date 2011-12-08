@@ -1,5 +1,5 @@
 /*
- static	const char rcsid[] = "$Id: bign.c,v 1.30 2011-12-06 17:10:05 jullien Exp $";
+ static	const char rcsid[] = "$Id: bign.c,v 1.33 2011-12-08 10:43:48 jullien Exp $";
 */
 
 /*
@@ -43,6 +43,8 @@
 
 static void BnnDivideHelper(BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl);
 
+#include <stdio.h>
+
 void
 BnnSetToZero( BigNum nn, BigNumLength nl )
 {
@@ -50,8 +52,10 @@ BnnSetToZero( BigNum nn, BigNumLength nl )
 	 * Sets all the specified digits of the BigNum to BN_ZERO (0).
 	 */
 
-	while( nl-- != 0 ) {
-		*nn++ = BN_ZERO;
+	BigNumLength d;
+
+	for( d = 0 ; d < nl ; ++d ) {
+		nn[d] = BN_ZERO;
 	}
 }
 
@@ -62,15 +66,21 @@ BnnAssign( BigNum mm, BigNum nn, BigNumLength nl )
 	 * Copies N => M
 	 */
 
-	if( (mm < nn) || (mm > nn+nl) ) {
-		while( nl-- != 0 ) {
-			*mm++ = *nn++;
+	int	d;
+
+	if( (mm < nn) || (mm > (nn + nl)) ) {
+		/*
+		 * no memory overlap using classic loop 
+		 */
+		for( d = 0 ; d < (int)nl ; ++d ) {
+			mm[d] = nn[d];
 		}
 	} else	if( mm > nn ) {
-		nn += nl;
-		mm += nl;
-		while( nl-- != 0 ) {
-			*--mm = *--nn;
+		/*
+		 * memory overlap, loop starting from most significant digit
+		 */
+		for( d = (int)(nl - 1) ; d >= 0 ; --d ) {
+			mm[d] = nn[d];
 		}
 	}
 }
@@ -102,13 +112,22 @@ BnnNumDigits( BigNum nn, BigNumLength nl )
 	 * Returns the number of digits of N, not counting leading zeros
 	 */
 
-	nn += nl;
+	int	d;
 
-	while( (nl != 0) && (*--nn == BN_ZERO) ) {
-		nl--;
+	/*
+	 * loop starting from most significant digit
+	 */
+
+	for( d = (int)(nl - 1) ; d >= 0 ; --d ) {
+		if( nn[d] != BN_ZERO ) {
+			/*
+			 * length = d+1
+			 */
+			return( (BigNumLength)(d + 1) );
+		}
 	}
 
-	return( (nl == 0 ? ((BigNumLength)1) : nl) );
+	return( (BigNumLength)1 );
 }
 
 BigNumLength
@@ -177,13 +196,13 @@ BnnIsPower2( BigNum nn, BigNumLength nl )
 	 *	There must be only 1 bit set on the last Digit.
 	 */
 
-	i	= (BigNumLength)BN_DIGIT_SIZE;
-	nbits	= 0;
+	nbits = 0;
 
-	while( i != 0 ) {
-		if( ((*nn & (BN_ONE << --i)) != 0)
-		    && (++nbits > (BigNumLength)1) ) {
-			return( BN_FALSE );
+	for( i = 0 ; i < (BigNumLength)BN_DIGIT_SIZE ; ++i ) {
+		if( (*nn & (BN_ONE << i)) != 0 ) {
+			if( nbits++ > 0 ) {
+				return( BN_FALSE );
+			}
 		}
 	}
 
@@ -262,8 +281,10 @@ BnnComplement( BigNum nn, BigNumLength nl )
 	 * Performs the computation BBase(N) - N - 1 => N
 	 */
 
-	while( nl-- != 0 ) {
-		*nn++ ^= BN_COMPLEMENT;
+	BigNumLength d;
+
+	for( d = 0 ; d < nl ; ++d ) {
+		nn[d] ^= BN_COMPLEMENT;
 	}
 }
 
@@ -300,7 +321,6 @@ BnnOrDigits( BigNum n, BigNumDigit d )
 	/*
 	 * Returns the logical computation n[0] OR d2 in n[0].
 	 */
-
 	*n |= d;
 }
 
@@ -327,16 +347,15 @@ BnnShiftLeft( BigNum mm, BigNumLength ml, BigNumLength nbits )
 	 * BN_DIGIT_SIZE.
 	 */
 
-	BigNumDigit	res = BN_ZERO;
-	BigNumDigit	save;
-	BigNumLength	rnbits;
+	BigNumDigit res = BN_ZERO;
 
 	if( nbits != 0 ) {
-		rnbits = (BigNumLength)(BN_DIGIT_SIZE - nbits);
+		BigNumLength rnbits = (BigNumLength)(BN_DIGIT_SIZE - nbits);
+		BigNumLength d;
 
-		while( ml-- != 0 ) {
-			save  = *mm;
-			*mm++ = (save << nbits) | res;
+		for( d = 0 ; d < ml ; ++d ) {
+			BigNumDigit save = mm[d];
+			mm[d] = (save << nbits) | res;
 			res   = save >> rnbits;
 		}
 	}
@@ -353,18 +372,20 @@ BnnShiftRight( BigNum mm, BigNumLength ml, BigNumLength nbits )
 	 * BN_DIGIT_SIZE.
 	 */
 
-	BigNumDigit	res = BN_ZERO;
-	BigNumDigit	save;
-	BigNumLength	lnbits;
+	BigNumDigit res = BN_ZERO;
 
 	if( nbits != 0 ) {
-		mm     += ml;
-		lnbits  = (BigNumLength)BN_DIGIT_SIZE - nbits;
+		BigNumLength lnbits = (BigNumLength)BN_DIGIT_SIZE - nbits;
+		int d;
 
-		while( ml-- != 0 ) {
-			save = *(--mm);
-			*mm  = (save >> nbits) | res;
-			res  = save << lnbits;
+		/*
+		 * loop starting from most significant digit
+		 */
+
+		for( d = (int)(ml - 1) ; d >= 0 ; --d ) {
+			BigNumDigit save = mm[d];
+			mm[d] = (save >> nbits) | res;
+			res   = save << lnbits;
 		}
 	}
 
@@ -384,17 +405,19 @@ BnnAddCarry( BigNum nn, BigNumLength nl, BigNumCarry carryin )
 
 	if( carryin == BN_NOCARRY ) {
 		return( BN_NOCARRY );
-	}
+	} else	if( nl == 0 ) {
+		return( BN_CARRY );
+	} else	{
+		BigNumLength d;
 
-	if( nl == 0 ) {
+		for( d = 0 ; d < nl ; ++d ) {
+			if( ++nn[d] != 0 ) {
+				return( BN_NOCARRY );
+			}
+		}
+
 		return( BN_CARRY );
 	}
-
-	while( nl != 0 && (++(*nn++)) == 0 ) {
-		--nl;
-	}
-
-	return( (nl != 0) ? BN_NOCARRY : BN_CARRY );
 }
 
 BigNumCarry
@@ -406,12 +429,12 @@ BnnAdd( BigNum mm, BigNumLength ml, BigNum nn, BigNumLength nl, BigNumCarry carr
 	 */
 
 	BigNumProduct c = (BigNumProduct)carryin;
-	BigNumProduct save;
 
 	ml -= nl;
 
 	while( nl-- != 0 ) {
-		save = (BigNumProduct)*mm;
+		BigNumProduct save = (BigNumProduct)*mm;
+
 		c   += save;
 		if( c < save ) {
 			*(mm++) = *(nn++);
@@ -441,18 +464,19 @@ BnnSubtractBorrow( BigNum nn, BigNumLength nl, BigNumCarry carryin )
 
 	if( carryin == BN_CARRY ) {
 		return( BN_CARRY );
-	}
+	} else	if( nl == 0 ) {
+		return( BN_NOCARRY );
+	} else	{
+		BigNumLength d;
 
-	if( nl == 0 ) {
+		for( d = 0 ; d < nl ; ++d ) {
+			if( nn[d]-- != 0 ) {
+				return( BN_CARRY );
+			}
+		}
+
 		return( BN_NOCARRY );
 	}
-
-	while( nl != 0 && ((*nn)--) == 0 ) {
-		--nl;
-		++nn;
-	}
-
-	return( (nl != 0) ? BN_CARRY : BN_NOCARRY );
 }
 
 BigNumCarry
@@ -913,7 +937,7 @@ BnnDivide( BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl )
 
 	switch( BnnCompare( nn, nl, dd, dl ) ) {
 	case BN_LT:	/* n < d */
-		;					 /* N => R */
+							 /* N => R */
 		BnnSetToZero( nn+dl, nl-dl );		 /* 0 => Q */
 		return;
 	case BN_EQ:	/* n == d */
@@ -974,18 +998,27 @@ BnnCompare( BigNum mm, BigNumLength ml, BigNum nn, BigNumLength nl )
 	 *		BN_LT	iff N < N
 	 */
 
-	BigNumCmp result = BN_EQ;
-
 	ml = BnnNumDigits( mm, ml );
 	nl = BnnNumDigits( nn, nl );
 
 	if( ml != nl ) {
 		return( ml > nl ? BN_GT : BN_LT );
-	}
+	} else	{
+		int	d;
 
-	while( result == BN_EQ && ml-- > 0 ) {
-		result = BnnCompareDigits( *(mm+ml), *(nn+ml) );
-	}
+		/*
+		 * loop starting from most significant digit
+		 */
 
-	return( result );
+		for( d = (int)(nl - 1) ; d >= 0 ; --d ) {
+			if( mm[d] > nn[d] ) {
+				return( BN_GT );
+			}
+			if( mm[d] < nn[d] ) {
+				return( BN_LT  );
+			}
+		}
+
+		return( BN_EQ );
+	}
 }

@@ -1,5 +1,5 @@
 /*
- static	const char rcsid[] = "$Id: bigz.c,v 1.64 2011-12-06 18:05:33 jullien Exp $";
+ static	const char rcsid[] = "$Id: bigz.c,v 1.66 2011-12-08 10:43:48 jullien Exp $";
 */
 
 /*
@@ -16,6 +16,13 @@
  *    A "BigZ" is the name for an arbitrary-precision signed integer.
  *    Capital letters (e.g., "Z") are used to refer to the value of BigZs.
  */
+
+#if	!defined( _CRT_SECURE_NO_DEPRECATE )
+#define	_CRT_SECURE_NO_DEPRECATE	1
+#endif
+#if	!defined( _CRT_NONSTDC_NO_DEPRECATE )
+#define	_CRT_NONSTDC_NO_DEPRECATE	1
+#endif
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -81,23 +88,22 @@ static int	BzStrLen( const BzChar *s ) BN_PURE_FUNCTION;
 static BzSign	BzGetOppositeSign( const BigZ z );
 
 #if	defined( BZ_DEBUG )
-static void	BzShowBits( BigNumDigit n );
-
-static void
+void
 BzShowBits( BigNumDigit n )
 {
 	int	i;
 
 	for( i = (int)(BN_DIGIT_SIZE - 1) ; i >= 0 ; i-- ) {
-		(void)printf( "%d", (n & (1 << (unsigned int)i)) != 0 ? 1 : 0 );
+		if( (n & ((BigNumDigit)1 << (unsigned int)i)) != 0 ) {
+			(void)printf( "1" );
+		} else	{
+			(void)printf( "0" );
+		}
 	}
 }
 
-void	BnDebug(const BzChar *m,
-		const BzChar *bzstr, BigNum n, BigNumLength nl, BzSign sign);
-
 void
-BnDebug(const BzChar *m,
+BnDebug(const char *m,
 	const BzChar *bzstr,
 	BigNum	     n,
 	BigNumLength nl,
@@ -108,7 +114,7 @@ BnDebug(const BzChar *m,
 	BzChar	     c;
 	char	     fmt[8];
 
-	if( m != (BzChar *)NULL ) {
+	if( m != NULL ) {
 		(void)printf( "%-20s\n", m );
 	}
 
@@ -129,14 +135,37 @@ BnDebug(const BzChar *m,
 	(void)printf( "      %c : ", c );
 	p = n + nl - 1;
 	l = nl;
-	/*
-	 * compute format output depending on BigNumDigit size.
-	 * It requires 2 hexa digits by byte.
-	 */
-	sprintf(fmt, "|%%0%dx", (int)(2 * sizeof( BigNumDigit )));
 
 	while( l-- != 0 ) {
-		(void)printf( fmt, *p-- );
+		BigNumDigit d = *p--;
+		int	    bnsize = (int)sizeof(d);
+
+		(void)printf( "|" );
+
+		if( sizeof(bnsize) < bnsize ) {
+			/*
+			 * assume 64bits BigNumDigit and 32bits int.
+			 */
+			unsigned int low;
+			unsigned int high;
+
+			low = (unsigned int)(d & 0xffffffff);
+
+			/*
+			 * shift d in two operations to fool 32bit compilers.
+			 */
+			d >>= 16;
+			high = (unsigned int)((d >> 16) & 0xffffffff);
+			(void)printf( "%08x", high );
+			(void)printf( "%08x", low  );
+		} else	{
+			/*
+			 * compute format output depending on BigNumDigit size.
+			 * It requires 2 hexa digits by byte.
+			 */
+			(void)sprintf( fmt, "%%0%dx", (int)(2 * sizeof(d)) );
+			(void)printf( fmt, d );
+		}
 	}
 	(void)printf( "|\n" );
 
@@ -151,7 +180,7 @@ BnDebug(const BzChar *m,
 }
 
 void
-BzDebug( const BzChar *m, const BigZ y )
+BzDebug( const char *m, const BigZ y )
 {
 	BzChar * s = BzToString( y, (BigNumDigit)10, 0 );
 
@@ -231,7 +260,7 @@ BzCreate( BigNumLength Size )
 	BigZ	z;
 	size_t	chunk;
 
-	chunk = sizeof(struct BigZHeader) + Size * sizeof(BigNumDigit);
+	chunk = sizeof(BigZHeader) + Size * sizeof(BigNumDigit);
 
 	if( (z = (BigZ)(BzAlloc( chunk ))) != BZNULL ) {
 		/*
@@ -1020,6 +1049,7 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 	 */
 
 	*--s = (BzChar)'\0';
+
 	if( BzGetSign( z ) == BZ_ZERO ) {
 		*--s = (BzChar)'0';
 #if	defined( BZ_OPTIMIZE_FOR_BASE10 )

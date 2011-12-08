@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.h,v 1.42 2011-12-06 15:01:37 jullien Exp $
+ * $Id: bigz.h,v 1.43 2011-12-07 08:47:37 jullien Exp $
  */
 
 /* Copyright Digital Equipment Corporation & INRIA 1988, 1989 */
@@ -48,14 +48,26 @@ typedef enum {
  * BigZ number
  */
 
-struct BigZHeader {
+typedef struct {
 	BigNumLength	Size;
 	BzSign		Sign;
-};
+} BigZHeader;
+
+ /*
+  * define a dummy positive value to declare a Digits vector.
+  * BigZ is allocated with required size. Choose a rather large value
+  * to prevent 'smart' compilers to exchange fields.
+  */
+
+#define	BZ_DUMMY_SIZE	32
 
 struct BigZStruct {
-	struct BigZHeader Header;
-	BigNumDigit 	  Digits[ 16 ];
+	BigZHeader Header;
+	/*
+	 * Digit vector should be the last field to allow allocation
+	 * of the real size (BZ_DUMMY_SIZE is never used).
+	 */
+	BigNumDigit 	  Digits[ BZ_DUMMY_SIZE ];
 };
 
 typedef struct BigZStruct * __BigZ;

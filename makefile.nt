@@ -1,6 +1,6 @@
 #
 #	Makefile for 'Bignums'	(c) C. Jullien
-#	$Id: makefile.nt,v 1.15 2011-12-06 09:31:19 jullien Exp $
+#	$Id: makefile.nt,v 1.17 2011-12-07 08:54:27 jullien Exp $
 #
 
 .SUFFIXES: .lsp .dat .$(SUFFIXES)
@@ -78,6 +78,14 @@ testbign.lsp: lisptests.lsp $(OLISP)
 
 # Misc
 
+qualify:
+	@cd .. && nmake -nologo && cd bignum
+	@nmake -nologo \
+	       && nmake -nologo lint \
+	       && testkern a \
+	       && bztest \
+	       && tCBignum
+
 clean:
 	-del *~ *.exe *.obj *.o *.pdb *.ilk *.BAK *.cgl *pure.log *pure.ini /s
 
@@ -127,7 +135,6 @@ MASTER		= \
 		config.h.in		\
 		configure		\
 		configure.in		\
-		doc/			\
 		doc/bn.html		\
 		doc/bn.tex		\
 		doc/bnbody.html		\
@@ -138,6 +145,8 @@ MASTER		= \
 		etc/maxbase10.c		\
 		etc/maxbase10.lsp	\
 		etc/testbits.c		\
+		pdf/PRL-RR-2.pdf	\
+		pdf/RR-1016.pdf		\
 		gentest.lsp		\
 		gnuvar.bat		\
 		lisptests.lsp		\
@@ -146,8 +155,6 @@ MASTER		= \
 		makefile.lcc		\
 		makefile.nt		\
 		makefile.tcc		\
-		PRL-RR-2.pdf		\
-		RR-1016.pdf		\
 		tCBignum.cpp		\
 		tCBignum.dat		\
 		test/BntoBnn.h		\
@@ -165,3 +172,6 @@ save:
 		&& tar czf bignum-$(VERSION).tar.gz bignum-$(VERSION) \
 		&& rm -r -f bignum-$(VERSION)
 	@tar tvzf bignum-$(VERSION).tar.gz
+
+tosvn:
+	@for %%i in ($(MASTER)) do @echo bigz/%%i && cp %%i bigz/%%i

@@ -1,6 +1,6 @@
 #
 #	Makefile for 'Bignums'	(c) C. Jullien
-#	$Id: Makefile.in,v 1.12 2011-12-05 13:01:57 jullien Exp $
+#	$Id: Makefile.in,v 1.13 2011-12-07 08:47:36 jullien Exp $
 #
 
 .SUFFIXES: .cpp .lsp .dat $(.SUFFIXES)
@@ -111,7 +111,6 @@ MASTER		= \
 		config.h.in		\
 		configure		\
 		configure.in		\
-		doc/			\
 		doc/bn.html		\
 		doc/bn.tex		\
 		doc/bnbody.html		\
@@ -122,6 +121,8 @@ MASTER		= \
 		etc/maxbase10.c		\
 		etc/maxbase10.lsp	\
 		etc/testbits.c		\
+		pdf/PRL-RR-2.pdf	\
+		pdf/RR-1016.pdf		\
 		gentest.lsp		\
 		gnuvar.bat		\
 		lisptests.lsp		\
@@ -130,8 +131,6 @@ MASTER		= \
 		makefile.lcc		\
 		makefile.nt		\
 		makefile.tcc		\
-		PRL-RR-2.pdf		\
-		RR-1016.pdf		\
 		tCBignum.cpp		\
 		tCBignum.dat		\
 		test/BntoBnn.h		\

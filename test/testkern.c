@@ -205,10 +205,10 @@ RangeNumberPrint(char *s, BigNum n, int nd, int nl)
 			low = (unsigned int)(p & 0xffffffff);
 
 			/*
-			 * shift p in two operation to fool 32bit compilers.
+			 * shift p in two operations to fool 32bit compilers.
 			 */
 			p >>= 16;
-			high = (unsigned int)p >> 16;
+			high = (unsigned int)(p >> 16);
 			printf("%.8x", high);
 			printf("%.8x", low);
 		}
