@@ -1,5 +1,5 @@
 /*
- * $Id: bign.h,v 1.23 2011-12-08 12:27:13 jullien Exp $
+ * $Id: bign.h,v 1.24 2011-12-08 13:30:24 jullien Exp $
 */
 
 /*
@@ -40,12 +40,6 @@
 #if	defined( HAVE_CONFIG_H )
 #include "config.h"
 #endif
-
-/*
- * Copyright:
- *  - Digital Equipment Corporation & INRIA 1988, 1989
- *  - Eligis 1997 - 2012
- */
 
 /*
  *  Bignum representation
@@ -124,7 +118,10 @@ typedef enum	{
  *	BN_DIGIT_SIZE:	number of bits in a digit of a BigNum
  */
 
-#define BN_BYTE_SIZE	8
+#if	!defined( BN_BYTE_SIZE )
+#define BN_BYTE_SIZE	8	/* may be 9! on 36bit computers. */
+#endif
+
 #define BN_DIGIT_SIZE	(sizeof(BigNumDigit) * BN_BYTE_SIZE)
 
 /*

@@ -1,5 +1,5 @@
 /*
- static	const char rcsid[] = "$Id: bigz.c,v 1.67 2011-12-08 12:27:13 jullien Exp $";
+ * $Id: bigz.c,v 1.70 2011-12-08 19:42:05 jullien Exp $
 */
 
 /*
@@ -112,7 +112,10 @@ static int	BzStrLen( const BzChar *s ) BN_PURE_FUNCTION;
 static BzSign	BzGetOppositeSign( const BigZ z );
 
 #if	defined( BZ_DEBUG )
-void
+static void	BzShowBits(BigNumDigit n);
+static void	BzShowUnsingnedInt(unsigned int n);
+
+static void
 BzShowBits( BigNumDigit n )
 {
 	int	i;
@@ -126,6 +129,26 @@ BzShowBits( BigNumDigit n )
 	}
 }
 
+static void
+BzShowUnsingnedInt( unsigned int n )
+{
+	/*
+	 * Deal with different integer sizes. This avoid to build format
+	 * string dynamically which results to potential buffer overflow.
+	 * This also makes splint happy.
+	 */
+
+	size_t size = sizeof( n );
+
+	switch( size ) {
+	case  2: (void)printf( "%04x",  n); break;
+	case  4: (void)printf( "%08x",  n); break;
+	case  8: (void)printf( "%016x", n); break;
+	case 16: (void)printf( "%032x", n); break;
+	default: (void)printf( "%016x", n); break;
+	}
+}
+
 void
 BnDebug(const char *m,
 	const BzChar *bzstr,
@@ -136,13 +159,12 @@ BnDebug(const char *m,
 	BigNum	     p;
 	BigNumLength l;
 	BzChar	     c;
-	char	     fmt[8];
 
 	if( m != NULL ) {
 		(void)printf( "%-20s\n", m );
 	}
 
-	(void)printf( "\t: BigZ = %s at 0x%p, ", bzstr, n );
+	(void)printf( "\t: BigZ = %s at 0x%p, ", (char *)bzstr, n );
 	(void)printf( "digit = %d, word = %d bytes\n",
 		      (int)BN_DIGIT_SIZE,
 		      (int)sizeof( void * ) );
@@ -162,33 +184,38 @@ BnDebug(const char *m,
 
 	while( l-- != 0 ) {
 		BigNumDigit d = *p--;
-		int	    bnsize = (int)sizeof(d);
+		unsigned int size = (unsigned int)sizeof(d);
 
 		(void)printf( "|" );
 
-		if( sizeof(bnsize) < bnsize ) {
+		if( sizeof( size ) < (size_t)size ) {
 			/*
-			 * assume 64bits BigNumDigit and 32bits int.
+			 * sizeof(BigNumDigit) > sizeof(int).
+			 * (can be 64bit BigNumDigit and 32bit int)
 			 */
-			unsigned int low;
+			unsigned int mask;
+			unsigned int shift;
+			unsigned int low;			
 			unsigned int high;
 
-			low = (unsigned int)(d & 0xffffffff);
+			mask  = ~(unsigned int)0; /* 0xff..ff */
+			shift = (unsigned int)(sizeof(int) * BN_BYTE_SIZE);
+			low   = (unsigned int)(d & mask);
 
 			/*
-			 * shift d in two operations to fool 32bit compilers.
+			 * shift d in two operations to fool compilers
+			 * having sizeof(BigNumDigit) == sizeof(int)
+			 * which complain if shift count looks too big.
 			 */
-			d >>= 16;
-			high = (unsigned int)((d >> 16) & 0xffffffff);
-			(void)printf( "%08x", high );
-			(void)printf( "%08x", low  );
+			d >>= shift;
+			high = (unsigned int)((d >> shift) & mask);
+			BzShowUnsingnedInt( high );
+			BzShowUnsingnedInt( low  );
 		} else	{
 			/*
-			 * compute format output depending on BigNumDigit size.
-			 * It requires 2 hexa digits by byte.
+			 * sizeof(BigNumDigit) <= sizeof(int).
 			 */
-			(void)sprintf( fmt, "%%0%dx", (int)(2 * sizeof(d)) );
-			(void)printf( fmt, d );
+			BzShowUnsingnedInt( (unsigned int)d );
 		}
 	}
 	(void)printf( "|\n" );

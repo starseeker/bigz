@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.h,v 1.44 2011-12-08 12:27:13 jullien Exp $
+ * $Id: bigz.h,v 1.46 2011-12-08 19:42:05 jullien Exp $
  */
 
 /*
@@ -226,9 +226,8 @@ extern BigZ	    BzRandom(const BigZ n);
 extern void	    BzSetRandom(const BigZ n);
 
 #if	defined( BZ_DEBUG )
-extern void	    BzShowBits(BigNumDigit n);
-extern void	    BnDebug(const BzChar *m, const BzChar *bzstr, BigNum n, BigNumLength nl, BzSign sign);
-extern void	    BzDebug(const BzChar *m, const BigZ y);
+extern void	    BnDebug(const char *m, const BzChar *bzstr, BigNum n, BigNumLength nl, BzSign sign);
+extern void	    BzDebug(const char *m, const BigZ y);
 #endif
 
 #if	defined( __cplusplus )

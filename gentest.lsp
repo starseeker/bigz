@@ -1,5 +1,5 @@
 ;;;; -*-Mode:LISP; Package:LISP; Base:10; Syntax:ISLISP -*-
-;;;; Date:	$Id: gentest.lsp,v 1.13 2011-12-08 12:27:13 jullien Exp $
+;;;; Date:	$Id: gentest.lsp,v 1.14 2011-12-08 13:30:24 jullien Exp $
 ;;;; Title:	gentest.lsp
 ;;;; Author:	C. Jullien
 
@@ -30,7 +30,6 @@
 ;;; (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING  IN ANY WAY OUT OF THE USE
 ;;; OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;;;
-
 
 ;;;
 ;;; Generate C++ test data for CBignum class.
