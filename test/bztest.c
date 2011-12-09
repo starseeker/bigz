@@ -3,6 +3,8 @@ static	char *sccsid = "@(#)bztest.c	(c) C. Jullien 1999/01/26";
 #endif
 
 /*
+ * Simplified BSD License
+ *
  * Copyright (c) 1988-1989, Digital Equipment Corporation & INRIA.
  * Copyright (c) 1992-2012, Eligis
  * All rights reserved.

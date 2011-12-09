@@ -1,8 +1,10 @@
 /*
- * $Id: bigz.h,v 1.46 2011-12-08 19:42:05 jullien Exp $
+ * $Id: bigz.h,v 1.49 2011-12-09 14:39:06 jullien Exp $
  */
 
 /*
+ * Simplified BSD License
+ *
  * Copyright (c) 1988-1989, Digital Equipment Corporation & INRIA.
  * Copyright (c) 1992-2012, Eligis
  * All rights reserved.
@@ -48,7 +50,7 @@ extern	"C"	{
  * BigZ.h: Types and structures for clients of BigZ
  */
 
-#define	BZ_VERSION			"1.4"
+#define	BZ_VERSION			"1.4.0"
 
 /*
  * BigZ sign
@@ -157,8 +159,8 @@ typedef	unsigned int			BzUInt;
 #define	__toBzObj(z)			((__BigZ)z)
 #define	BZNULL				((BigZ)0)
 #define	BzAlloc( size )			malloc( size )
+#define	BzFree( z )			free( z ) /* free(__toBzObj(z)) */
 #define	BzStringAlloc( size )		malloc( size * sizeof( BzChar ) )
-#define	BzFree( z )			free( __toBzObj(z) )
 #define	BzFreeString( s )		free( s )
 #endif
 

@@ -1,8 +1,10 @@
 /*
- * $Id: bign.h,v 1.24 2011-12-08 13:30:24 jullien Exp $
+ * $Id: bign.h,v 1.26 2011-12-09 11:17:58 jullien Exp $
 */
 
 /*
+ * Simplified BSD License
+ *
  * Copyright (c) 1988-1989, Digital Equipment Corporation & INRIA.
  * Copyright (c) 1992-2012, Eligis
  * All rights reserved.
@@ -67,7 +69,7 @@ extern	"C"	{
 #if	defined( _WIN64 )
 typedef unsigned __int64	BigNumDigit;
 #else
-typedef unsigned int		BigNumDigit;
+typedef unsigned long		BigNumDigit;
 #endif
 #endif
 

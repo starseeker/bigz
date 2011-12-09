@@ -1,8 +1,10 @@
 /*
- * $Id: bigz.c,v 1.70 2011-12-08 19:42:05 jullien Exp $
+ * $Id: bigz.c,v 1.72 2011-12-09 14:39:06 jullien Exp $
 */
 
 /*
+ * Simplified BSD License
+ *
  * Copyright (c) 1988-1989, Digital Equipment Corporation & INRIA.
  * Copyright (c) 1992-2012, Eligis
  * All rights reserved.
@@ -807,7 +809,7 @@ BzCeiling( const BigZ y, const BigZ z )
 		 *	Q == 0, sign(Y) == sign(Z) : 1 => Q
 		 */
 		BzFree( q );
-		q = BzFromInteger( 1 );
+		q = BzFromInteger( (BzInt)1 );
 	}
 
 	BzFree( r );
@@ -932,7 +934,7 @@ BzRound( const BigZ y, const BigZ z )
 			/*
 			 *	2*R>= Z : 1 => Q
 			 */
-			q = BzFromInteger( 1 );
+			q = BzFromInteger( (BzInt)1 );
 		}
 
 		BzSetSign( z, sign );
@@ -1435,14 +1437,16 @@ BzToBigNum( const BigZ z, BigNumLength *nl )
 	BigNum          n;
 	BigNum          m;
 	BigNumLength	i;
+	size_t		size;
 
 	if( BzGetSign( z ) == BZ_MINUS ) {
 		return( (BigNum)NULL );
 	}
 
-	*nl = BzNumDigits( z );
+	*nl  = BzNumDigits( z );
+	size = ((size_t)(*nl+1)) * sizeof(BigNumDigit);
 
-	if( (n = (BigNum)(BzAlloc(((*nl+1) * sizeof(BigNumDigit))))) != NULL ) {
+	if( (n = (BigNum)(BzAlloc( size ))) != NULL ) {
 		*n = (BigNumDigit)*nl; /* set size */
 
 		for( i = 0, m = ++n ; i < *nl ; i++, m++ ) {
@@ -1501,7 +1505,7 @@ BzNot( const BigZ z )
 		}
 		break;
 	case BZ_ZERO:
-		y = BzFromInteger( -1 );
+		y = BzFromInteger( (BzInt)-1 );
 		break;
 	default: /* case BZ_PLUS: */
 		y = BzCopy( z );
@@ -1900,7 +1904,7 @@ BzAsh( const BigZ y, int n )
 			return( BzCopy( y ) );
 		}
 
-		one = BzFromInteger( 1 );
+		one = BzFromInteger( (BzInt)1 );
 		d   = BzAsh( one, -n );
 
 		z = BzFloor( y, d );
@@ -1937,11 +1941,11 @@ BzSqrt( const BigZ z )
 	BigZ		two;
 
 	if( BzGetSign( z ) == BZ_ZERO ) {
-		return( BzFromInteger( 0 ) );
+		return( BzFromInteger( (BzInt)0 ) );
 	}
 
-	one = BzFromInteger( 1 );
-	two = BzFromInteger( 2 );
+	one = BzFromInteger( (BzInt)1 );
+	two = BzFromInteger( (BzInt)2 );
 	n   = BzLength( z );
 
 	if( (n % 2) != 0 ) {
@@ -2018,9 +2022,10 @@ BzGcd( const BigZ y, const BigZ z )
 	} else	{
 		BigZ yc = BzAbs( y ); /* a fresh copy */
 		BigZ zc = BzAbs( z ); /* a fresh copy */
+		BigZ tmp;
 
 		while( BzGetSign( zc ) != BZ_ZERO ) {
-			BigZ tmp = BzMod( yc, zc );
+			tmp = BzMod( yc, zc );
 			BzFree( yc );
 			yc = zc;
 			zc = tmp;

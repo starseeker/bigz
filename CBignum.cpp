@@ -1,8 +1,10 @@
 #if	!defined( lint )
-static	const char rcsid[] = "$Id: CBignum.cpp,v 1.4 2011-12-08 12:27:13 jullien Exp $";
+static	const char rcsid[] = "$Id: CBignum.cpp,v 1.5 2011-12-09 07:52:23 jullien Exp $";
 #endif
 
 /*
+ * Simplified BSD License
+ *
  * Copyright (c) 1988-1989, Digital Equipment Corporation & INRIA.
  * Copyright (c) 1992-2012, Eligis
  * All rights reserved.

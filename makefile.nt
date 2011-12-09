@@ -1,6 +1,6 @@
 #
 #	Makefile for 'Bignums'	(c) C. Jullien
-#	$Id: makefile.nt,v 1.17 2011-12-07 08:54:27 jullien Exp $
+#	$Id: makefile.nt,v 1.19 2011-12-09 08:15:36 jullien Exp $
 #
 
 .SUFFIXES: .lsp .dat .$(SUFFIXES)
@@ -63,15 +63,15 @@ bztest.obj: test\bztest.c
 tCBignum.exe: bigz.obj bign.obj CBignum.obj tCBignum.obj
 	@$(CC) $(CFLAGS) -FotCBignum tCBignum.obj CBignum.obj bigz.obj bign.obj
 
-tCBignum.dat: gentest.lsp
+tCBignum.dat: ./lisp/gentest.lsp
 	@echo generating tests with $(CLISP)..
-	@$(CLISP) gentest.lsp > tCBignum.dat
+	@$(CLISP) ./lisp/gentest.lsp > tCBignum.dat
 	@dos2unix -q tCBignum.dat
 
 tCBignum.obj: CBignum.h tCBignum.dat
 
-testbign.lsp: lisptests.lsp $(OLISP)
-	@$(CLISP) lisptests.lsp | dos2unix > testbign.lsp
+testbign.lsp: ./lisp/lisptests.lsp $(OLISP)
+	@$(CLISP) ./lisp/lisptests.lsp | dos2unix > testbign.lsp
 	@dos2unix -q testbign.lsp
 	@copy testbign.lsp $(OPENLISP)\tst\testbign.lsp > nul
 	@$(OLISP) -e "(run-test \"../../tst/testbign.lsp\")"
@@ -145,11 +145,11 @@ MASTER		= \
 		etc/maxbase10.c		\
 		etc/maxbase10.lsp	\
 		etc/testbits.c		\
+		lisp/gentest.lsp	\
+		lisp/lisptests.lsp	\
 		pdf/PRL-RR-2.pdf	\
 		pdf/RR-1016.pdf		\
-		gentest.lsp		\
-		gnuvar.bat		\
-		lisptests.lsp		\
+		pdf/RR-1016.ps		\
 		makefile.gnu		\
 		Makefile.in		\
 		makefile.lcc		\

@@ -1,8 +1,10 @@
 /*
- static	const char rcsid[] = "$Id: bign.c,v 1.34 2011-12-08 12:27:13 jullien Exp $";
+ static	const char rcsid[] = "$Id: bign.c,v 1.36 2011-12-09 11:17:58 jullien Exp $";
 */
 
 /*
+ * Simplified BSD License
+ *
  * Copyright (c) 1988-1989, Digital Equipment Corporation & INRIA.
  * Copyright (c) 1992-2012, Eligis
  * All rights reserved.
@@ -964,7 +966,7 @@ BnnDivide( BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl )
 		return;
 	case BN_EQ:	/* n == d */
 		BnnSetToZero( nn, nl );			 /* 0 => R */
-		BnnSetDigit( nn+nl-1, (BigNumLength)1 ); /* 1 => Q */
+		BnnSetDigit( nn+nl-1, (BigNumDigit)1 );  /* 1 => Q */
 		return;
 	case BN_GT:	/* n > d */
 		/*

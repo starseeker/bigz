@@ -1,22 +1,29 @@
 #
 #	Makefile for 'Bignums'	(c) C. Jullien
-#	$Id: Makefile.in,v 1.13 2011-12-07 08:47:36 jullien Exp $
+#	$Id: Makefile.in,v 1.16 2011-12-09 14:39:06 jullien Exp $
 #
 
 .SUFFIXES: .cpp .lsp .dat $(.SUFFIXES)
 
 CC		= @CC@
 CPP		= @CXX@
+AR		= @AR@
 O		= @OBJEXT@
+RANLIB		= @RANLIB@
+SOEXT		= @SOEXT@
+AEXT		= @AEXT@
 EXE		= @EXEEXT@
+ARFLAGS		= @AROPTS@
 DEBUG		=
 CFLAGS		= @CFLAGS@ -I. -DHAVE_CONFIG_H
-KRNLIB		= kern.@SOEXT@
+KERN		= kern
+KRNLIB		= kern.$(AEXT)
+KRNSHARED	= kern.$(SOEXT)
 LISP		= clisp
 OBJECT		= bigz.$(O) bign.$(O)
 VERSION		= 1.4.0
 
-BINARIES	= bztest$(EXE) testkern$(EXE) tCBignum$(EXE)
+BINARIES	= $(KRNLIB) bztest$(EXE) testkern$(EXE) tCBignum$(EXE)
 
 all: $(BINARIES) tests
 
@@ -28,13 +35,19 @@ all: $(BINARIES) tests
 	@echo $*.cpp
 	@$(CPP) -c $(CFLAGS) $*.cpp
 
+# KerN lib
+
+$(KRNLIB): $(OBJECT)
+	@$(AR) $(ARFLAGS) $(KRNLIB) $(OBJECT)
+	-@$(RANLIB) $(KRNLIB)
+
 # KerN test
 
 testkern.$(O):
 	@$(CC) -c $(CFLAGS) -Itest test/testkern.c
 
 testkern$(EXE): $(OBJECT) testkern.$(O)
-	@$(CC) $(CFLAGS) -o testkern$(EXE) testkern.$(O) bigz.$(O) bign.$(O)
+	@$(CC) $(CFLAGS) -o testkern$(EXE) testkern.$(O) $(OBJECT)
 
 # BZ test
 
@@ -49,9 +62,9 @@ bztest.$(O): test/bztest.c
 tCBignum$(EXE): $(OBJECT) CBignum.$(O) tCBignum.$(O)
 	@$(CPP) $(CFLAGS) -o tCBignum$(EXE) tCBignum.$(O) CBignum.$(O) $(OBJECT)
 
-tCBignum.dat: gentest.lsp
+tCBignum.dat: ./lisp/gentest.lsp
 	@echo generating tests with $(LISP)..
-	@$(LISP) gentest.lsp
+	@$(LISP) ./lisp/gentest.lsp
 
 tCBignum.$(O): CBignum.h tCBignum.cpp tCBignum.dat
 
@@ -88,7 +101,7 @@ lint:
 		-retalias \
 	        -usedef \
 	        -booltype Boolean \
-	        bigz.c
+	        bigz.c bign.c
 
 MASTER		= \
 		AUTHORS			\
@@ -121,11 +134,10 @@ MASTER		= \
 		etc/maxbase10.c		\
 		etc/maxbase10.lsp	\
 		etc/testbits.c		\
+		lisp/gentest.lsp	\
+		lisp/lisptests.lsp	\
 		pdf/PRL-RR-2.pdf	\
 		pdf/RR-1016.pdf		\
-		gentest.lsp		\
-		gnuvar.bat		\
-		lisptests.lsp		\
 		makefile.gnu		\
 		Makefile.in		\
 		makefile.lcc		\

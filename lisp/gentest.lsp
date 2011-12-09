@@ -1,8 +1,11 @@
 ;;;; -*-Mode:LISP; Package:LISP; Base:10; Syntax:ISLISP -*-
-;;;; Date:	$Id: gentest.lsp,v 1.14 2011-12-08 13:30:24 jullien Exp $
+;;;; Date:	$Id: gentest.lsp,v 1.2 2011-12-09 07:52:23 jullien Exp $
 ;;;; Title:	gentest.lsp
+;;;; License:   Simplified BSD license
 ;;;; Author:	C. Jullien
 
+;;;
+;;; Simplified BSD License
 ;;;
 ;;; Copyright (c) 1988-1989, Digital Equipment Corporation & INRIA.
 ;;; Copyright (c) 1992-2012, Eligis

@@ -1,7 +1,7 @@
 #
 # Autoconf script for OpenLisp.
 # By Christian Jullien (jullien@eligis.com)
-# $Id: configure.in,v 1.4 2011-12-05 18:41:39 jullien Exp $
+# $Id: configure.in,v 1.5 2011-12-09 11:17:58 jullien Exp $
 #
 # use autoconf-2.68 (works also with autoconf-2.13)
 
@@ -45,6 +45,12 @@ if test $MAKE = no
 then
   AC_MSG_ERROR(Can\'t find gmake or make.)
 fi
+
+AC_CHECK_PROGS(AR, ar gar, no)
+if test $AR = no; then
+  AC_MSG_ERROR(Can\'t find ar or gar.)
+fi
+AC_SUBST(AR)
 
 AC_CHECK_PROGS(RANLIB, ranlib, no)
 if test $RANLIB = no; then
@@ -143,7 +149,6 @@ esac
 # Option "-mcpu=`uname -m`"
 
 AC_SUBST(AEXT)
-AC_SUBST(AR)
 AC_SUBST(AROPTS)
 AC_SUBST(CFLAGS)
 AC_SUBST(CXX)
