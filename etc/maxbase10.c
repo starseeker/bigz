@@ -7,12 +7,13 @@ static	char *sccsid = "@(#)maxbase10.c	(c) C. Jullien 2010/06/08";
  */
 
 #include <stdio.h>
+#include "../bigz.h"
 
 int
 main(int argc, char *argv[])
 {
-	size_t i = 10;
-	double f = (double)10;
+	BigNumDigit  i = 10;
+	double 	     f = (double)10;
 	unsigned int b = 1;
 
 	for( b = 1 ; (i * 10) > (f * 9.5) ; ++b ) {

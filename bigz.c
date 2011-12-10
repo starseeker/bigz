@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.c,v 1.72 2011-12-09 14:39:06 jullien Exp $
+ * $Id: bigz.c,v 1.77 2011-12-10 16:15:39 jullien Exp $
 */
 
 /*
@@ -63,11 +63,15 @@
 
 #define BZMAXINT                ((BzInt)(((BzUInt)-1L) >> 1))
 
+/*
+ *	See ./etc/hextable.c if you need to change BigHexToDigit tables.
+ */
+
 #if	!defined( OLEBCDIC )
 /*
  * ASCII character class table
  */
-static int BigHexToDigit[] = {
+static const int BigHexToDigit[] = {
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 
@@ -78,15 +82,15 @@ static int BigHexToDigit[] = {
 	25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,  0,  0,  0,  0,  0  
 };
 
-#define	CTOI(c)	 ((((unsigned int)c)<(unsigned int)127) \
-		  ? BigHexToDigit[(unsigned int)c] \
-		  : 0)
+#define	CTOI(c)	((((unsigned int)c)<(unsigned int)127) \
+		 ? BigHexToDigit[(unsigned int)c]      \
+		 : 0)
 
 #else
 /*
  * EBCDIC character class table
  */
-static int BigHexToDigit[] = {
+static const int BigHexToDigit[] = {
          0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
          0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
          0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -105,9 +109,9 @@ static int BigHexToDigit[] = {
          0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  0,  0,  0,  0,  0,  0
 };
 
-#define	CTOI(c)	 ((((unsigned int)c)<(unsigned int)255) \
-		  ? BigHexToDigit[(unsigned int)c] \
-		  : 0)
+#define	CTOI(c)	((((unsigned int)c)<(unsigned int)255) \
+		 ? BigHexToDigit[(unsigned int)c]      \
+		 : 0)
 #endif
 
 static int	BzStrLen( const BzChar *s ) BN_PURE_FUNCTION;
@@ -186,33 +190,37 @@ BnDebug(const char *m,
 
 	while( l-- != 0 ) {
 		BigNumDigit d = *p--;
-		unsigned int size = (unsigned int)sizeof(d);
+		unsigned int dsize = (unsigned int)sizeof( d );
+		unsigned int isize = (unsigned int)sizeof( dsize ); /* int */
 
 		(void)printf( "|" );
 
-		if( sizeof( size ) < (size_t)size ) {
+		if( dsize > isize ) {
 			/*
 			 * sizeof(BigNumDigit) > sizeof(int).
-			 * (can be 64bit BigNumDigit and 32bit int)
+			 * (can be 64bit BigNumDigit and 32bit int).
+			 * NOTE: this code also works if isize == dsize.
 			 */
+			unsigned int chunk[8]; /* should be enough */
 			unsigned int mask;
 			unsigned int shift;
-			unsigned int low;			
-			unsigned int high;
+			unsigned int i;
 
 			mask  = ~(unsigned int)0; /* 0xff..ff */
-			shift = (unsigned int)(sizeof(int) * BN_BYTE_SIZE);
-			low   = (unsigned int)(d & mask);
+			shift = (unsigned int)(isize * BN_BYTE_SIZE);
 
 			/*
-			 * shift d in two operations to fool compilers
-			 * having sizeof(BigNumDigit) == sizeof(int)
-			 * which complain if shift count looks too big.
+			 *	Split BigNumDigit in int chunks.
 			 */
-			d >>= shift;
-			high = (unsigned int)((d >> shift) & mask);
-			BzShowUnsingnedInt( high );
-			BzShowUnsingnedInt( low  );
+
+			for( i = 0 ; i < (dsize / isize) ; ++i ) {
+				chunk[i] = (unsigned int)(d & mask);
+				d >>= shift;
+			}
+
+			while( i-- != 0 ) {
+				BzShowUnsingnedInt( chunk[ i ] );
+			}
 		} else	{
 			/*
 			 * sizeof(BigNumDigit) <= sizeof(int).
@@ -1341,7 +1349,7 @@ BzFromUnsignedInteger( BzUInt i )
 	z = BzCreate( (BigNumLength)1 );
 
 	BzSetDigit( z, 0, (BigNumDigit)i );
-	BzSetSign( z, ((i > 0) ? BZ_PLUS : BZ_ZERO) );
+	BzSetSign( z, ((i > (BzInt)0) ? BZ_PLUS : BZ_ZERO) );
 
 	return( z );
 }

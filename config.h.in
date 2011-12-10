@@ -1,5 +1,5 @@
 /*
- static char rcsid[] = "$Id: config.h.in,v 1.2 2011-12-05 13:01:57 jullien Exp $";
+ static char rcsid[] = "$Id: config.h.in,v 1.3 2011-12-10 16:15:39 jullien Exp $";
  */
 
 /*
@@ -42,3 +42,26 @@
 
 /* When C allows restrict keyword */
 #undef	_RESTRICT_KEYWORD
+
+/*
+ * Deduce bignum constants
+ */
+
+#if	defined( SIZEOF_LONG ) && (SIZEOF_LONG == 8)
+#if	!defined( BN_NUM_DIGIT_TYPE )
+#define	BN_NUM_DIGIT_TYPE
+typedef unsigned long		BigNumDigit;
+#endif
+#if	!defined( BZ_MAX_BASE10 )
+/*
+ *	Max power of 10 to fix in a BigNumDigit (generally machine word).
+ */
+#define	BZ_MAX_BASE10		((BigNumDigit)10000000000000000000UL)
+#endif
+#if	!defined( BZ_MAX_BASE10_DIGITS )
+/*
+ *	Max number of digits in base 10 that fit in a BigNumDigit.
+ */
+#define	BZ_MAX_BASE10_DIGITS	19
+#endif
+#endif

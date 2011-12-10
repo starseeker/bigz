@@ -1,6 +1,6 @@
-#if	!defined( lint )
-static	char *sccsid = "@(#)bztest.c	(c) C. Jullien 1999/01/26";
-#endif
+/*
+ static	const char rcsid[] = "$Id: bztest.c,v 1.11 2011-12-10 16:15:39 jullien Exp $";
+*/
 
 /*
  * Simplified BSD License
@@ -97,12 +97,18 @@ main()
    BigZ	a;
    BigZ b;
 
-   printf("BzTest test suite\n");
+   printf("BzTest v%s test suite\n", BzVersion());
 
-   printf("sizeof(BigNumDigit) == %d\n", sizeof(BigNumDigit));
-   printf("sizeof(BigZ)        == %d\n", sizeof(BigZ));
-   printf("sizeof(BzInt)       == %d\n", sizeof(BzInt));
-   printf("sizeof(BzUInt)      == %d\n", sizeof(BzUInt));
+   printf("sizeof(BigNumDigit)  == %d\n", sizeof(BigNumDigit));
+   printf("sizeof(BigZ)         == %d\n", sizeof(BigZ));
+   printf("sizeof(BzInt)        == %d\n", sizeof(BzInt));
+   printf("sizeof(BzUInt)       == %d\n", sizeof(BzUInt));
+   printf("BZ_MAX_BASE10_DIGITS == %d\n", BZ_MAX_BASE10_DIGITS);
+#if defined( _WIN64 )
+   printf("BZ_MAX_BASE10        == %I64u\n", BZ_MAX_BASE10);
+#else
+   printf("BZ_MAX_BASE10        == %lu\n", (long)BZ_MAX_BASE10);
+#endif
    printf("\n");
 
    T(1,"12", To(From("12"))) ;

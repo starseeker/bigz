@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.h,v 1.49 2011-12-09 14:39:06 jullien Exp $
+ * $Id: bigz.h,v 1.50 2011-12-10 16:15:39 jullien Exp $
  */
 
 /*
@@ -141,19 +141,34 @@ typedef	unsigned int			BzUInt;
  *	Values should be portable for BigNumDigit size >= 32bit
  *	64bit ports may increase the two values to optimize even more.
  */
+#if	defined( _WIN64 )
+#if	!defined( BZ_MAX_BASE10 )
+/*
+ *	Max power of 10 to fix in a BigNumDigit (generally machine word).
+ */
+#define	BZ_MAX_BASE10		((BigNumDigit)10000000000000000000UL)
+#endif	/* BZ_MAX_BASE10 */
+#if	!defined( BZ_MAX_BASE10_DIGITS )
+/*
+ *	Max number of digits in base 10 that fit in a BigNumDigit.
+ */
+#define	BZ_MAX_BASE10_DIGITS	19
+#endif	/* BZ_MAX_BASE10_DIGITS */
+#else	/* _WIN64 */
 #if	!defined( BZ_MAX_BASE10 )
 /*
  *	Max power of 10 to fix in a BigNumDigit (generally machine word).
  */
 #define	BZ_MAX_BASE10		((BigNumDigit)1000000000)
-#endif
+#endif	/* BZ_MAX_BASE10 */
 #if	!defined( BZ_MAX_BASE10_DIGITS )
 /*
  *	Max number of digits in base 10 that fit in a BigNumDigit.
  */
 #define	BZ_MAX_BASE10_DIGITS	9
-#endif
-#endif
+#endif	/* BZ_MAX_BASE10_DIGITS */
+#endif	/* _WIN64 */
+#endif	/* BZ_OPTIMIZE_FOR_BASE10 */
 
 #if	!defined( __EXTERNAL_BIGZ_MEMORY )
 #define	__toBzObj(z)			((__BigZ)z)
