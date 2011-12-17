@@ -1,6 +1,6 @@
 #
 #	Makefile for 'Bignums'	(c) C. Jullien
-#	$Id: makefile.nt,v 1.19 2011-12-09 08:15:36 jullien Exp $
+#	$Id: makefile.nt,v 1.20 2011-12-17 16:02:37 jullien Exp $
 #
 
 .SUFFIXES: .lsp .dat .$(SUFFIXES)
@@ -92,26 +92,26 @@ clean:
 lint:
 #	set LARCH_PATH=/usr/share/splint/lib
 #	Very strict rules for kernel
-	@splint -checks \
-		-namechecks \
-	        -exportlocal \
-		-infloopsuncon \
+	@splint -checks 		\
+		-namechecks 		\
+	        -exportlocal 		\
+		-infloopsuncon		\
 	        bign.c
 #	Check bigz.c and (again) bign.c
-	@splint -checks \
-		-namechecks \
-	        -exportlocal \
-		-infloopsuncon \
-	        -observertrans \
-	        -statictrans \
-	        -compdef \
-	        -nullret \
-	        -nullpass \
-	        -nullderef \
-	        -branchstate \
-	        -temptrans \
-		-retalias \
-	        -usedef \
+	@splint -checks			\
+		-branchstate 		\
+		-compdef 		\
+		-exportlocal		\
+		-infloopsuncon		\
+		-namechecks		\
+		-nullderef 		\
+		-nullpass 		\
+		-nullret 		\
+		-observertrans		\
+		-retalias 		\
+		-statictrans 		\
+		-temptrans 		\
+		-usedef 		\
 	        bigz.c bign.c
 
 MASTER		= \

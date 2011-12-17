@@ -1,5 +1,5 @@
 /*
- static	const char rcsid[] = "$Id: bign.c,v 1.36 2011-12-09 11:17:58 jullien Exp $";
+ static	const char rcsid[] = "$Id: bign.c,v 1.37 2011-12-11 23:46:25 jullien Exp $";
 */
 
 /*
@@ -463,7 +463,7 @@ BnnAdd( BigNum mm, BigNumLength ml, BigNum nn, BigNumLength nl, BigNumCarry carr
 		if( c < save ) {
 			*(mm++) = *(nn++);
 			c	= (BigNumProduct)1;
-		} else {
+		} else	{
 			save	= (BigNumProduct)*(nn++);
 			c      += save;
 			*(mm++) = (BigNumDigit)c;

@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.c,v 1.77 2011-12-10 16:15:39 jullien Exp $
+ * $Id: bigz.c,v 1.79 2011-12-17 16:02:37 jullien Exp $
 */
 
 /*
@@ -1064,7 +1064,6 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 	BigNumLength	sl;
 	BzChar *	s;
 	BzChar *	strg;
-	int		sd;
 
 	if( base < (BigNumDigit)BZ_MIN_BASE
 	    || base > (BigNumDigit)BZ_MAX_BASE ) {
@@ -1207,11 +1206,14 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 	 * and move string into position
 	 */
 
-	if( (sd = (int)(s - strg)) > 0 ) {
-		while( s < (strg + sl) ) {
-			*(s - sd) = *s;
-			s++;
+	if( (s - strg) > 0 ) {
+		BigNumLength i;
+
+		for( i = 0 ; s[ i ] != (BzChar)'\000' ; ++i ) {
+			strg[ i ] = s[ i ];
 		}
+
+		strg[ i ] = (BzChar)'\000';
 	}
 
 	/*
@@ -1278,7 +1280,18 @@ BzFromString( const BzChar *s, BigNumDigit base )
 	 * Set up sign, base, initialize result
 	 */
 
-	sign = (*s=='-' ? (s++, BZ_MINUS) : *s=='+' ? (s++, BZ_PLUS) : BZ_PLUS);
+	switch( *s ) {
+	case (BzChar)'-':
+		sign = BZ_MINUS;
+		++s;
+		break;
+	case (BzChar)'+':
+		sign = BZ_PLUS;
+		++s;
+		break;
+	default:
+		sign = BZ_PLUS;
+	}
 
 	/*
 	 * Multiply in the digits of the string, one at a time
