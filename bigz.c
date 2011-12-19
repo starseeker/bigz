@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.c,v 1.79 2011-12-17 16:02:37 jullien Exp $
+ * $Id: bigz.c,v 1.81 2011-12-19 17:51:15 jullien Exp $
 */
 
 /*
@@ -1259,7 +1259,10 @@ BzFromString( const BzChar *s, BigNumDigit base )
 	 * Throw away any initial space
 	 */
 
-	while( *s == (BzChar)' ' ) {
+	while( (*s == (BzChar)' ')
+	       || (*s == (BzChar)'\t')
+	       || (*s == (BzChar)'\n')
+	       || (*s == (BzChar)'\r') ) {
 		s++;
 	}
 
@@ -1301,6 +1304,9 @@ BzFromString( const BzChar *s, BigNumDigit base )
 		BigNumDigit next = (BigNumDigit)CTOI( *s );
 
 		if( next >= base ) {
+			/*
+			 * Invalid syntax for base.
+			 */
 			BzFree( p );
 			BzFree( z );
 			return( BZNULL );
@@ -2064,37 +2070,27 @@ BzRandom( const BigZ n )
 	BigZ res;
 	BigZ r;
 	BigNumLength len;
-	BigNumLength ilen;
 	BigNumLength i;
-
-	r    = BzCopy( n );
-	len  = BzGetSize( n );
-	ilen = (BigNumLength)(len * sizeof( BigNumDigit ) / sizeof( int ));
 
 	/*
 	 * Algo: make a copy of n and call rand() to replace all its bits.
 	 * Assume any bit has an equiprobable [0-1] value.
+	 *
+	 * NOTE: since rand() returns integer value between 0 and RAND_MAX
+	 * which may be much smaller that BigNumDigit (like 16bit value),
+	 * we loop until BigNumDigit is filled.
 	 */
 
-	if( ilen > len ) {
-		/*
-		 * It means a BigNumDigit is greater than an int.
-		 * fill as many int as can fit in a bignum (i.e. ilen)
-		 */
-		int *nn = (int *)BzToBn( r );
+	r   = BzCopy( n );
+	len = BzGetSize( n );
 
-		for( i = 0 ; i < ilen ; ++i ) {
-			*nn++ = rand();
-		}
-	} else	{
-		BigNumDigit *nn = BzToBn( r );
+	for( i = 0 ; i < len ; ++i ) {
+		BigNumLength j;
+		BigNumDigit  *d = BzToBn( r ) + i;
 
-		for( i = 0 ; i < len ; ++i ) {
-			/*
-			 * truncate rand() if ever BigNumDigit is smaller than
-			 * an int.
-			 */
-			*nn++ = (BigNumDigit)rand();
+		for( j = 0 ; j < (BigNumLength)sizeof( d ) ; ++j ) {
+			BigNumDigit chunk = ((BigNumDigit)rand() & 0xff);
+			*d += (chunk << (j * BN_BYTE_SIZE));
 		}
 	}
 
@@ -2115,6 +2111,13 @@ BzSetRandom( const BigZ n )
 	BigNumLength ilen;
 	BigNumLength i;
 	unsigned int seed;
+
+	if( BzGetSign( n ) == BZ_MINUS ) {
+		/*
+		 * silently ignore negative numbers.
+		 */
+		return;
+	}
 
 	len  = BzGetSize( n );
 	ilen = (BigNumLength)(len * sizeof( BigNumDigit ) / sizeof( int ));

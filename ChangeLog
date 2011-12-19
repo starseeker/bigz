@@ -1,10 +1,12 @@
 Change log
 
-2011/12/06: Specialize int constant with enum.
+2011/12/16: BzFromString ignore leading spaces including tab and newline.
+2011/12/06: Specialize int constants with enum.
 2011/12/05: Add configure scripts.
 2011/12/05: Fix BzTruncate, BzCeiling, BzFloor, BzRound.
 2011/12/03: Event better type checking.
 2011/12/03: Add BzLength.
+2011/11/26: Add BzRandom and BzSetRandom functions.
 2010/07/22: Fix sign (set BZ_ZERO) for BzAnd, BzOr and BzXor when result is 0.
 2010/07/22: Fix BzNot special cases for 0 and -1.
 2010/06/08: Optimize (more than x10) very large bignum printing (base 10 only).

@@ -8,9 +8,9 @@ Chistian  Jullien  from  Eligis  decided  to  use  and  maintain this
 package  for  it's  own  Lisp  implementation called OpenLisp (a full
 ISO/IEC 13816:2007(E) ISLISP Language implementation).
 
-On 2011-12-05, Bernard-Paul Serpette from INRIA granted C. Jullien
-the persmission to create a sourceforge projet under Simplified BSD License to
-continue this development.
+On 2011-12-05,  Bernard-Paul  Serpette  from INRIA  granted Christian
+Jullien the  persmission to create  a sourceforge.net  project  under
+Simplified BSD License to continue this development.
 
 This directory contains the C/C++ source code for BigNum.
 
@@ -32,7 +32,7 @@ This directory contains the C/C++ source code for BigNum.
 	test/bztest.c	  - Test program for verifying a BigNum implementation
 	test/testkern.c	  - Test program for verifying KerN implementation
 
-   C++ Source Code:
+   C++ Source Code (wrapper sample):
 	CBignum.h	  - C++ Wrapper class on top of BigZ
 	CBignum.cpp	  - Non inlined functions
 	tCBignum.cpp	  - C++ non-regression test
@@ -40,6 +40,7 @@ This directory contains the C/C++ source code for BigNum.
 
    Lisp Source Code:
 	lisp/gentest.lsp  - CLtL code used to generate tCBignum.dat file
+	lisp/lisptest.lsp - CLtL/OpenLisp code used to generate OpenLisp tests.
 
 If you have the tools LaTeX, makeindex and aptex, type:
 	make doc	  - to build the Postscript files of the documents

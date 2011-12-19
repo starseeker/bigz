@@ -1,6 +1,6 @@
 #
 #	Makefile for 'Bignums'	(c) C. Jullien
-#	$Id: Makefile.in,v 1.16 2011-12-09 14:39:06 jullien Exp $
+#	$Id: Makefile.in,v 1.17 2011-12-17 22:34:26 jullien Exp $
 #
 
 .SUFFIXES: .cpp .lsp .dat $(.SUFFIXES)
@@ -80,27 +80,26 @@ clean:
 
 lint:
 #	set LARCH_PATH=/usr/share/splint/lib
-	@splint -checks \
-		-namechecks \
-	        -exportlocal \
-		-infloopsuncon \
-	        -booltype Boolean \
+	@splint -checks 		\
+		-exportlocal 		\
+		-infloopsuncon		\
+		-namechecks 		\
 	        bign.c
-	@splint -checks \
-		-namechecks \
-		-declundef \
-	        -exportlocal \
-	        -observertrans \
-	        -statictrans \
-	        -compdef \
-	        -nullret \
-	        -nullpass \
-	        -nullderef \
-	        -branchstate \
-	        -temptrans \
-		-retalias \
-	        -usedef \
-	        -booltype Boolean \
+#	Check bigz.c and (again) bign.c
+	@splint -checks			\
+		-branchstate 		\
+		-compdef 		\
+		-exportlocal		\
+		-infloopsuncon		\
+		-namechecks		\
+		-nullderef 		\
+		-nullpass 		\
+		-nullret 		\
+		-observertrans		\
+		-retalias 		\
+		-statictrans 		\
+		-temptrans 		\
+		-usedef 		\
 	        bigz.c bign.c
 
 MASTER		= \
