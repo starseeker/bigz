@@ -2,7 +2,7 @@
 ;;;; Title:     lisptests.lsp
 ;;;; Author:    C. Jullien
 ;;;; License:   Simplified BSD license
-;;;; CVS:       $Id: lisptests.lsp,v 1.2 2011-12-09 07:52:23 jullien Exp $
+;;;; CVS:       $Id: lisptests.lsp,v 1.3 2011-12-22 06:36:59 jullien Exp $
 
 ;;;
 ;;; Simplified BSD License
@@ -362,6 +362,14 @@
            (call2 f 'big1- 'big1-)
            (call2 f 'big1- 'big2-)
            (call2 f 'big1- 'zero)
+           (call2 f 'big5+ 'small1+)
+           (call2 f 'big5+ 'small1-)
+           (call2 f 'big5- 'small1+)
+           (call2 f 'big5- 'small1-)
+           (call2 f 'small1+ 'big5+)
+           (call2 f 'small1+ 'big5-)
+           (call2 f 'small1- 'big5+)
+           (call2 f 'small1- 'big5-)
            t)
         ;; basic math
         (dolist (f '(+ - * / quotient div rem mod gcd lcm))
@@ -380,6 +388,10 @@
            (call2 f 'big5+ 'big5-)
            (call2 f 'big5- 'big5+)
            (call2 f 'big5- 'big5-)
+           (call2 f 'big5+ 'small1+)
+           (call2 f 'big5+ 'small1-)
+           (call2 f 'big5- 'small1+)
+           (call2 f 'big5- 'small1-)
            (call2 f 'small1+ 'big5+)
            (call2 f 'small1+ 'big5-)
            (call2 f 'small1- 'big5+)
@@ -463,6 +475,14 @@
            (call2 f 'small1+ 'small2+)
            (call2 f 'small1- 'small2-)
            (call2 f 'small1- 'small2+)
+           (call2 f 'big5+ 'small1+)
+           (call2 f 'big5+ 'small1-)
+           (call2 f 'big5- 'small1+)
+           (call2 f 'big5- 'small1-)
+           (call2 f 'small1+ 'big5+)
+           (call2 f 'small1+ 'big5-)
+           (call2 f 'small1- 'big5+)
+           (call2 f 'small1- 'big5-)
            t)
         ;; lognot.
         (dolist (f '(lognot))

@@ -1,5 +1,5 @@
 /*
- static	const char rcsid[] = "$Id: bign.c,v 1.38 2011-12-22 06:08:33 jullien Exp $";
+ static	const char rcsid[] = "$Id: bign.c,v 1.39 2011-12-22 06:36:59 jullien Exp $";
 */
 
 /*
@@ -969,7 +969,7 @@ BnnDivide( BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl )
 		return;
 	case BN_EQ:	/* n == d */
 		BnnSetToZero( nn, nl );			 /* 0 => R */
-		BnnSetDigit( nn+nl-1, (BigNumDigit)1 );  /* 1 => Q */
+		BnnSetDigit( nn+nl-1, BN_ONE );          /* 1 => Q */
 		return;
 	case BN_GT:	/* n > d */
 		/*

@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.c,v 1.82 2011-12-22 06:08:33 jullien Exp $
+ * $Id: bigz.c,v 1.84 2011-12-22 09:54:33 jullien Exp $
 */
 
 /*
@@ -127,7 +127,7 @@ BzShowBits( BigNumDigit n )
 	int	i;
 
 	for( i = (int)(BN_DIGIT_SIZE - 1) ; i >= 0 ; i-- ) {
-		if( (n & ((BigNumDigit)1 << (unsigned int)i)) != 0 ) {
+		if( (n & (BN_ONE << (unsigned int)i)) != 0 ) {
 			(void)printf( "1" );
 		} else	{
 			(void)printf( "0" );
@@ -511,7 +511,6 @@ BzAdd( const BigZ y, const BigZ z )
 				BzSetSign( n, BzGetSign( y ) );
 			}
 			break;
-
 		default:	/* BN_LT: |Y| < |Z| */
 			if( (n = BzCreate( zl+1 )) != BZNULL ) {
 				BnnAssign( BzToBn( n ), BzToBn( z ), zl );
@@ -532,7 +531,6 @@ BzAdd( const BigZ y, const BigZ z )
 		case BN_EQ:	/* Y = -Z */
 			n = BzCreate( (BigNumLength)1 );
 			break;
-
 		case BN_GT:	/* |Y| > |Z| */
 			if( (n = BzCreate (yl)) != BZNULL ) {
 			    BnnAssign( BzToBn( n ), BzToBn( y ), yl );
@@ -647,10 +645,12 @@ BzDivide( const BigZ y, const BigZ z, BigZ *r )
 	 * Set up quotient, remainder
 	 */
 
-	q  = BzCreate( ql );
-	*r = BzCreate( rl );
+	if( (q = BzCreate( ql )) == BZNULL ) {
+		return( BZNULL );
+	}
 
-	if( *r == 0 || q == 0 ) {
+	if( (*r = BzCreate( rl )) == BZNULL ) {
+		BzFree( q );
 		return( BZNULL );
 	}
 
@@ -1085,17 +1085,24 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 		return( (BzChar *)NULL );
 	}
 
-	y = BzCreate( zl );
-	q = BzCreate( zl );
+	if( (y = BzCreate( zl )) == BZNULL ) {
+		return( (BzChar *)NULL );
+	}
+
+	if( (q = BzCreate( zl )) == BZNULL ) {
+		BzFree( y );
+		return( (BzChar *)NULL );
+	}
 
 	if( buf != (BzChar *)NULL ) {
 		strg = buf;
 	} else	{
 		strg = (BzChar *)BzStringAlloc( (size_t)sl );
-	}
-
-	if( y == 0 || q == 0 || strg == 0 ) {
-		return( (BzChar *)NULL );
+		if( strg == (BzChar *)NULL ) {
+			BzFree( y );
+			BzFree( q );
+			return( (BzChar *)NULL );
+		}
 	}
 
 	BnnAssign( BzToBn( y ), BzToBn( z ), zl - 1 );
@@ -1269,10 +1276,12 @@ BzFromString( const BzChar *s, BigNumDigit base )
 
 	zl = (BigNumLength)(BzStrLen(s)*BzLog[base]/(BzLog[2]*BN_DIGIT_SIZE)+1);
 
-	z = BzCreate( zl );
-	p = BzCreate( zl );
+	if( (z = BzCreate( zl )) == BZNULL ) {
+		return( BZNULL );
+	}
 
-	if( z == 0 || p == 0 ) {
+	if( (p = BzCreate( zl )) == BZNULL ) {
+		BzFree( z );
 		return( BZNULL );
 	}
 
@@ -1553,6 +1562,7 @@ BzAnd( const BigZ y, const BigZ z )
 	BigZ		zz;
 	BigNumLength	yl;
 	BigNumLength	zl;
+	BigNumLength	l;
 	unsigned int	sign = 0;
 
 	yl = BzNumDigits( y );
@@ -1578,23 +1588,23 @@ BzAnd( const BigZ y, const BigZ z )
 		n = BzCopy( zz );
 		BzSetSign( n, BZ_PLUS );
 		if( (sign & BZ_SIGN1) == 0 ) {
-			while( zl-- != yl ) {
-				BnnAndDigits( BzToBn(n) + zl, (BigNumDigit)0 );
+			for( l = (zl - 1) ; l >= yl ; --l ) {
+				BnnAndDigits( BzToBn( n ) + l, BN_ZERO );
 			}
 		}
-		while( yl-- != 0 ) {
-			BnnAndDigits( BzToBn( n ) + yl, *(BzToBn( yy ) + yl) );
+		for( l = 0 ; l < yl ; ++l ) {
+			BnnAndDigits( BzToBn( n ) + l, *(BzToBn( yy ) + l) );
 		}
 	} else	{
 		n = BzCopy( yy );
 		BzSetSign( n, BZ_PLUS );
 		if( (sign & BZ_SIGN2) == 0 ) {
-			while( zl != yl-- ) {
-				BnnAndDigits( BzToBn(n) + yl, (BigNumDigit)0 );
+			for( l = (yl - 1) ; l >= zl ; --l ) {
+				BnnAndDigits( BzToBn( n ) + l, BN_ZERO );
 			}
 		}
-		while( zl-- != 0 ) {
-			BnnAndDigits( BzToBn( n ) + zl, *(BzToBn( zz ) + zl) );
+		for( l = 0 ; l < zl ; ++l ) {
+			BnnAndDigits( BzToBn( n ) + l, *(BzToBn( zz ) + l) );
 		}
 	}
 
@@ -1632,6 +1642,7 @@ BzOr( const BigZ y, const BigZ z )
 	BigZ		zz;
 	BigNumLength	yl;
 	BigNumLength	zl;
+	BigNumLength	l;
 	unsigned int	sign = 0;
 
 	yl = BzNumDigits( y );
@@ -1657,23 +1668,23 @@ BzOr( const BigZ y, const BigZ z )
 		n = BzCopy( zz );
 		BzSetSign( n, BZ_PLUS );
 		if( (sign & BZ_SIGN1) != 0 ) {
-			while( zl-- != yl ) {
-				BnnAndDigits( BzToBn(n) + zl, (BigNumDigit)0 );
+			for( l = (zl - 1) ; l >= yl ; --l ) {
+				BnnAndDigits( BzToBn(n) + l, BN_ZERO );
 			}
 		}
-		while( yl-- != 0 ) {
-			BnnOrDigits( BzToBn( n ) + yl, *(BzToBn( yy ) + yl) );
+		for( l = 0 ; l < yl ; ++l ) {
+			BnnOrDigits( BzToBn( n ) + l, *(BzToBn( yy ) + l) );
 		}
 	} else	{
 		n = BzCopy( yy );
 		BzSetSign( n, BZ_PLUS );
 		if( (sign & BZ_SIGN2) != 0 ) {
-			while( zl != yl-- ) {
-				BnnAndDigits( BzToBn(n) + yl, (BigNumDigit)0 );
+			for( l = (yl - 1) ; l >= zl ; --l ) {
+				BnnAndDigits( BzToBn(n) + l, BN_ZERO );
 			}
 		}
-		while( zl-- != 0 ) {
-			BnnOrDigits( BzToBn( n ) + zl, *(BzToBn( zz ) + zl) );
+		for( l = 0 ; l < zl ; ++l ) {
+			BnnOrDigits( BzToBn( n ) + l, *(BzToBn( zz ) + l) );
 		}
 	}
 
@@ -1711,6 +1722,7 @@ BzXor( const BigZ y, const BigZ z )
 	BigZ		zz;
 	BigNumLength	yl;
 	BigNumLength	zl;
+	BigNumLength	l;
 	int		sign = 0;
 
 	yl = BzNumDigits( y );
@@ -1736,23 +1748,23 @@ BzXor( const BigZ y, const BigZ z )
 		n = BzCopy( zz );
 		BzSetSign( n, BZ_PLUS );
 		if( (sign & BZ_SIGN1) != 0 ) {
-			while( zl-- != yl ) {
-				BnnXorDigits( BzToBn(n) + zl, (BigNumDigit)-1 );
+			for( l = (zl - 1) ; l >= yl ; --l ) {
+				BnnXorDigits( BzToBn(n) + l, BN_COMPLEMENT );
 			}
 		}
-		while( yl-- != 0 ) {
-			BnnXorDigits( BzToBn( n ) + yl, *(BzToBn( yy ) + yl) );
+		for( l = 0 ; l < yl ; ++l ) {
+			BnnXorDigits( BzToBn( n ) + l, *(BzToBn( yy ) + l) );
 		}
 	} else	{
 		n = BzCopy( yy );
 		BzSetSign( n, BZ_PLUS );
 		if( (sign & BZ_SIGN2) != 0 ) {
-			while( zl != yl-- ) {
-				BnnXorDigits( BzToBn(n) + yl, (BigNumDigit)-1 );
+			for( l = (yl - 1) ; l >= zl ; --l ) {
+				BnnXorDigits( BzToBn(n) + l, BN_COMPLEMENT );
 			}
 		}
-		while( zl-- != 0 ) {
-			BnnXorDigits( BzToBn( n ) + zl, *(BzToBn( zz ) + zl) );
+		for( l = 0 ; l < zl ; ++l ) {
+			BnnXorDigits( BzToBn( n ) + l, *(BzToBn( zz ) + l) );
 		}
 	}
 
