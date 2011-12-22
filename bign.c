@@ -1,5 +1,5 @@
 /*
- static	const char rcsid[] = "$Id: bign.c,v 1.39 2011-12-22 06:36:59 jullien Exp $";
+ static	const char rcsid[] = "$Id: bign.c,v 1.40 2011-12-22 22:07:07 jullien Exp $";
 */
 
 /*
@@ -685,7 +685,7 @@ BnnDivideDigit( BigNum qq, BigNum nn, BigNumLength nl, BigNumDigit d )
 	rl = *(--nn);
 
 	while( nl-- != 0 ) {
-		BigNumDigit	qa;   	/* Current appr. to quotient	   */
+		BigNumDigit qa; /* Current appr. to quotient */
 
 		rh = rl;
 		rl = *(--nn);
@@ -806,7 +806,7 @@ BnnMultiply( BigNum pp, BigNumLength pl, const BigNum mm, BigNumLength ml, const
 	 */
 
 	for( i = 0 ; i < nl ; ++i ) {
-		if( BnnMultiplyDigit( &pp[i], pl--, mm, ml, nn[i] ) == BN_CARRY ) {
+		if(BnnMultiplyDigit(&pp[i], pl--, mm, ml, nn[i]) == BN_CARRY) {
 			c = BN_CARRY;
 		}
 	}
@@ -1042,7 +1042,7 @@ BnnCompare( const BigNum mm, BigNumLength ml, const BigNum nn, BigNumLength nl )
 				return( BN_GT );
 			}
 			if( mm[d] < nn[d] ) {
-				return( BN_LT  );
+				return( BN_LT );
 			}
 		}
 

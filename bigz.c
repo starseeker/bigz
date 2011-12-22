@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.c,v 1.85 2011-12-22 13:34:46 jullien Exp $
+ * $Id: bigz.c,v 1.86 2011-12-22 22:07:07 jullien Exp $
 */
 
 /*
@@ -155,6 +155,8 @@ BzShowUnsingnedInt( unsigned int n )
 	}
 }
 
+#define	BZ_INT_CHUNKS 	((unsigned int)8) /* Assume BigNumDigit < (8 * int) */
+
 void
 BnDebug(const char *m,
 	const BzChar *bzstr,
@@ -192,13 +194,13 @@ BnDebug(const char *m,
 
 		(void)printf( "|" );
 
-		if( dsize > isize ) {
+		if( (dsize > isize) && ((dsize / isize) <= BZ_INT_CHUNKS) ) {
 			/*
 			 * sizeof(BigNumDigit) > sizeof(int).
 			 * (can be 64bit BigNumDigit and 32bit int).
 			 * NOTE: this code also works if isize == dsize.
 			 */
-			unsigned int chunk[8]; /* should be enough */
+			unsigned int chunk[BZ_INT_CHUNKS];
 			unsigned int mask;
 			unsigned int shift;
 			unsigned int i;
@@ -587,32 +589,30 @@ BzMultiply( const BigZ y, const BigZ z )
 	 * Returns Y * Z.
 	 */
 
+	BigZ		n;
+	BigNumLength	yl;
+	BigNumLength	zl;
+
 	if( BzGetSign( y ) == BZ_ZERO || BzGetSign( z ) == BZ_ZERO ) {
 		return( BzFromInteger( 0 ) );
-	} else	{
-		BigZ		n;
-		BigNumLength	yl;
-		BigNumLength	zl;
-
-		yl = BzNumDigits( y );
-		zl = BzNumDigits( z );
-
-		if( (n = BzCreate( yl+zl )) != BZNULL ) {
-			(void)BnnMultiply( BzToBn(n),
-					   yl + zl,
-					   BzToBn(y),
-					   yl,
-					   BzToBn(z),
-					   zl );
-			if( BzGetSign( y ) == BzGetSign( z ) ) {
-				BzSetSign( n, BZ_PLUS );
-			} else	{
-				BzSetSign( n, BZ_MINUS );
-			}
-		}
-
-		return( n );
 	}
+
+	yl = BzNumDigits( y );
+	zl = BzNumDigits( z );
+
+	if( (n = BzCreate( yl+zl )) == BZNULL ) {
+		return( BZNULL );
+	}
+
+	(void)BnnMultiply( BzToBn(n), yl+zl, BzToBn(y), yl, BzToBn(z), zl );
+
+	if( BzGetSign( y ) == BzGetSign( z ) ) {
+		BzSetSign( n, BZ_PLUS );
+	} else	{
+		BzSetSign( n, BZ_MINUS );
+	}
+
+	return( n );
 }
 
 BigZ
@@ -1801,7 +1801,7 @@ BzTestBit( unsigned int bit, const BigZ z )
 	 * assumes that bit is a non-negative integer.
 	 */
 
-	zl  = (BigNumLength)(bit / BN_DIGIT_SIZE);
+	zl = (BigNumLength)(bit / BN_DIGIT_SIZE);
 
 	if( zl >= BzNumDigits( z ) ) {
 		return( (BzGetSign( z ) == BZ_MINUS) ? BN_TRUE : BN_FALSE );
@@ -1969,7 +1969,6 @@ BzSqrt( const BigZ z )
 {
 	BigNumLength	n;
 	BigZ		x;
-	BigZ		v;
 	BigZ		one;
 	BigZ		two;
 
@@ -1990,6 +1989,7 @@ BzSqrt( const BigZ z )
 	x = BzAsh( one, (int)n );
 
 	for( ;; ) {
+		BigZ v;
 		BigZ y = BzFloor( z, x );
 
 		if( BzCompare( x, y ) != BZ_GT ) {
