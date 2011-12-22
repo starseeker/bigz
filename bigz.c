@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.c,v 1.84 2011-12-22 09:54:33 jullien Exp $
+ * $Id: bigz.c,v 1.85 2011-12-22 13:34:46 jullien Exp $
 */
 
 /*
@@ -1894,27 +1894,26 @@ BzOrC2( const BigZ x, const BigZ y )
 BigZ
 BzAsh( const BigZ y, int n )
 {
-	BigZ		z;
-	BigNumLength	zl;
-	BigNumLength	ll;
+	BigZ	z;
 
 	if( n > 0 ) {
 		/*
 		 *	Create a copy + space for the shift.
 		 */
 
-		ll = (BigNumLength)AbsInt( n );
-		zl = (BigNumLength)(ll / BN_DIGIT_SIZE);
+		BigNumLength zl;
+		BigNumLength len = (BigNumLength)(BN_DIGIT_SIZE - 1);
+		int	     ll;
 
-		if( (ll % BN_DIGIT_SIZE) != 0 ) {
+		zl = (BigNumLength)(n / BN_DIGIT_SIZE);
+
+		if( (n % BN_DIGIT_SIZE) != 0 ) {
 			zl++;
 		}
 
 		zl += BzNumDigits( y );
 
-		z = BzCreate( zl );
-
-		if( z == BZNULL ) {
+		if( (z = BzCreate( zl )) == BZNULL ) {
 			return( z );
 		}
 
@@ -1925,12 +1924,11 @@ BzAsh( const BigZ y, int n )
 		 *	Now do the shift by BN_DIGIT_SIZE increment.
 		 */
 
-		while( ll >= (BigNumLength)BN_DIGIT_SIZE ) {
-			BigNumLength len = (BigNumLength)(BN_DIGIT_SIZE - 1);
+		for( ll = n ; ll >= (int)BN_DIGIT_SIZE ; ll -= len ) {
 			(void)BnnShiftLeft( BzToBn( z ), zl, len );
-			ll -= BN_DIGIT_SIZE - 1;
 		}
-		(void)BnnShiftLeft( BzToBn( z ), zl, ll );
+
+		(void)BnnShiftLeft( BzToBn( z ), zl, (BigNumLength)ll );
 	} else	{
 		BigZ	one;
 		BigZ	d;
