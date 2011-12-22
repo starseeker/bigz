@@ -1,5 +1,5 @@
 /*
- * $Id: bign.h,v 1.26 2011-12-09 11:17:58 jullien Exp $
+ * $Id: bign.h,v 1.27 2011-12-22 06:08:33 jullien Exp $
 */
 
 /*
@@ -138,34 +138,34 @@ typedef enum	{
  *	functions of bign.c
  */
 
-extern BigNumCarry  BnnAdd(BigNum mm, BigNumLength ml, BigNum nn, BigNumLength nl, BigNumCarry carryin);
+extern BigNumCarry  BnnAdd(BigNum mm, BigNumLength ml, const BigNum nn, BigNumLength nl, BigNumCarry carryin);
 extern BigNumCarry  BnnAddCarry(BigNum nn, BigNumLength nl, BigNumCarry carryin);
 extern void	    BnnAndDigits(BigNum n, BigNumDigit d);
-extern void	    BnnAssign(BigNum mm, BigNum nn, BigNumLength nl);
-extern BigNumCmp    BnnCompare(BigNum mm, BigNumLength ml, BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
+extern void	    BnnAssign(BigNum mm, const BigNum nn, BigNumLength nl);
+extern BigNumCmp    BnnCompare(const BigNum mm, BigNumLength ml, const BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
 extern BigNumCmp    BnnCompareDigits(BigNumDigit d1, BigNumDigit d2) BN_CONST_FUNCTION;
 extern void	    BnnComplement(BigNum nn, BigNumLength nl);
 extern void	    BnnComplement2(BigNum nn, BigNumLength nl);
 extern void	    BnnDivide(BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl);
 extern BigNumDigit  BnnDivideDigit(BigNum qq, BigNum nn, BigNumLength nl, BigNumDigit d);
-extern BigNumDigit  BnnGetDigit(BigNum nn) BN_PURE_FUNCTION;
-extern BigNumBool   BnnIsPower2(BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
+extern BigNumDigit  BnnGetDigit(const BigNum nn) BN_PURE_FUNCTION;
+extern BigNumBool   BnnIsPower2(const BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
 extern BigNumBool   BnnIsDigitEven(BigNumDigit d) BN_CONST_FUNCTION;
 extern BigNumBool   BnnIsDigitOdd(BigNumDigit d) BN_CONST_FUNCTION;
 extern BigNumBool   BnnIsDigitNormalized(BigNumDigit d) BN_CONST_FUNCTION;
 extern BigNumBool   BnnIsDigitZero(BigNumDigit d) BN_CONST_FUNCTION;
-extern BigNumBool   BnnIsZero(BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
-extern BigNumCarry  BnnMultiply(BigNum pp, BigNumLength pl, BigNum mm, BigNumLength ml, BigNum nn, BigNumLength nl);
-extern BigNumCarry  BnnMultiplyDigit(BigNum pp, BigNumLength pl, BigNum mm, BigNumLength ml, BigNumDigit d);
-extern BigNumLength BnnNumDigits(BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
-extern BigNumLength BnnNumLength(BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
+extern BigNumBool   BnnIsZero(const BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
+extern BigNumCarry  BnnMultiply(BigNum pp, BigNumLength pl, const BigNum mm, BigNumLength ml, const BigNum nn, BigNumLength nl);
+extern BigNumCarry  BnnMultiplyDigit(BigNum pp, BigNumLength pl, const BigNum mm, BigNumLength ml, BigNumDigit d);
+extern BigNumLength BnnNumDigits(const BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
+extern BigNumLength BnnNumLength(const BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
 extern BigNumLength BnnNumLeadingZeroBitsInDigit(BigNumDigit d) BN_CONST_FUNCTION;
 extern void	    BnnOrDigits(BigNum n, BigNumDigit d);
 extern void	    BnnSetDigit(BigNum nn, BigNumDigit d);
 extern void	    BnnSetToZero(BigNum nn, BigNumLength nl);
 extern BigNumDigit  BnnShiftLeft(BigNum mm, BigNumLength ml, BigNumLength nbits);
 extern BigNumDigit  BnnShiftRight(BigNum mm, BigNumLength ml, BigNumLength nbits);
-extern BigNumCarry  BnnSubtract(BigNum mm, BigNumLength ml, BigNum nn, BigNumLength nl, BigNumCarry carryin);
+extern BigNumCarry  BnnSubtract(BigNum mm, BigNumLength ml, const BigNum nn, BigNumLength nl, BigNumCarry carryin);
 extern BigNumCarry  BnnSubtractBorrow(BigNum nn, BigNumLength nl, BigNumCarry carryin);
 extern void	    BnnXorDigits(BigNum n, BigNumDigit d);
 

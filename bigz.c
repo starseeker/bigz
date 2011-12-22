@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.c,v 1.81 2011-12-19 17:51:15 jullien Exp $
+ * $Id: bigz.c,v 1.82 2011-12-22 06:08:33 jullien Exp $
 */
 
 /*
@@ -158,11 +158,10 @@ BzShowUnsingnedInt( unsigned int n )
 void
 BnDebug(const char *m,
 	const BzChar *bzstr,
-	BigNum	     n,
+	const BigNum n,
 	BigNumLength nl,
 	BzSign	     sign)
 {
-	BigNum	     p;
 	BigNumLength l;
 	BzChar	     c;
 
@@ -185,11 +184,9 @@ BnDebug(const char *m,
 	}
 
 	(void)printf( "      %c : ", c );
-	p = n + nl - 1;
-	l = nl;
 
-	while( l-- != 0 ) {
-		BigNumDigit d = *p--;
+	for( l = nl ; l-- != 0 ; ) {
+		BigNumDigit d = n[l];
 		unsigned int dsize = (unsigned int)sizeof( d );
 		unsigned int isize = (unsigned int)sizeof( dsize ); /* int */
 
@@ -231,12 +228,12 @@ BnDebug(const char *m,
 	(void)printf( "|\n" );
 
 	(void)printf( "      %c : ", c );
-	p = n + nl - 1;
-	l = nl;
-	while( l-- != 0 ) {
+
+	for( l = nl ; l-- != 0 ; ) {
 		(void)printf( "|" );
-		BzShowBits( *p-- );
+		BzShowBits( n[l] );
 	}
+
 	(void)printf( "|\n" );
 }
 
@@ -1433,7 +1430,7 @@ BzToUnsignedIntegerPointer( const BigZ z, BzUInt *p )
 }
 
 BigZ
-BzFromBigNum( BigNum n, BigNumLength nl )
+BzFromBigNum( const BigNum n, BigNumLength nl )
 {
 	BigZ		z;
 	BigNumLength	i;
@@ -1450,13 +1447,12 @@ BzFromBigNum( BigNum n, BigNumLength nl )
 		BzSetSign( z, BZ_PLUS );
 	}
 
-	for( i = 0 ; i < nl ; i++, n++ ) {
-		BzSetDigit( z, i, *n );
+	for( i = 0 ; i < nl ; ++i ) {
+		BzSetDigit( z, i, n[i] );
 	}
 
 	return( z );
 }
-
 
 BigNum
 BzToBigNum( const BigZ z, BigNumLength *nl )

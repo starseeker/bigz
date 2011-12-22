@@ -1,5 +1,5 @@
 /*
- static	const char rcsid[] = "$Id: bign.c,v 1.37 2011-12-11 23:46:25 jullien Exp $";
+ static	const char rcsid[] = "$Id: bign.c,v 1.38 2011-12-22 06:08:33 jullien Exp $";
 */
 
 /*
@@ -84,7 +84,7 @@ BnnSetToZero( BigNum nn, BigNumLength nl )
 }
 
 void
-BnnAssign( BigNum mm, BigNum nn, BigNumLength nl )
+BnnAssign( BigNum mm, const BigNum nn, BigNumLength nl )
 {
 	/*
 	 * Copies N => M
@@ -120,7 +120,7 @@ BnnSetDigit( BigNum nn, BigNumDigit d )
 }
 
 BigNumDigit
-BnnGetDigit( BigNum nn )
+BnnGetDigit( const BigNum nn )
 {
 	/*
 	 * Returns the single digit pointed by N
@@ -130,7 +130,7 @@ BnnGetDigit( BigNum nn )
 }
 
 BigNumLength
-BnnNumDigits( BigNum nn, BigNumLength nl )
+BnnNumDigits( const BigNum nn, BigNumLength nl )
 {
 	/*
 	 * Returns the number of digits of N, not counting leading zeros
@@ -155,21 +155,18 @@ BnnNumDigits( BigNum nn, BigNumLength nl )
 }
 
 BigNumLength
-BnnNumLength( BigNum nn, BigNumLength nl )
+BnnNumLength( const BigNum nn, BigNumLength nl )
 {
 	/*
 	 * Returns the number of bits of N, not counting leading zeros
 	 */
 
-	BigNumLength i;
+	const BigNumDigit d = nn[nl - 1];
+	int	i;
 
-	nn += (nl - 1);
-
-	i = (BigNumLength)BN_DIGIT_SIZE;
-
-	while( i != 0 ) {
-		if( (*nn & (BN_ONE << --i)) != 0 ) {
-		  return( (BigNumLength)(((nl - 1) * BN_DIGIT_SIZE) + i + 1) );
+	for( i = (int)(BN_DIGIT_SIZE - 1) ; i >= 0 ; --i ) {
+		if( (d & (BN_ONE << (BigNumLength)i)) != 0 ) {
+			return((BigNumLength)(((nl-1) * BN_DIGIT_SIZE) + i+1));
 		}
 	}
 
@@ -198,7 +195,7 @@ BnnNumLeadingZeroBitsInDigit( BigNumDigit d )
 }
 
 BigNumBool
-BnnIsPower2( BigNum nn, BigNumLength nl )
+BnnIsPower2( const BigNum nn, BigNumLength nl )
 {
 	/*
 	 * Returns BN_TRUE iff nn is a power of 2.
@@ -206,25 +203,31 @@ BnnIsPower2( BigNum nn, BigNumLength nl )
 
 	BigNumLength i;
 	BigNumLength nbits;
+	BigNumDigit  d;
 
-	while( --nl >= (BigNumLength)1 ) {
-		/*
-		 *	the n-1 digits must be 0
-		 */
-		if( *nn++ != BN_ZERO ) {
+	/*
+	 *	The n-1 digits must be 0
+	 */
+
+	for( i = 0 ; i < (nl - 1) ; ++i ) {
+		if( nn[ i ] != BN_ZERO ) {
 			return( BN_FALSE );
 		}
 	}
-	
+
 	/*
 	 *	There must be only 1 bit set on the last Digit.
 	 */
 
+	d     = nn[ i ];
 	nbits = 0;
 
 	for( i = 0 ; i < (BigNumLength)BN_DIGIT_SIZE ; ++i ) {
-		if( (*nn & (BN_ONE << i)) != 0 ) {
+		if( (d & (BN_ONE << i)) != 0 ) {
 			if( nbits++ > 0 ) {
+				/*
+				 * More than two digits.
+				 */
 				return( BN_FALSE );
 			}
 		}
@@ -445,7 +448,7 @@ BnnAddCarry( BigNum nn, BigNumLength nl, BigNumCarry carryin )
 }
 
 BigNumCarry
-BnnAdd( BigNum mm, BigNumLength ml, BigNum nn, BigNumLength nl, BigNumCarry carryin )
+BnnAdd( BigNum mm, BigNumLength ml, const BigNum nn, BigNumLength nl, BigNumCarry carryin )
 {
 	/*
 	 * Performs the sum M + N + CarryIn => M. Returns the CarryOut.
@@ -453,25 +456,24 @@ BnnAdd( BigNum mm, BigNumLength ml, BigNum nn, BigNumLength nl, BigNumCarry carr
 	 */
 
 	BigNumProduct c = (BigNumProduct)carryin;
+	BigNumLength i;
 
-	ml -= nl;
-
-	while( nl-- != 0 ) {
+	for( i = 0 ; i < nl ; ++i ) {
 		BigNumProduct save = (BigNumProduct)*mm;
 
 		c   += save;
 		if( c < save ) {
-			*(mm++) = *(nn++);
+			*(mm++) = nn[ i ];
 			c	= (BigNumProduct)1;
 		} else	{
-			save	= (BigNumProduct)*(nn++);
+			save	= (BigNumProduct)nn[ i ];
 			c      += save;
 			*(mm++) = (BigNumDigit)c;
 			c	= (BigNumProduct)((c < save) ? 1 : 0);
 		}
 	}
 
-	return( BnnAddCarry( mm, ml, ((c == 0) ? BN_NOCARRY : BN_CARRY) ) );
+	return( BnnAddCarry( mm, ml-nl, ((c == 0) ? BN_NOCARRY : BN_CARRY) ) );
 }
 
 /*
@@ -504,7 +506,7 @@ BnnSubtractBorrow( BigNum nn, BigNumLength nl, BigNumCarry carryin )
 }
 
 BigNumCarry
-BnnSubtract( BigNum mm, BigNumLength ml, BigNum nn, BigNumLength nl, BigNumCarry carryin )
+BnnSubtract( BigNum mm, BigNumLength ml, const BigNum nn, BigNumLength nl, BigNumCarry carryin )
 {
 	/*
 	 * Performs the difference M - N + CarryIn - 1 => M.
@@ -514,13 +516,11 @@ BnnSubtract( BigNum mm, BigNumLength ml, BigNum nn, BigNumLength nl, BigNumCarry
 	BigNumProduct 	c = (BigNumProduct)((carryin == BN_CARRY) ? 1 : 0);
 	BigNumDigit 	invn;
 	BigNumProduct	save;
+	BigNumLength    i;
 
-	ml -= nl;
-
-	while( nl != 0 ) {
-		--nl;
+	for( i = 0 ; i < nl ; ++ i ) {
 		save = (BigNumProduct)*mm;
-		invn = *(nn++) ^ BN_COMPLEMENT;
+		invn = nn[ i ] ^ BN_COMPLEMENT;
 		c += save;
 
 		if( c < save ) {
@@ -534,9 +534,9 @@ BnnSubtract( BigNum mm, BigNumLength ml, BigNum nn, BigNumLength nl, BigNumCarry
 	}
 
 	if( c == 0 ) {
-		return( BnnSubtractBorrow( mm, ml, BN_NOCARRY ) );
+		return( BnnSubtractBorrow( mm, ml-nl, BN_NOCARRY ) );
 	} else	{
-		return( BnnSubtractBorrow( mm, ml, BN_CARRY ) );
+		return( BnnSubtractBorrow( mm, ml-nl, BN_CARRY ) );
 	}
 }
 
@@ -550,7 +550,7 @@ BnnSubtract( BigNum mm, BigNumLength ml, BigNum nn, BigNumLength nl, BigNumCarry
 #define UPDATE_S(c,V,X3)   c += V; if (c < V) { X3++; }
 
 BigNumCarry
-BnnMultiplyDigit( BigNum pp, BigNumLength pl, BigNum mm, BigNumLength ml, BigNumDigit d )
+BnnMultiplyDigit( BigNum pp, BigNumLength pl, const BigNum mm, BigNumLength ml, BigNumDigit d )
 {
 	/*
 	 * Performs the product:
@@ -562,16 +562,9 @@ BnnMultiplyDigit( BigNum pp, BigNumLength pl, BigNum mm, BigNumLength ml, BigNum
 	 * Assumes Size(P) >= Size(M) + 1.
 	 */
 
-	BigNumProduct c = 0;
+	BigNumLength	i;
+	BigNumProduct	c = 0;
 	BigNumDigit	save;
-	BigNumDigit	Lm;
-	BigNumDigit	Hm;
-	BigNumDigit	Ld;
-	BigNumDigit	Hd;
-	BigNumDigit	X0;
-	BigNumDigit	X1;
-	BigNumDigit	X2;
-	BigNumDigit	X3;
 
     	if( d == BN_ZERO ) {
 		return( BN_NOCARRY );
@@ -581,12 +574,20 @@ BnnMultiplyDigit( BigNum pp, BigNumLength pl, BigNum mm, BigNumLength ml, BigNum
 		return( BnnAdd( pp, pl, mm, ml, BN_NOCARRY ) );
 	}
 
-	while( ml-- != 0 ) {
-		save = *(mm++);
+	for( i = 0 ; i < ml ; ++i ) {
+		BigNumDigit	Lm;
+		BigNumDigit	Hm;
+		BigNumDigit	Ld;
+		BigNumDigit	Hd;
+		BigNumDigit	X0;
+		BigNumDigit	X1;
+		BigNumDigit	X2;
+		BigNumDigit	X3;
+
 		Ld = LOW( d );
 		Hd = HIGH( d );
-		Lm = LOW( save );
-		Hm = HIGH( save );
+		Lm = LOW( mm[ i ] );
+		Hm = HIGH( mm[ i ] );
 		X0 = Ld * Lm;
 		X1 = Ld * Hm;
 		X2 = Hd * Lm;
@@ -630,7 +631,7 @@ BnnMultiplyDigit( BigNum pp, BigNumLength pl, BigNum mm, BigNumLength ml, BigNum
 
 /* xh:xl -= yh:yl */
 
-#define SUB(xh,xl,yh,yl)					\
+#define SUB(xh, xl, yh, yl)					\
 	if( yl > xl ) {						\
 		xl -= yl;					\
 		xh -= yh + 1;					\
@@ -652,7 +653,6 @@ BnnDivideDigit( BigNum qq, BigNum nn, BigNumLength nl, BigNumDigit d )
 	BigNumLength	orig_nl;
 	BigNumDigit	rh;	/* Two halves of current remainder */
 	BigNumDigit 	rl;	/* Correspond to quad above	   */
-	BigNumDigit	qa;   	/* Current appr. to quotient	   */
 	BigNumDigit	ph;
 	BigNumDigit	pl;	/* product of c and qa		   */
 	BigNumDigit 	ch;
@@ -685,6 +685,8 @@ BnnDivideDigit( BigNum qq, BigNum nn, BigNumLength nl, BigNumDigit d )
 	rl = *(--nn);
 
 	while( nl-- != 0 ) {
+		BigNumDigit	qa;   	/* Current appr. to quotient	   */
+
 		rh = rl;
 		rl = *(--nn);
 		qa = rh / ch; 	/* appr. quotient */
@@ -765,7 +767,7 @@ BnnDivideDigit( BigNum qq, BigNum nn, BigNumLength nl, BigNumDigit d )
 }
 
 BigNumBool
-BnnIsZero( BigNum nn, BigNumLength nl )
+BnnIsZero( const BigNum nn, BigNumLength nl )
 {
 	/*
 	 * Returns BN_TRUE iff N = 0
@@ -780,7 +782,7 @@ BnnIsZero( BigNum nn, BigNumLength nl )
 }
 
 BigNumCarry
-BnnMultiply( BigNum pp, BigNumLength pl, BigNum mm, BigNumLength ml, BigNum nn, BigNumLength nl )
+BnnMultiply( BigNum pp, BigNumLength pl, const BigNum mm, BigNumLength ml, const BigNum nn, BigNumLength nl )
 {
 	/*
 	 * Performs the product:
@@ -796,14 +798,15 @@ BnnMultiply( BigNum pp, BigNumLength pl, BigNum mm, BigNumLength ml, BigNum nn, 
 	 *    Size(M) >= Size(N).
 	 */
 
-	BigNumCarry c;
+	BigNumLength i;
+	BigNumCarry  c = BN_NOCARRY;
 
 	/*
 	 * Multiply one digit at a time
 	 */
 
-	for( c = BN_NOCARRY ; nl-- > 0 ; pp++, nn++, pl-- ) {
-		if( BnnMultiplyDigit( pp, pl, mm, ml, *nn ) == BN_CARRY ) {
+	for( i = 0 ; i < nl ; ++i ) {
+		if( BnnMultiplyDigit( &pp[i], pl--, mm, ml, nn[i] ) == BN_CARRY ) {
 			c = BN_CARRY;
 		}
 	}
@@ -1013,7 +1016,7 @@ BnnDivide( BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl )
 }
 
 BigNumCmp
-BnnCompare( BigNum mm, BigNumLength ml, BigNum nn, BigNumLength nl )
+BnnCompare( const BigNum mm, BigNumLength ml, const BigNum nn, BigNumLength nl )
 {
 	/*
 	 * return
