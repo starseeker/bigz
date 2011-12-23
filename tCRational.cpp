@@ -33,6 +33,8 @@ main()
 	std::cout << (q1 - q3) << std::endl;
 	std::cout << (q1 / q3) << std::endl;
 	std::cout << (q3 - q1) << std::endl;
+	std::cout << (q3 < q1) << std::endl;
+	std::cout << (q3 > q1) << std::endl;
 
 	return( 0 );
 }

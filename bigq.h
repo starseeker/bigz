@@ -97,17 +97,16 @@ typedef	__BigQ				BigQ;
  *	functions of bigq.c
  */
 
-extern BigQ	    BqAbs(const BigQ q);
-extern BigQ	    BqAdd(const BigQ y, const BigQ q);
+extern BigQ	    BqAbs(const BigQ a);
+extern BigQ	    BqAdd(const BigQ a, const BigQ b);
 extern BigQ	    BqCreate(const BigZ n, const BigZ d);
-extern BqCmp	    BqCompare(const BigQ y, const BigQ q) BQ_PURE_FUNCTION;
-extern BigQ	    BqCopy(const BigQ q);
-extern BigQ	    BqDiv(const BigQ y, const BigQ q);
-extern BigQ	    BqInverse(const BigQ q);
-extern BigQ	    BqMultiply(const BigQ y, const BigQ q);
-extern BigQ	    BqNegate(const BigQ q);
-extern BigQ	    BqNormalize(const BigQ q);
-extern BigQ	    BqSubtract(const BigQ y, const BigQ q);
+extern BqCmp	    BqCompare(const BigQ a, const BigQ b) BQ_PURE_FUNCTION;
+extern BigQ	    BqCopy(const BigQ a);
+extern BigQ	    BqDiv(const BigQ a, const BigQ b);
+extern BigQ	    BqInverse(const BigQ a);
+extern BigQ	    BqMultiply(const BigQ a, const BigQ b);
+extern BigQ	    BqNegate(const BigQ a);
+extern BigQ	    BqSubtract(const BigQ a, const BigQ b);
 
 #if 0
 extern BqChar *	    BqToString(const BigQ q, int sign);

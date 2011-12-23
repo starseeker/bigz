@@ -121,6 +121,15 @@ lint:
 		-temptrans 		\
 		-usedef 		\
 	        bigz.c bign.c
+	@splint +quiet			\
+		-checks 		\
+		-compdef 		\
+		-declundef		\
+		-exportlocal 		\
+		-infloopsuncon		\
+		-namechecks 		\
+		-nullret 		\
+	        bigq.c
 
 MASTER		= \
 		AUTHORS			\

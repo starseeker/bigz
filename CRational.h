@@ -103,6 +103,47 @@ public:
 		return (CRational(bn) / q);
 	}
 
+	// comparisons
+
+	friend bool operator==(const CRational& q1, const CRational& q2) {
+		return BqCompare(q1.m_q, q2.m_q) == BZ_EQ;
+	}
+	friend bool operator==(const CRational& q, const CBignum& bn) {
+		return (q == CRational(bn));
+	}
+	friend bool operator==(const CBignum& bn, const CRational& q) {
+		return (CRational(bn) == q);
+	}
+	friend bool operator!=(const CRational& q1, const CBignum& q2) {
+		return !(q1 != q2);
+	}
+
+	friend bool operator>(const CRational& q1, const CRational& q2) {
+		return BqCompare(q1.m_q, q2.m_q) == BZ_GT;
+	}
+	friend bool operator>(const CRational& q, const CBignum& bn) {
+		return (q == CRational(bn));
+	}
+	friend bool operator>(const CBignum& bn, const CRational& q) {
+		return (CRational(bn) == q);
+	}
+	friend bool operator<=(const CRational& a, const CRational& b) {
+		return !(a > b);
+	}
+
+	friend bool operator<(const CRational& q1, const CRational& q2) {
+		return BqCompare(q1.m_q, q2.m_q) == BZ_LT;
+	}
+	friend bool operator<(const CRational& q, const CBignum& bn) {
+		return (q == CRational(bn));
+	}
+	friend bool operator<(const CBignum& bn, const CRational& q) {
+		return (CRational(bn) == q);
+	}
+	friend bool operator>=(const CRational& a, const CRational& b) {
+		return !(a < b);
+	}
+
 	// output
 	friend std::ostream& operator<<(std::ostream& os, const CRational& q) {
 		BzSign sign = BzGetSign(q.m_q);

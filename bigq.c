@@ -38,6 +38,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+static	void BqNormalize(BigQ q);
+
 BigQ
 BqCreate( const BigZ n, const BigZ d )
 {
@@ -74,11 +76,12 @@ BqCreate( const BigZ n, const BigZ d )
 	BqSetNumerator( q, cn );
 	BqSetDenominator( q, cd );
 
-	return( BqNormalize( q ) );
+	BqNormalize( q );
+	return( q );
 }
 
-BigQ
-BqNormalize( const BigQ q )
+static	void
+BqNormalize( BigQ q )
 {
 	BigZ n   = BqGetNumerator( q );
 	BigZ d   = BqGetDenominator( q );
@@ -96,9 +99,8 @@ BqNormalize( const BigQ q )
 		BqSetDenominator( q, nd );
 	}
 
+	BzFree( one );
 	BzFree( gcd );
-
-	return( q );
 }
 
 BigQ
