@@ -60,6 +60,7 @@ public:
 	operator int         () const { return (int)BzToInteger( m_bz );    }
 	operator bool        () const { return BzGetSign( m_bz ) != BZ_ZERO; }
 	operator const char* () const { return BzToString( m_bz, 10, 0 ); }
+	operator const BigZ  () const { return m_bz; }
 
 	// unary +, -, ++, --
 

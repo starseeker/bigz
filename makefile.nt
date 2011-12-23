@@ -70,6 +70,12 @@ tCBignum.dat: ./lisp/gentest.lsp
 
 tCBignum.obj: CBignum.h tCBignum.dat
 
+tCRational.obj: tCRational.cpp CRational.h CBignum.h
+
+tCRational.exe: bigq.obj bigz.obj bign.obj tCRational.obj CBignum.obj
+	@$(CC) $(CFLAGS) -FotCRational tCRational.obj CBignum.obj \
+	       bigq.obj bigz.obj bign.obj
+
 testbign.lsp: ./lisp/lisptests.lsp $(OLISP)
 	@$(CLISP) ./lisp/lisptests.lsp | dos2unix > testbign.lsp
 	@dos2unix -q testbign.lsp
@@ -125,11 +131,14 @@ MASTER		= \
 		README			\
 		bign.c			\
 		bign.h			\
+		bigq.c			\
+		bigq.h			\
 		bigz.c			\
 		bigz.h			\
 		bzf.c			\
 		CBignum.cpp		\
 		CBignum.h		\
+		CRational.h		\
 		conf/config.guess	\
 		conf/config.sub		\
 		conf/COPYING		\
@@ -158,6 +167,8 @@ MASTER		= \
 		makefile.nt		\
 		makefile.tcc		\
 		tCBignum.cpp		\
+		tCBignum.dat		\
+		tCRational.cpp		\
 		tCBignum.dat		\
 		test/BntoBnn.h		\
 		test/bztest.c		\
