@@ -1,5 +1,5 @@
 //
-// $Id: CRational.h,v 1.3 2011-12-24 07:04:38 jullien Exp $
+// $Id: CRational.h,v 1.4 2011-12-24 08:31:43 jullien Exp $
 //
 
 /*
@@ -57,9 +57,11 @@ public:
 		: m_q(BqCreate(BzFromInteger((BzInt)n),
 			       BzFromInteger((BzInt)1))) {
 	}
+#if	defined( HAVE_BQ_FROM_DOUBLE )
 	CRational( double n )
 		: m_q( BqFromDouble( n ) ) {
 	}
+#endif
 	~CRational() { BzFree( m_q ); }
 
 	// convertions
@@ -143,29 +145,12 @@ public:
 
 	// output
 	friend std::ostream& operator<<(std::ostream& os, const CRational& q) {
-		BzSign sign = BzGetSign(q.m_q);
-		BigZ n = BqGetNumerator(q.m_q);
-		BigZ d = BqGetDenominator(q.m_q);
-
-		if( n == BZNULL && d == BZNULL ) {
-			os << 0;
-			return os;
-		}
-
-		if( sign == BZ_MINUS ) {
-			os << "-";
-		}
-
-		if( BzLength(d) == 1 ) {
-			const char* ns = BzToString( n, 10, 0 );
-			os << ns;
-			BzFreeString( (void *)ns );
+		BzChar *s = BqToString(q, 0);
+		if( s != (BzChar)NULL ) {
+			os << s;
+			BzFreeString( (void *)s );
 		} else	{
-			const char* ns = BzToString( n, 10, 0 );
-			const char* ds = BzToString( d, 10, 0 );
-			os << ns << "/" << ds;
-			BzFreeString( (void *)ds );
-			BzFreeString( (void *)ns );
+			os << "#.QNaN";
 		}
 		return os;
 	}

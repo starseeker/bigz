@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.c,v 1.4 2011-12-24 07:04:39 jullien Exp $
+ * $Id: bigq.c,v 1.5 2011-12-24 08:31:43 jullien Exp $
  */
 
 /*
@@ -305,4 +305,78 @@ BqInverse( const BigQ a )
 	const BigZ ad  = BqGetDenominator( a );
 
 	return( BqCreate( ad, an ) );
+}
+
+BzChar *
+BqToString(const BigQ q, int sign)
+{
+	BzChar * n;
+	BzChar * d;
+	BzChar * res;
+	size_t	len;
+	int	i;
+
+	if( q == BQNULL ) {
+		return( (BzChar *)NULL );
+	} else	if( BzLength(BqGetDenominator(q)) == (BigNumLength)1 ) {
+		return( BzToString(BqGetNumerator(q), (BigNumDigit)10, sign) );
+	} else	{
+		/*
+		 * Get numerator string.
+		 */
+		n = BzToString( BqGetNumerator(q), (BigNumDigit)10, sign );
+
+		if( n == (BzChar *)NULL ) {
+			return( n );
+		}
+
+		/*
+		 * Get denominator string.
+		 */
+		d = BzToString( BqGetDenominator(q), (BigNumDigit)10, 0 );
+
+		if( d == (BzChar *)NULL ) {
+			BzFreeString( n );
+			return( d );
+		}
+
+		/*
+		 * Compute total length (don't use strlen because we
+		 * don't know the exact type of BzChar - it may be wchar_t).
+		 */
+
+		len = 0;
+		for( i = 0 ; n[i] != (BzChar)'\000' ; ++i ) {
+			len += (size_t)i;
+		}
+		++len; /* for '\\' */
+		for( i = 0 ; d[i] != (BzChar)'\000' ; ++i ) {
+			len += (size_t)i;
+		}
+		++len; /* for '\000' */
+
+		/*
+		 * Alloc result string and catenate n/d.
+		 */
+
+		if( (res = (BzChar *)BzStringAlloc(len)) != (BzChar *)NULL ) {
+			len = 0;
+			for( i = 0 ; n[i] != (BzChar)'\000' ; ++i ) {
+				res[ len++ ] = n[ i ];
+			}
+
+			res[ len++ ] = (BzChar)'/';
+
+			for( i = 0 ; d[i] != (BzChar)'\000' ; ++i ) {
+				res[ len++ ] = d[ i ];
+			}
+
+			res[ len ] = (BzChar)'\000';
+		}
+
+		BzFreeString( d );
+		BzFreeString( n );
+
+		return( res );
+	}
 }

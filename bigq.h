@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.h,v 1.3 2011-12-23 22:14:08 jullien Exp $
+ * $Id: bigq.h,v 1.4 2011-12-24 08:31:43 jullien Exp $
  */
 
 /*
@@ -38,10 +38,6 @@
 #include "bigz.h"
 #endif
 
-#if	!defined( __BIGN_H )
-#include "bign.h"
-#endif
-
 #if	defined( __cplusplus )
 extern	"C"	{
 #endif
@@ -52,8 +48,6 @@ extern	"C"	{
 /*
  * BigQ.h: Types and structures for clients of BigQ
  */
-
-#define	BQ_VERSION			"1.4.0"
 
 /*
  * BigQ compare result
@@ -107,13 +101,11 @@ extern BigQ	    BqInverse(const BigQ a);
 extern BigQ	    BqMultiply(const BigQ a, const BigQ b);
 extern BigQ	    BqNegate(const BigQ a);
 extern BigQ	    BqSubtract(const BigQ a, const BigQ b);
-extern BigQ	    BqFromDouble(double num);
+extern BzChar *	    BqToString(const BigQ q, int sign);
 
 #if 0
-extern BqChar *	    BqToString(const BigQ q, int sign);
-extern BqChar *	    BqToStringBuffer(const BigQ q, int sign, BqChar *buf, size_t *len);
-extern BigQ	    BqFromString(const BqChar *s, BigNumDigit base);
-extern BigQ	    BqFromUnsignedInteger(BzUInt i);
+extern BzChar *	    BqToStringBuffer(const BigQ q, int sign, BzChar *buf, size_t *len);
+extern BigQ	    BqFromString(const BzChar *s, BigNumDigit base);
 #endif
 
 #if	defined( __cplusplus )
