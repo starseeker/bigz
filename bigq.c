@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.c,v 1.1 2011-12-23 14:18:31 jullien Exp $
+ * $Id: bigq.c,v 1.4 2011-12-24 07:04:39 jullien Exp $
  */
 
 /*
@@ -37,6 +37,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 static	void BqNormalize(BigQ q);
 
@@ -56,8 +57,8 @@ BqCreate( const BigZ n, const BigZ d )
 	}
 
 	if( BzGetSign( n ) == BZ_ZERO ) {
-		BqSetNumerator( q, BZNULL );
-		BqSetDenominator( q, BZNULL );
+		BqSetNumerator(   q, BzFromInteger((BzInt)0) );
+		BqSetDenominator( q, BzFromInteger((BzInt)1) );
 		return( q );
 	}
 
@@ -73,7 +74,7 @@ BqCreate( const BigZ n, const BigZ d )
 		BzSetSign( cn, BZ_MINUS );
 	}
 
-	BqSetNumerator( q, cn );
+	BqSetNumerator(   q, cn );
 	BqSetDenominator( q, cd );
 
 	BqNormalize( q );
@@ -273,10 +274,10 @@ BqNegate( const BigQ a )
 
 	switch( BzGetSign( an ) ) {
 	case BZ_MINUS:
-		BzSetSign( an, BZ_PLUS );
+		BzSetSign( BqGetNumerator(res), BZ_PLUS );
 		return( res );
 	case BZ_PLUS:
-		BzSetSign( an, BZ_MINUS );
+		BzSetSign( BqGetNumerator(res), BZ_MINUS );
 		return( res );
 	default:
 		return( res );
