@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.h,v 1.1 2011-12-23 14:18:31 jullien Exp $
+ * $Id: bigq.h,v 1.3 2011-12-23 22:14:08 jullien Exp $
  */
 
 /*
@@ -107,12 +107,12 @@ extern BigQ	    BqInverse(const BigQ a);
 extern BigQ	    BqMultiply(const BigQ a, const BigQ b);
 extern BigQ	    BqNegate(const BigQ a);
 extern BigQ	    BqSubtract(const BigQ a, const BigQ b);
+extern BigQ	    BqFromDouble(double num);
 
 #if 0
 extern BqChar *	    BqToString(const BigQ q, int sign);
 extern BqChar *	    BqToStringBuffer(const BigQ q, int sign, BqChar *buf, size_t *len);
 extern BigQ	    BqFromString(const BqChar *s, BigNumDigit base);
-extern BigQ	    BqFromInteger(BzInt i);
 extern BigQ	    BqFromUnsignedInteger(BzUInt i);
 #endif
 

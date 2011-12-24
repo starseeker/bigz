@@ -1,5 +1,5 @@
 #if	!defined( lint )
-static	const char rcsid[] = "$Id: tCRational.cpp,v 1.7 2011-12-03 13:23:21 jullien Exp $";
+static	const char rcsid[] = "$Id: tCRational.cpp,v 1.3 2011-12-24 07:04:39 jullien Exp $";
 #endif
 
 //
@@ -12,20 +12,27 @@ static	const char rcsid[] = "$Id: tCRational.cpp,v 1.7 2011-12-03 13:23:21 julli
 #include <iostream>
 #include "CRational.h"
 
-static int testcnt = 0;
-static int failcnt = 0;
-
 int
 main()
 {
 	(void)printf("Rational non-regression tests. (c) 2012 C. Jullien\n");
 
-	CRational q1(CBignum(-4), CBignum(6));
-	CRational q2(CBignum(4), CBignum(-6));
-	CRational q3(CBignum(5), CBignum(9));
+	CRational q1(-4, 6);
+	CRational q2(4, -6);
+	CRational q3(5, 9);
+	CRational q4("87384004098848212735349875629364987687687667720",
+		     "93495466257274887265487820984675290489826754805");
+	CRational one(1);
+	CRational zero(0);
 
+	std::cout << one << std::endl;
+	std::cout << zero << std::endl;
+	std::cout << -zero << std::endl;
 	std::cout << q1 << std::endl;
+	std::cout << q4 << std::endl;
+	std::cout << -q1 << std::endl;
 	std::cout << q2 << std::endl;
+	std::cout << abs(q2) << std::endl;
 	std::cout << (q1 + q2) << std::endl;
 	std::cout << (q1 * q2) << std::endl;
 	std::cout << (q1 * -3) << std::endl;
@@ -35,6 +42,7 @@ main()
 	std::cout << (q3 - q1) << std::endl;
 	std::cout << (q3 < q1) << std::endl;
 	std::cout << (q3 > q1) << std::endl;
+	std::cout << (q1 < zero) << std::endl;
 
 	return( 0 );
 }

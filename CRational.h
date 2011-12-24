@@ -1,5 +1,5 @@
 //
-// $Id: CRational.h,v 1.13 2011-12-09 07:52:23 jullien Exp $
+// $Id: CRational.h,v 1.3 2011-12-24 07:04:38 jullien Exp $
 //
 
 /*
@@ -53,18 +53,29 @@ public:
 	CRational( const CBignum &n )
 		: m_q( BqCreate( n, BzFromInteger((BzInt)1) ) ) {
 	}
+	CRational( int n )
+		: m_q(BqCreate(BzFromInteger((BzInt)n),
+			       BzFromInteger((BzInt)1))) {
+	}
+	CRational( double n )
+		: m_q( BqFromDouble( n ) ) {
+	}
 	~CRational() { BzFree( m_q ); }
+
+	// convertions
+
+	operator const BigQ  () const { return m_q; }
+
+	// unary -
+
+	friend CRational operator-(const CRational& q ) {
+		return( CRational(BqNegate(q.m_q), ASSIGN ) );
+	}
 
 	// binary +
 
 	friend CRational operator+(const CRational& q1, const CRational& q2) {
 		return CRational(BqAdd(q1.m_q, q2.m_q), ASSIGN);
-	}
-	friend CRational operator+(const CRational& q, const CBignum& bn) {
-		return (q + CRational(bn));
-	}
-	friend CRational operator+(const CBignum& bn, const CRational& bz1) {
-		return (CRational(bn) + bz1);
 	}
 
 	// binary -
@@ -72,35 +83,17 @@ public:
 	friend CRational operator-(const CRational& q1, const CRational& q2) {
 		return CRational(BqSubtract(q1.m_q, q2.m_q), ASSIGN);
 	}
-	friend CRational operator-(const CRational& q, const CBignum& bn) {
-		return (q - CRational(bn));
-	}
-	friend CRational operator-(const CBignum& bn, const CRational& bz1) {
-		return (CRational(bn) - bz1);
-	}
 
 	// binary *
 
 	friend CRational operator*(const CRational& q1, const CRational& q2) {
 		return CRational(BqMultiply(q1.m_q, q2.m_q), ASSIGN);
 	}
-	friend CRational operator*(const CRational& q, const CBignum& bn) {
-		return (q * CRational(bn));
-	}
-	friend CRational operator*(const CBignum& bn, const CRational& q) {
-		return (CRational(bn) * q);
-	}
 
 	// binary /
 
 	friend CRational operator/(const CRational& q1, const CRational& q2) {
 		return CRational(BqDiv(q1.m_q, q2.m_q), ASSIGN);
-	}
-	friend CRational operator/(const CRational& q, const CBignum& bn) {
-		return (q / CRational(bn));
-	}
-	friend CRational operator/(const CBignum& bn, const CRational& q) {
-		return (CRational(bn) / q);
 	}
 
 	// comparisons
@@ -144,18 +137,37 @@ public:
 		return !(a < b);
 	}
 
+	friend CRational abs(const CRational& q) {
+		return CRational(BqAbs(q.m_q), ASSIGN);
+	}
+
 	// output
 	friend std::ostream& operator<<(std::ostream& os, const CRational& q) {
 		BzSign sign = BzGetSign(q.m_q);
-		const char* n = BzToString( BqGetNumerator(q.m_q), 10, 0 );
-		const char* d = BzToString( BqGetDenominator(q.m_q), 10, 0 );
+		BigZ n = BqGetNumerator(q.m_q);
+		BigZ d = BqGetDenominator(q.m_q);
+
+		if( n == BZNULL && d == BZNULL ) {
+			os << 0;
+			return os;
+		}
+
 		if( sign == BZ_MINUS ) {
 			os << "-";
 		}
-		os << n << "/" << d;
-		BzFreeString( (void *)d );
-		BzFreeString( (void *)n );
-		return( os );
+
+		if( BzLength(d) == 1 ) {
+			const char* ns = BzToString( n, 10, 0 );
+			os << ns;
+			BzFreeString( (void *)ns );
+		} else	{
+			const char* ns = BzToString( n, 10, 0 );
+			const char* ds = BzToString( d, 10, 0 );
+			os << ns << "/" << ds;
+			BzFreeString( (void *)ds );
+			BzFreeString( (void *)ns );
+		}
+		return os;
 	}
 private:
 	BigQ	m_q;
