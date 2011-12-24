@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.h,v 1.52 2011-12-24 13:19:23 jullien Exp $
+ * $Id: bigz.h,v 1.53 2011-12-24 14:38:03 jullien Exp $
  */
 
 /*
@@ -73,8 +73,8 @@ typedef enum {
 } BzCmp;
 
 typedef	enum {
-	BZ_UNTIL_END	= 0,
-	BZ_UNTIL_VALID	= 1
+	BZ_UNTIL_END	 = 0,
+	BZ_UNTIL_INVALID = 1
 } BzStrFlag;
 
 /*

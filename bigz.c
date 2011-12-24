@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.c,v 1.87 2011-12-24 13:19:23 jullien Exp $
+ * $Id: bigz.c,v 1.88 2011-12-24 14:38:03 jullien Exp $
 */
 
 /*
@@ -1311,7 +1311,7 @@ BzFromString( const BzChar *s, BigNumDigit base, BzStrFlag flag )
 		BigNumDigit next = (BigNumDigit)val;
 
 		if( val == -1 || next >= base ) {
-			if( flag == BZ_UNTIL_VALID ) {
+			if( flag == BZ_UNTIL_INVALID ) {
 				break;
 			}
 			/*

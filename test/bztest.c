@@ -1,5 +1,5 @@
 /*
- static	const char rcsid[] = "$Id: bztest.c,v 1.11 2011-12-10 16:15:39 jullien Exp $";
+ static	const char rcsid[] = "$Id: bztest.c,v 1.12 2011-12-24 14:38:03 jullien Exp $";
 */
 
 /*
@@ -47,7 +47,7 @@
 #define T(A,B,C)	S(B,C)?E(A,B,C):P(A)
 #define To(A)		BzToString(A,10,0)
 
-#define From(A)		BzFromString(A,10)
+#define From(A)		BzFromString(A,10,BZ_UNTIL_END)
 #define Abs(A)		BzAbs(A)
 #define Neg(A)		BzNegate(A)
 #define Add(A,B)	BzAdd(A,B)
