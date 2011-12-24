@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.h,v 1.51 2011-12-22 06:08:33 jullien Exp $
+ * $Id: bigz.h,v 1.52 2011-12-24 13:19:23 jullien Exp $
  */
 
 /*
@@ -71,6 +71,11 @@ typedef enum {
 	BZ_EQ    = BN_EQ,
 	BZ_GT    = BN_GT
 } BzCmp;
+
+typedef	enum {
+	BZ_UNTIL_END	= 0,
+	BZ_UNTIL_VALID	= 1
+} BzStrFlag;
 
 /*
  * BigZ number
@@ -214,7 +219,7 @@ extern BigNumBool   BzIsEven(const BigZ y) BZ_PURE_FUNCTION;
 extern BigNumBool   BzIsOdd(const BigZ y) BZ_PURE_FUNCTION;
 extern BzChar *	    BzToString(const BigZ z, BigNumDigit base, int sign);
 extern BzChar *	    BzToStringBuffer(const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t *len);
-extern BigZ	    BzFromString(const BzChar *s, BigNumDigit base);
+extern BigZ	    BzFromString(const BzChar *s, BigNumDigit base, BzStrFlag flag);
 extern BigZ	    BzFromInteger(BzInt i);
 extern BigZ	    BzFromUnsignedInteger(BzUInt i);
 extern BzInt	    BzToInteger(const BigZ z) BZ_PURE_FUNCTION;

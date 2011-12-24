@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.c,v 1.5 2011-12-24 08:31:43 jullien Exp $
+ * $Id: bigq.c,v 1.6 2011-12-24 13:19:23 jullien Exp $
  */
 
 /*
@@ -378,5 +378,53 @@ BqToString(const BigQ q, int sign)
 		BzFreeString( n );
 
 		return( res );
+	}
+}
+
+BigQ
+BqFromString(const BzChar *s)
+{
+	BigZ n;
+	BigZ d;
+	BigQ q;
+	const BzChar *p;
+
+	if( s == (BzChar *)NULL ) {
+		return( BQNULL );
+	}
+
+	p = s;
+
+	if( *p == (BzChar)'+' || *p == (BzChar)'-' ) {
+		++p;
+	}
+
+	while( *p != (BzChar)'\000' ) {
+		if( *p == '/' ) {
+			break;
+		} else	if( !(*p >= (BzChar)'0' && *p <= (BzChar)'9') ) {
+			return( BQNULL );
+		} else	{
+			++p;
+		}
+	}
+
+	if( *p == (BzChar)'\000' ) {
+		/*
+		 * simply an integer in Z (no denominator).
+		 */
+		n = BzFromString( s, (BigNumDigit)10, BZ_UNTIL_END );
+		d = BzFromInteger( (BzInt)1 );
+		q = BqCreate( n, d );
+		BzFree( d );
+		BzFree( n );
+		return( q );
+	} else	{
+		n = BzFromString( s,   (BigNumDigit)10, BZ_UNTIL_VALID );
+		d = BzFromString( p+1, (BigNumDigit)10, BZ_UNTIL_END   );
+		q = BqCreate( n, d );
+		BzFree( n );
+		BzFree( d );
+		return( q );
 	}
 }

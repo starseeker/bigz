@@ -1,5 +1,5 @@
 //
-// $Id: CRational.h,v 1.4 2011-12-24 08:31:43 jullien Exp $
+// $Id: CRational.h,v 1.5 2011-12-24 13:19:23 jullien Exp $
 //
 
 /*
@@ -52,6 +52,9 @@ public:
 	}
 	CRational( const CBignum &n )
 		: m_q( BqCreate( n, BzFromInteger((BzInt)1) ) ) {
+	}
+	CRational( const char *s )
+		: m_q( BqFromString((BzChar *)s) ) {
 	}
 	CRational( int n )
 		: m_q(BqCreate(BzFromInteger((BzInt)n),
