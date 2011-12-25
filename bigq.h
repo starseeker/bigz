@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.h,v 1.5 2011-12-24 13:19:23 jullien Exp $
+ * $Id: bigq.h,v 1.6 2011-12-25 10:01:57 jullien Exp $
  */
 
 /*
@@ -56,7 +56,8 @@ extern	"C"	{
 typedef enum {
 	BQ_LT    = BN_LT,
 	BQ_EQ    = BN_EQ,
-	BQ_GT    = BN_GT
+	BQ_GT    = BN_GT,
+	BQ_ERR   = 100
 } BqCmp;
 
 /*

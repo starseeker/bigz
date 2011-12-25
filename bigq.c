@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.c,v 1.6 2011-12-24 13:19:23 jullien Exp $
+ * $Id: bigq.c,v 1.8 2011-12-25 10:01:57 jullien Exp $
  */
 
 /*
@@ -47,6 +47,10 @@ BqCreate( const BigZ n, const BigZ d )
 	BigQ	q;
 	BigZ	cn;
 	BigZ	cd;
+
+	if( n == BZNULL || d ==BZNULL ) {
+		return( BQNULL );
+	}
 
 	if( BzGetSign( d ) == BZ_ZERO ) {
 		return( BQNULL );
@@ -107,208 +111,241 @@ BqNormalize( BigQ q )
 BigQ
 BqAdd( const BigQ a, const BigQ b )
 {
-	const BigZ an = BqGetNumerator(   a );
-	const BigZ ad = BqGetDenominator( a );
-	const BigZ bn = BqGetNumerator(   b );
-	const BigZ bd = BqGetDenominator( b );
-	BigZ n;
-	BigZ d;
-	BigZ tmp1;
-	BigZ tmp2;
-	BigQ res;
+	if( a == BQNULL || b == BQNULL ) {
+		return( BQNULL );
+	} else	{
+		const BigZ an = BqGetNumerator(   a );
+		const BigZ ad = BqGetDenominator( a );
+		const BigZ bn = BqGetNumerator(   b );
+		const BigZ bd = BqGetDenominator( b );
+		BigZ n;
+		BigZ d;
+		BigZ tmp1;
+		BigZ tmp2;
+		BigQ res;
 
-	tmp1 = BzMultiply( an, bd );
-	tmp2 = BzMultiply( ad, bn );
+		tmp1 = BzMultiply( an, bd );
+		tmp2 = BzMultiply( ad, bn );
 
-	n = BzAdd( tmp1, tmp2 );
-	BzFree( tmp2 );
-	BzFree( tmp1 );
+		n = BzAdd( tmp1, tmp2 );
+		BzFree( tmp2 );
+		BzFree( tmp1 );
 
-	d = BzMultiply( ad, bd );
+		d = BzMultiply( ad, bd );
 
-	res = BqCreate( n, d );
+		res = BqCreate( n, d );
 
-	BzFree( d );
-	BzFree( n );
+		BzFree( d );
+		BzFree( n );
 
-	return( res );
+		return( res );
+	}
 }
 
 BigQ
 BqSubtract( const BigQ a, const BigQ b )
 {
-	const BigZ an = BqGetNumerator(   a );
-	const BigZ ad = BqGetDenominator( a );
-	const BigZ bn = BqGetNumerator(   b );
-	const BigZ bd = BqGetDenominator( b );
-	BigZ n;
-	BigZ d;
-	BigZ tmp1;
-	BigZ tmp2;
-	BigQ res;
+	if( a == BQNULL || b == BQNULL ) {
+		return( BQNULL );
+	} else	{
+		const BigZ an = BqGetNumerator(   a );
+		const BigZ ad = BqGetDenominator( a );
+		const BigZ bn = BqGetNumerator(   b );
+		const BigZ bd = BqGetDenominator( b );
+		BigZ n;
+		BigZ d;
+		BigZ tmp1;
+		BigZ tmp2;
+		BigQ res;
 
-	tmp1 = BzMultiply( an, bd );
-	tmp2 = BzMultiply( ad, bn );
+		tmp1 = BzMultiply( an, bd );
+		tmp2 = BzMultiply( ad, bn );
 
-	n = BzSubtract( tmp1, tmp2 );
-	BzFree( tmp2 );
-	BzFree( tmp1 );
+		n = BzSubtract( tmp1, tmp2 );
+		BzFree( tmp2 );
+		BzFree( tmp1 );
 
-	d = BzMultiply( ad, bd );
+		d = BzMultiply( ad, bd );
 
-	res = BqCreate( n, d );
-	BzFree( d );
-	BzFree( n );
+		res = BqCreate( n, d );
+		BzFree( d );
+		BzFree( n );
 
-	return( res );
+		return( res );
+	}
 }
 
 BigQ
 BqMultiply( const BigQ a, const BigQ b )
 {
-	const BigZ an = BqGetNumerator(   a );
-	const BigZ ad = BqGetDenominator( a );
-	const BigZ bn = BqGetNumerator(   b );
-	const BigZ bd = BqGetDenominator( b );
-	BigZ n;
-	BigZ d;
-	BigQ res;
+	if( a == BQNULL || b == BQNULL ) {
+		return( BQNULL );
+	} else	{
+		const BigZ an = BqGetNumerator(   a );
+		const BigZ ad = BqGetDenominator( a );
+		const BigZ bn = BqGetNumerator(   b );
+		const BigZ bd = BqGetDenominator( b );
+		BigZ n;
+		BigZ d;
+		BigQ res;
 
-	n = BzMultiply( an, bn );
-	d = BzMultiply( ad, bd );
+		n = BzMultiply( an, bn );
+		d = BzMultiply( ad, bd );
 
-	res = BqCreate( n, d );
+		res = BqCreate( n, d );
 
-	BzFree( d );
-	BzFree( n );
+		BzFree( d );
+		BzFree( n );
 
-	return( res );
+		return( res );
+	}
 }
 
 BigQ
 BqDiv( const BigQ a, const BigQ b )
 {
-	const BigZ an = BqGetNumerator(   a );
-	const BigZ ad = BqGetDenominator( a );
-	const BigZ bn = BqGetNumerator(   b );
-	const BigZ bd = BqGetDenominator( b );
-	BigZ n;
-	BigZ d;
-	BigQ res;
-
-	if( BzGetSign( bn ) == BZ_ZERO ) {
+	if( a == BQNULL || b == BQNULL ) {
 		return( BQNULL );
+	} else	{
+		const BigZ an = BqGetNumerator(   a );
+		const BigZ ad = BqGetDenominator( a );
+		const BigZ bn = BqGetNumerator(   b );
+		const BigZ bd = BqGetDenominator( b );
+		BigZ n;
+		BigZ d;
+		BigQ res;
+
+		if( BzGetSign( bn ) == BZ_ZERO ) {
+			return( BQNULL );
+		}
+
+		n = BzMultiply( an, bd );
+		d = BzMultiply( ad, bn );
+
+		res = BqCreate( n, d );
+
+		BzFree( d );
+		BzFree( n );
+
+		return( res );
 	}
-
-	n = BzMultiply( an, bd );
-	d = BzMultiply( ad, bn );
-
-	res = BqCreate( n, d );
-
-	BzFree( d );
-	BzFree( n );
-
-	return( res );
 }
 
 BqCmp
 BqCompare( const BigQ a, const BigQ b )
 {
-	const BigZ an = BqGetNumerator(   a );
-	const BigZ ad = BqGetDenominator( a );
-	const BigZ bn = BqGetNumerator(   b );
-	const BigZ bd = BqGetDenominator( b );
-	BigZ tmp1;
-	BigZ tmp2;
-	BzCmp cmp;
+	if( a == BQNULL || b == BQNULL ) {
+		return( BQ_ERR );
+	} else	{
+		const BigZ an = BqGetNumerator(   a );
+		const BigZ ad = BqGetDenominator( a );
+		const BigZ bn = BqGetNumerator(   b );
+		const BigZ bd = BqGetDenominator( b );
+		BigZ tmp1;
+		BigZ tmp2;
+		BzCmp cmp;
 
-	if( BzGetSign( an ) != BzGetSign( bn ) ) {
-		/*
-		 *	Sign differs, easy case!
-		 */
-		if( BzGetSign( an ) == BZ_MINUS ) {
-			return( BQ_LT );
-		} else	{
-			return( BQ_GT );
+		if( BzGetSign( an ) != BzGetSign( bn ) ) {
+			/*
+			 *	Sign differs, easy case!
+			 */
+			if( BzGetSign( an ) == BZ_MINUS ) {
+				return( BQ_LT );
+			} else	{
+				return( BQ_GT );
+			}
 		}
-	}
 
-	if( BzCompare( an, bn ) == BZ_EQ && BzCompare( an, bn ) == BZ_EQ ) {
-		/*
-		 *	Numerators and denominators are equal.
-		 */
-		return( BQ_EQ );
-	}
-
-	tmp1 = BzMultiply( an, bd );
-	tmp2 = BzMultiply( ad, bn );
-	cmp  = BzCompare( tmp1, tmp2 );
-
-	BzFree( tmp2 );
-	BzFree( tmp1 );
-
-	switch( cmp ) {
-	case BZ_LT:
-		if( BzGetSign( an ) == BZ_MINUS ) {
-			return( BQ_GT );
-		} else	{
-			return( BQ_LT );
+		if( BzCompare( an, bn ) == BZ_EQ
+		    && BzCompare( an, bn ) == BZ_EQ ) {
+			/*
+			 *	Numerators and denominators are equal.
+			 */
+			return( BQ_EQ );
 		}
-	case BZ_GT:
-		if( BzGetSign( an ) == BZ_MINUS ) {
-			return( BQ_LT );
-		} else	{
-			return( BQ_GT );
+
+		tmp1 = BzMultiply( an, bd );
+		tmp2 = BzMultiply( ad, bn );
+		cmp  = BzCompare( tmp1, tmp2 );
+
+		BzFree( tmp2 );
+		BzFree( tmp1 );
+
+		switch( cmp ) {
+		case BZ_LT:
+			if( BzGetSign( an ) == BZ_MINUS ) {
+				return( BQ_GT );
+			} else	{
+				return( BQ_LT );
+			}
+		case BZ_GT:
+			if( BzGetSign( an ) == BZ_MINUS ) {
+				return( BQ_LT );
+			} else	{
+				return( BQ_GT );
+			}
+		default:
+			return( BQ_EQ );
 		}
-	default:
-		return( BQ_EQ );
 	}
 }
 
 BigQ
 BqNegate( const BigQ a )
 {
-	const BigZ an  = BqGetNumerator(   a );
-	const BigZ ad  = BqGetDenominator( a );
-	BigQ       res = BqCreate( an, ad );
+	if( a == BQNULL ) {
+		return( BQNULL );
+	} else	{
+		const BigZ an  = BqGetNumerator(   a );
+		const BigZ ad  = BqGetDenominator( a );
+		BigQ       res = BqCreate( an, ad );
 
-	switch( BzGetSign( an ) ) {
-	case BZ_MINUS:
-		BzSetSign( BqGetNumerator(res), BZ_PLUS );
-		return( res );
-	case BZ_PLUS:
-		BzSetSign( BqGetNumerator(res), BZ_MINUS );
-		return( res );
-	default:
-		return( res );
+		switch( BzGetSign( an ) ) {
+		case BZ_MINUS:
+			BzSetSign( BqGetNumerator(res), BZ_PLUS );
+			return( res );
+		case BZ_PLUS:
+			BzSetSign( BqGetNumerator(res), BZ_MINUS );
+			return( res );
+		default:
+			return( res );
+		}
 	}
 }
 
 BigQ
 BqAbs( const BigQ a )
 {
-	const BigZ an  = BqGetNumerator(   a );
-	const BigZ ad  = BqGetDenominator( a );
-	BigQ       res = BqCreate( an, ad );
+	if( a == BQNULL ) {
+		return( BQNULL );
+	} else	{
+		const BigZ an  = BqGetNumerator(   a );
+		const BigZ ad  = BqGetDenominator( a );
+		BigQ       res = BqCreate( an, ad );
 
-	if( BzGetSign( an ) == BZ_MINUS ) {
-		BzSetSign( an, BZ_PLUS );
+		if( BzGetSign( an ) == BZ_MINUS ) {
+			BzSetSign( an, BZ_PLUS );
+		}
+
+		return( res );
 	}
-
-	return( res );
 }
 
 BigQ
 BqInverse( const BigQ a )
 {
-	const BigZ an  = BqGetNumerator(   a );
-	const BigZ ad  = BqGetDenominator( a );
+	if( a == BQNULL ) {
+		return( BQNULL );
+	} else	{
+		const BigZ an  = BqGetNumerator(   a );
+		const BigZ ad  = BqGetDenominator( a );
 
-	return( BqCreate( ad, an ) );
+		return( BqCreate( ad, an ) );
+	}
 }
 
 BzChar *
-BqToString(const BigQ q, int sign)
+BqToString( const BigQ q, int sign )
 {
 	BzChar * n;
 	BzChar * d;
@@ -382,7 +419,7 @@ BqToString(const BigQ q, int sign)
 }
 
 BigQ
-BqFromString(const BzChar *s)
+BqFromString( const BzChar *s )
 {
 	BigZ n;
 	BigZ d;
@@ -420,7 +457,7 @@ BqFromString(const BzChar *s)
 		BzFree( n );
 		return( q );
 	} else	{
-		n = BzFromString( s,   (BigNumDigit)10, BZ_UNTIL_VALID );
+		n = BzFromString( s,   (BigNumDigit)10, BZ_UNTIL_INVALID );
 		d = BzFromString( p+1, (BigNumDigit)10, BZ_UNTIL_END   );
 		q = BqCreate( n, d );
 		BzFree( n );
