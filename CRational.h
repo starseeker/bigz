@@ -1,5 +1,5 @@
 //
-// $Id: CRational.h,v 1.5 2011-12-24 13:19:23 jullien Exp $
+// $Id: CRational.h,v 1.6 2011-12-26 09:25:42 jullien Exp $
 //
 
 /*
@@ -149,12 +149,8 @@ public:
 	// output
 	friend std::ostream& operator<<(std::ostream& os, const CRational& q) {
 		BzChar *s = BqToString(q, 0);
-		if( s != (BzChar)NULL ) {
-			os << s;
-			BzFreeString( (void *)s );
-		} else	{
-			os << "#.QNaN";
-		}
+		os << s;
+		BzFreeString( (void *)s );
 		return os;
 	}
 private:

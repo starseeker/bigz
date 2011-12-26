@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.c,v 1.8 2011-12-25 10:01:57 jullien Exp $
+ * $Id: bigq.c,v 1.9 2011-12-26 09:25:42 jullien Exp $
  */
 
 /*
@@ -38,6 +38,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+
+/*
+ * Implementation note:
+ * If any BigQ parameter is passed as BZNULL, function returns BZNULL which
+ * should be considered as an error.
+ */
 
 static	void BqNormalize(BigQ q);
 
@@ -91,7 +97,7 @@ BqNormalize( BigQ q )
 	BigZ n   = BqGetNumerator( q );
 	BigZ d   = BqGetDenominator( q );
 	BigZ gcd = BzGcd( n, d );
-	BigZ one = BzFromInteger( (BzInt) 1 );
+	BigZ one = BzFromInteger( (BzInt)1 );
 
 	if( BzCompare( gcd, one ) != BZ_EQ ) {
 		BigZ nn = BzDiv( n, gcd );
@@ -160,14 +166,14 @@ BqSubtract( const BigQ a, const BigQ b )
 
 		tmp1 = BzMultiply( an, bd );
 		tmp2 = BzMultiply( ad, bn );
-
-		n = BzSubtract( tmp1, tmp2 );
+		n    = BzSubtract( tmp1, tmp2 );
 		BzFree( tmp2 );
 		BzFree( tmp1 );
 
-		d = BzMultiply( ad, bd );
+		d    = BzMultiply( ad, bd );
 
 		res = BqCreate( n, d );
+
 		BzFree( d );
 		BzFree( n );
 
@@ -214,10 +220,6 @@ BqDiv( const BigQ a, const BigQ b )
 		BigZ n;
 		BigZ d;
 		BigQ res;
-
-		if( BzGetSign( bn ) == BZ_ZERO ) {
-			return( BQNULL );
-		}
 
 		n = BzMultiply( an, bd );
 		d = BzMultiply( ad, bn );
@@ -344,6 +346,13 @@ BqInverse( const BigQ a )
 	}
 }
 
+/*
+ *	Define QNaN as an array (not a pointer!!!) to let sizeof returns
+ *	the string length.
+ */
+
+static	const BzChar BqNaN[] = "#.QNaN";
+
 BzChar *
 BqToString( const BigQ q, int sign )
 {
@@ -354,7 +363,19 @@ BqToString( const BigQ q, int sign )
 	int	i;
 
 	if( q == BQNULL ) {
-		return( (BzChar *)NULL );
+		/*
+		 * BqToString contract is to allocate a new string, even
+		 * for #.QNaN error.
+		 */
+		len = sizeof( BqNaN ); /* works because BqNaN is an array */
+		n   = (BzChar *)BzStringAlloc( len );
+		if( n != (BzChar *)NULL ) {
+			for( i = 0 ; BqNaN[ i ] != '\000' ; ++i ) {
+				n[ i ] = (BzChar)BqNaN[ i ];
+			}
+			n[ i ] = (BzChar)'\000';
+		}
+		return( n );
 	} else	if( BzLength(BqGetDenominator(q)) == (BigNumLength)1 ) {
 		return( BzToString(BqGetNumerator(q), (BigNumDigit)10, sign) );
 	} else	{
@@ -430,6 +451,17 @@ BqFromString( const BzChar *s )
 		return( BQNULL );
 	}
 
+	/*
+	 * Throw away any initial space
+	 */
+
+	while( (*s == (BzChar)' ')
+	       || (*s == (BzChar)'\t')
+	       || (*s == (BzChar)'\n')
+	       || (*s == (BzChar)'\r') ) {
+		s++;
+	}
+
 	p = s;
 
 	if( *p == (BzChar)'+' || *p == (BzChar)'-' ) {
@@ -458,7 +490,7 @@ BqFromString( const BzChar *s )
 		return( q );
 	} else	{
 		n = BzFromString( s,   (BigNumDigit)10, BZ_UNTIL_INVALID );
-		d = BzFromString( p+1, (BigNumDigit)10, BZ_UNTIL_END   );
+		d = BzFromString( p+1, (BigNumDigit)10, BZ_UNTIL_END );
 		q = BqCreate( n, d );
 		BzFree( n );
 		BzFree( d );
