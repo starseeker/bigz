@@ -1,5 +1,5 @@
 #if	!defined( lint )
-static	const char rcsid[] = "$Id: tCRational.cpp,v 1.6 2011-12-27 08:37:15 jullien Exp $";
+static	const char rcsid[] = "$Id: tCRational.cpp,v 1.7 2011-12-27 10:47:16 jullien Exp $";
 #endif
 
 //
@@ -33,7 +33,7 @@ main()
 	std::cout << zero << std::endl;
 	std::cout << -zero << std::endl;
 	std::cout << err << std::endl;
-//	std::cout << pi << std::endl;
+	std::cout << pi << std::endl;
 	std::cout << q1 << std::endl;
 	std::cout << q4 << std::endl;
 	std::cout << -q1 << std::endl;

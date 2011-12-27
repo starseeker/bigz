@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.h,v 1.6 2011-12-25 10:01:57 jullien Exp $
+ * $Id: bigq.h,v 1.7 2011-12-27 10:47:16 jullien Exp $
  */
 
 /*
@@ -97,6 +97,7 @@ extern BigQ	    BqAdd(const BigQ a, const BigQ b);
 extern BigQ	    BqCreate(const BigZ n, const BigZ d);
 extern BqCmp	    BqCompare(const BigQ a, const BigQ b) BQ_PURE_FUNCTION;
 extern BigQ	    BqCopy(const BigQ a);
+extern void	    BqDelete(const BigQ a);
 extern BigQ	    BqDiv(const BigQ a, const BigQ b);
 extern BigQ	    BqFromString(const BzChar *s);
 extern BigQ	    BqInverse(const BigQ a);

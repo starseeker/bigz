@@ -1,5 +1,5 @@
 //
-// $Id: CRational.h,v 1.6 2011-12-26 09:25:42 jullien Exp $
+// $Id: CRational.h,v 1.7 2011-12-27 10:47:16 jullien Exp $
 //
 
 /*
@@ -65,7 +65,7 @@ public:
 		: m_q( BqFromDouble( n ) ) {
 	}
 #endif
-	~CRational() { BzFree( m_q ); }
+	~CRational() { BqDelete( m_q ); }
 
 	// convertions
 

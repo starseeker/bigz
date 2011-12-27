@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.c,v 1.10 2011-12-27 08:37:15 jullien Exp $
+ * $Id: bigq.c,v 1.11 2011-12-27 10:47:16 jullien Exp $
  */
 
 /*
@@ -138,6 +138,20 @@ BqCreate( const BigZ n, const BigZ d )
 	return( BqCreateInternal( n, d, BQ_COPY ) );
 }
 
+void
+BqDelete( const BigQ a )
+{
+	if( a == BQNULL ) {
+		return;
+	} else	{
+		const BigZ n = BqGetNumerator(   a );
+		const BigZ d = BqGetDenominator( a );
+		BzFree( n );
+		BzFree( d );
+		BqFree( a );
+	}
+}
+
 BigQ
 BqAdd( const BigQ a, const BigQ b )
 {
@@ -210,11 +224,8 @@ BqMultiply( const BigQ a, const BigQ b )
 		const BigZ ad = BqGetDenominator( a );
 		const BigZ bn = BqGetNumerator(   b );
 		const BigZ bd = BqGetDenominator( b );
-		BigZ n;
-		BigZ d;
-
-		n = BzMultiply( an, bn );
-		d = BzMultiply( ad, bd );
+		const BigZ n  = BzMultiply( an, bn );
+		const BigZ d  = BzMultiply( ad, bd );
 
 		return( BqCreateInternal( n, d, BQ_SET ) );
 	}
@@ -230,11 +241,8 @@ BqDiv( const BigQ a, const BigQ b )
 		const BigZ ad = BqGetDenominator( a );
 		const BigZ bn = BqGetNumerator(   b );
 		const BigZ bd = BqGetDenominator( b );
-		BigZ n;
-		BigZ d;
-
-		n = BzMultiply( an, bd );
-		d = BzMultiply( ad, bn );
+		const BigZ n  = BzMultiply( an, bd );
+		const BigZ d  = BzMultiply( ad, bn );
 
 		return( BqCreateInternal( n, d, BQ_SET ) );
 	}
@@ -355,7 +363,7 @@ BqInverse( const BigQ a )
 
 /*
  *	Define QNaN as an array (not a pointer!!!) to let sizeof returns
- *	the string length.
+ *	the null terminating string length (including '\000').
  */
 
 static	const BzChar BqNaN[] = "#.QNaN";
@@ -468,6 +476,10 @@ BqFromString( const BzChar *s )
 	       || (*s == (BzChar)'\r') ) {
 		s++;
 	}
+
+	/*
+	 * search for '/'
+	 */
 
 	p = s;
 
