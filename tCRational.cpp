@@ -1,5 +1,5 @@
 #if	!defined( lint )
-static	const char rcsid[] = "$Id: tCRational.cpp,v 1.5 2011-12-24 13:19:23 jullien Exp $";
+static	const char rcsid[] = "$Id: tCRational.cpp,v 1.6 2011-12-27 08:37:15 jullien Exp $";
 #endif
 
 //
@@ -22,11 +22,13 @@ main()
 	CRational q3(5, 9);
 	CRational q4("87384004098848212735349875629364987687687667720",
 		     "93495466257274887265487820984675290489826754805");
+	CRational q5(-4, -6);
 	CRational pi("22/7");
 	CRational one(1);
 	CRational zero(0);
 	CRational err(5, 0);
 
+	std::cout << q5 << std::endl;
 	std::cout << one << std::endl;
 	std::cout << zero << std::endl;
 	std::cout << -zero << std::endl;

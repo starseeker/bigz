@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.c,v 1.9 2011-12-26 09:25:42 jullien Exp $
+ * $Id: bigq.c,v 1.10 2011-12-27 08:37:15 jullien Exp $
  */
 
 /*
@@ -45,16 +45,22 @@
  * should be considered as an error.
  */
 
-static	void BqNormalize(BigQ q);
+typedef	enum {
+	BQ_COPY,
+	BQ_SET
+} BqCreateMode;
 
-BigQ
-BqCreate( const BigZ n, const BigZ d )
+static	void BqNormalize(BigQ q);
+static	BigQ BqCreateInternal( const BigZ n, const BigZ d, BqCreateMode mode );
+
+static BigQ
+BqCreateInternal( const BigZ n, const BigZ d, BqCreateMode mode )
 {
 	BigQ	q;
 	BigZ	cn;
 	BigZ	cd;
 
-	if( n == BZNULL || d ==BZNULL ) {
+	if( n == BZNULL || d == BZNULL ) {
 		return( BQNULL );
 	}
 
@@ -72,22 +78,30 @@ BqCreate( const BigZ n, const BigZ d )
 		return( q );
 	}
 
-	cn = BzCopy( n );
-	cd = BzCopy( d );
+	if( mode == BQ_COPY ) {
+		cn = BzCopy( n );
+		cd = BzAbs( d );
 
-	BzSetSign( cn, BZ_PLUS );
-	BzSetSign( cd, BZ_PLUS );
+		if( BzGetSign( n ) != BzGetSign( d ) ) {
+			BzSetSign( cn, BZ_MINUS );
+		}
+	} else	{
+		cn = n;
+		cd = d;
 
-	if( BzGetSign( n ) != BzGetSign( d ) ) {
-		BzSetSign( cn, BZ_MINUS );
-	} else	if( BzGetSign( n ) == BZ_MINUS ) {
-		BzSetSign( cn, BZ_MINUS );
+		if( BzGetSign( n ) != BzGetSign( d ) ) {
+			BzSetSign( cn, BZ_MINUS );
+		}
+		BzSetSign( cd, BZ_PLUS );
 	}
 
 	BqSetNumerator(   q, cn );
 	BqSetDenominator( q, cd );
 
-	BqNormalize( q );
+	if( BzLength( cd ) != (BigNumLength)1 ) {
+		BqNormalize( q );
+	}
+
 	return( q );
 }
 
@@ -103,15 +117,25 @@ BqNormalize( BigQ q )
 		BigZ nn = BzDiv( n, gcd );
 		BigZ nd = BzDiv( d, gcd );
 
-		BzFree( n );
 		BzFree( d );
+		BzFree( n );
 		
-		BqSetNumerator( q, nn );
+		BqSetNumerator(   q, nn );
 		BqSetDenominator( q, nd );
 	}
 
 	BzFree( one );
 	BzFree( gcd );
+}
+
+/*
+ *	Public interface
+ */
+
+BigQ
+BqCreate( const BigZ n, const BigZ d )
+{
+	return( BqCreateInternal( n, d, BQ_COPY ) );
 }
 
 BigQ
@@ -128,23 +152,24 @@ BqAdd( const BigQ a, const BigQ b )
 		BigZ d;
 		BigZ tmp1;
 		BigZ tmp2;
-		BigQ res;
+
+		/*
+		 * Compute numerator
+		 */
 
 		tmp1 = BzMultiply( an, bd );
 		tmp2 = BzMultiply( ad, bn );
-
 		n = BzAdd( tmp1, tmp2 );
 		BzFree( tmp2 );
 		BzFree( tmp1 );
 
+		/*
+		 * Compute denominator
+		 */
+
 		d = BzMultiply( ad, bd );
 
-		res = BqCreate( n, d );
-
-		BzFree( d );
-		BzFree( n );
-
-		return( res );
+		return( BqCreateInternal( n, d, BQ_SET ) );
 	}
 }
 
@@ -162,7 +187,6 @@ BqSubtract( const BigQ a, const BigQ b )
 		BigZ d;
 		BigZ tmp1;
 		BigZ tmp2;
-		BigQ res;
 
 		tmp1 = BzMultiply( an, bd );
 		tmp2 = BzMultiply( ad, bn );
@@ -172,12 +196,7 @@ BqSubtract( const BigQ a, const BigQ b )
 
 		d    = BzMultiply( ad, bd );
 
-		res = BqCreate( n, d );
-
-		BzFree( d );
-		BzFree( n );
-
-		return( res );
+		return( BqCreateInternal( n, d, BQ_SET ) );
 	}
 }
 
@@ -193,17 +212,11 @@ BqMultiply( const BigQ a, const BigQ b )
 		const BigZ bd = BqGetDenominator( b );
 		BigZ n;
 		BigZ d;
-		BigQ res;
 
 		n = BzMultiply( an, bn );
 		d = BzMultiply( ad, bd );
 
-		res = BqCreate( n, d );
-
-		BzFree( d );
-		BzFree( n );
-
-		return( res );
+		return( BqCreateInternal( n, d, BQ_SET ) );
 	}
 }
 
@@ -219,17 +232,11 @@ BqDiv( const BigQ a, const BigQ b )
 		const BigZ bd = BqGetDenominator( b );
 		BigZ n;
 		BigZ d;
-		BigQ res;
 
 		n = BzMultiply( an, bd );
 		d = BzMultiply( ad, bn );
 
-		res = BqCreate( n, d );
-
-		BzFree( d );
-		BzFree( n );
-
-		return( res );
+		return( BqCreateInternal( n, d, BQ_SET ) );
 	}
 }
 
@@ -300,7 +307,7 @@ BqNegate( const BigQ a )
 	} else	{
 		const BigZ an  = BqGetNumerator(   a );
 		const BigZ ad  = BqGetDenominator( a );
-		BigQ       res = BqCreate( an, ad );
+		BigQ       res = BqCreateInternal( an, ad, BQ_COPY );
 
 		switch( BzGetSign( an ) ) {
 		case BZ_MINUS:
@@ -323,7 +330,7 @@ BqAbs( const BigQ a )
 	} else	{
 		const BigZ an  = BqGetNumerator(   a );
 		const BigZ ad  = BqGetDenominator( a );
-		BigQ       res = BqCreate( an, ad );
+		BigQ       res = BqCreateInternal( an, ad, BQ_COPY );
 
 		if( BzGetSign( an ) == BZ_MINUS ) {
 			BzSetSign( an, BZ_PLUS );
@@ -342,7 +349,7 @@ BqInverse( const BigQ a )
 		const BigZ an  = BqGetNumerator(   a );
 		const BigZ ad  = BqGetDenominator( a );
 
-		return( BqCreate( ad, an ) );
+		return( BqCreateInternal( an, ad, BQ_COPY ) );
 	}
 }
 
@@ -368,14 +375,14 @@ BqToString( const BigQ q, int sign )
 		 * for #.QNaN error.
 		 */
 		len = sizeof( BqNaN ); /* works because BqNaN is an array */
-		n   = (BzChar *)BzStringAlloc( len );
-		if( n != (BzChar *)NULL ) {
+		res = (BzChar *)BzStringAlloc( len );
+		if( res != (BzChar *)NULL ) {
 			for( i = 0 ; BqNaN[ i ] != '\000' ; ++i ) {
-				n[ i ] = (BzChar)BqNaN[ i ];
+				res[ i ] = (BzChar)BqNaN[ i ];
 			}
-			n[ i ] = (BzChar)'\000';
+			res[ i ] = (BzChar)'\000';
 		}
-		return( n );
+		return( res );
 	} else	if( BzLength(BqGetDenominator(q)) == (BigNumLength)1 ) {
 		return( BzToString(BqGetNumerator(q), (BigNumDigit)10, sign) );
 	} else	{
@@ -484,16 +491,13 @@ BqFromString( const BzChar *s )
 		 */
 		n = BzFromString( s, (BigNumDigit)10, BZ_UNTIL_END );
 		d = BzFromInteger( (BzInt)1 );
-		q = BqCreate( n, d );
-		BzFree( d );
-		BzFree( n );
+
+		q = BqCreateInternal( n, d, BQ_SET );
 		return( q );
 	} else	{
 		n = BzFromString( s,   (BigNumDigit)10, BZ_UNTIL_INVALID );
 		d = BzFromString( p+1, (BigNumDigit)10, BZ_UNTIL_END );
-		q = BqCreate( n, d );
-		BzFree( n );
-		BzFree( d );
+		q = BqCreateInternal( n, d, BQ_SET );
 		return( q );
 	}
 }
