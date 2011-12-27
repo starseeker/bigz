@@ -1,5 +1,5 @@
 #if	!defined( lint )
-static	const char rcsid[] = "$Id: tCBignum.cpp,v 1.7 2011-12-03 13:23:21 jullien Exp $";
+static	const char rcsid[] = "$Id: tCBignum.cpp,v 1.8 2011-12-27 15:11:17 jullien Exp $";
 #endif
 
 //
@@ -11,6 +11,7 @@ static	const char rcsid[] = "$Id: tCBignum.cpp,v 1.7 2011-12-03 13:23:21 jullien
 #include <string.h>
 #include <iostream>
 #include "CBignum.h"
+#include "CRational.h"
 
 static int testcnt = 0;
 static int failcnt = 0;
@@ -54,7 +55,23 @@ ffib( const CBignum& n )
 }
 
 void
-T( int count, const char* op, const CBignum& n, const char * res )
+Tz( int count, const char* op, const CBignum& n, const char * res )
+{
+	const char* s = (const char *)n;
+
+	++testcnt;
+
+	if( strcmp( s, res ) != 0 ) {
+	    printf( "test %3d (%s) fails: expected = %16s, computed = %16s\n",
+	            count, op, res, s );
+	    ++failcnt;
+	}
+
+	BzFreeString( (char *)s );
+}
+
+void
+Tq( int count, const char* op, const CRational& n, const char *res )
 {
 	const char* s = (const char *)n;
 
@@ -86,16 +103,16 @@ main()
 	CBignum x2( 2 );		/* 2		     		*/
 	CBignum	x3;			/* 0				*/
 
-	T(   1, "++",   ++x2, 		"3"				);
-	T(   2, "--",	--x1, 		"354224848179261915074"		);
-	T(   3, "*=",	x1 *= x2,	"1062674544537785745222"	);
-	T(   4, "-=",	x1 -= x2,	"1062674544537785745219"	);
-	T(   5, "+=",	x1 += 3,	"1062674544537785745222"	);
-	T(   6, "ctor",	x3,		"0"				);
-	T(   7, "=",	x3 = x1,	"1062674544537785745222"	);
-	T(   8, "/=",	x3 /= x2+2,	"212534908907557149044"		);
-	T(   9, "%=",	x3 %= 19,	"13"				);
-	T(  10, "exp",	x2 = x3*3+x1/2,	"531337272268892872650"		);
+	Tz(   1, "++",   ++x2, 		"3"				);
+	Tz(   2, "--",	 --x1, 		"354224848179261915074"		);
+	Tz(   3, "*=",	 x1 *= x2,	"1062674544537785745222"	);
+	Tz(   4, "-=",	 x1 -= x2,	"1062674544537785745219"	);
+	Tz(   5, "+=",	 x1 += 3,	"1062674544537785745222"	);
+	Tz(   6, "ctor", x3,		"0"				);
+	Tz(   7, "=",	 x3 = x1,	"1062674544537785745222"	);
+	Tz(   8, "/=",	 x3 /= x2+2,	"212534908907557149044"		);
+	Tz(   9, "%=",	 x3 %= 19,	"13"				);
+	Tz(  10, "exp",	 x2 = x3*3+x1/2, "531337272268892872650"	);
 
 	tests();
 

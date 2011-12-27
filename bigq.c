@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.c,v 1.11 2011-12-27 10:47:16 jullien Exp $
+ * $Id: bigq.c,v 1.12 2011-12-27 15:11:17 jullien Exp $
  */
 
 /*
@@ -274,7 +274,7 @@ BqCompare( const BigQ a, const BigQ b )
 		}
 
 		if( BzCompare( an, bn ) == BZ_EQ
-		    && BzCompare( an, bn ) == BZ_EQ ) {
+		    && BzCompare( ad, bd ) == BZ_EQ ) {
 			/*
 			 *	Numerators and denominators are equal.
 			 */
