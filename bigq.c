@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.c,v 1.12 2011-12-27 15:11:17 jullien Exp $
+ * $Id: bigq.c,v 1.13 2011-12-27 15:31:11 jullien Exp $
  */
 
 /*
@@ -340,8 +340,8 @@ BqAbs( const BigQ a )
 		const BigZ ad  = BqGetDenominator( a );
 		BigQ       res = BqCreateInternal( an, ad, BQ_COPY );
 
-		if( BzGetSign( an ) == BZ_MINUS ) {
-			BzSetSign( an, BZ_PLUS );
+		if( BzGetSign( BqGetNumerator( res ) ) == BZ_MINUS ) {
+			BzSetSign( BqGetNumerator( res ), BZ_PLUS );
 		}
 
 		return( res );

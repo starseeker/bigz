@@ -1,5 +1,5 @@
 ;;;; -*-Mode:LISP; Package:LISP; Base:10; Syntax:ISLISP -*-
-;;;; Date:	$Id: gentest.lsp,v 1.3 2011-12-27 15:11:17 jullien Exp $
+;;;; Date:	$Id: gentest.lsp,v 1.4 2011-12-27 15:31:11 jullien Exp $
 ;;;; Title:	gentest.lsp
 ;;;; License:   Simplified BSD license
 ;;;; Author:	C. Jullien
@@ -74,15 +74,15 @@
    (incf *cnt*)
    (if (equal res nil) (setq res 0))
    (if (equal res t)   (setq res 1))
-   (format t " ~a(~3d, \"~8a\", ~2a(CBignum(~a)), \"~s\"~68t);~%"
-	     *test* *cnt* op op a1 res))
+   (format t " ~a(~3d, \"~8a\", ~2a(~a(~a)), \"~s\"~68t);~%"
+	     *test* *cnt* op op *type* a1 res))
 
 (defun show-fun2 (a1 op a2 res)
    (incf *cnt*)
    (if (equal res nil) (setq res 0))
    (if (equal res t)   (setq res 1))
-   (format t " ~a(~3d, \"~8a\", ~2a(CBignum(~a), CBignum(~a)), \"~s\"~68t);~%"
-	     *test* *cnt* op op a1 a2 res))
+   (format t " ~a(~3d, \"~8a\", ~2a(~a(~a), ~a(~a)), \"~s\"~68t);~%"
+	     *test* *cnt* op op *type* a1 *type* a2 res))
 
 (defun function-header ()
    (format t "void test~s(void);~%~%" *ftest*)
@@ -333,6 +333,7 @@
 	   45967 -45967 1234589567812456786 -1234589567812456786
 	   (list #'abs #'lognot #'-)
 	   (list "abs" "~" "-"))
+
    (unary-functions
 	   0 1 -1 -2
 	   (list #'lognot)
@@ -355,10 +356,21 @@
 		  #'< #'<= #'= #'> #'>=)
 	    (list "+" "-" "/" "*"
 		  "<" "<=" "==" ">" ">="))
+
+   (unary-functions
+	    1/3 2/3 -2/7 1/6
+	   (list #'abs #'-)
+	   (list "abs" "-"))
    t)
 
 ;;; Generate the tests.
 
+#+openlisp
+(progn
+      (testz)
+      (call-tests))
+
+#-openlisp
 (let ((*type* nil)
       (*cnt* 0)
       (*test nil))

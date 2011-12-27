@@ -1415,6 +1415,27 @@ test22(void)
  Tq(1114, ">=", CRational(Y2) >= CRational(X2), "0"                 );
 }
 
+void test23(void);
+
+void
+test23(void)
+{
+
+ X1 = "1/3";
+ X2 = "2/3";
+ Y1 = "-2/7";
+ Y2 = "1/6";
+
+ Tq(1115, "abs     ", abs(CRational(X1)), "1/3"                     );
+ Tq(1116, "abs     ", abs(CRational(X2)), "2/3"                     );
+ Tq(1117, "abs     ", abs(CRational(Y1)), "2/7"                     );
+ Tq(1118, "abs     ", abs(CRational(Y2)), "1/6"                     );
+ Tq(1119, "-       ", - (CRational(X1)), "-1/3"                     );
+ Tq(1120, "-       ", - (CRational(X2)), "-2/3"                     );
+ Tq(1121, "-       ", - (CRational(Y1)), "2/7"                      );
+ Tq(1122, "-       ", - (CRational(Y2)), "-1/6"                     );
+}
+
 void tests(void);
 
 void
@@ -1443,5 +1464,6 @@ tests(void)
         test20();
         test21();
         test22();
+        test23();
 }
 
