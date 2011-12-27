@@ -1,5 +1,5 @@
 #if	!defined( lint )
-static	const char rcsid[] = "$Id: tCBignum.cpp,v 1.8 2011-12-27 15:11:17 jullien Exp $";
+static	const char rcsid[] = "$Id: tCBignum.cpp,v 1.9 2011-12-27 18:54:12 jullien Exp $";
 #endif
 
 //
@@ -96,6 +96,31 @@ const char* Y2;
 int
 main()
 {
+#if	defined( _WINDEBUG )
+	_CrtMemState state;
+	int	     res;
+
+        res = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
+        res |= _CRTDBG_ALLOC_MEM_DF;
+        res |= _CRTDBG_CHECK_ALWAYS_DF;
+        res |= _CRTDBG_DELAY_FREE_MEM_DF;
+        res |= _CRTDBG_LEAK_CHECK_DF;
+        _CrtSetDbgFlag(res);
+
+	/*
+	 * Send all reports to stdout.
+	 */
+
+	_CrtSetReportMode( _CRT_WARN,   _CRTDBG_MODE_FILE   );
+	_CrtSetReportFile( _CRT_WARN,   _CRTDBG_FILE_STDOUT );
+	_CrtSetReportMode( _CRT_ERROR,  _CRTDBG_MODE_FILE   );
+	_CrtSetReportFile( _CRT_ERROR,  _CRTDBG_FILE_STDOUT );
+	_CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_FILE   );
+	_CrtSetReportFile( _CRT_ASSERT, _CRTDBG_FILE_STDOUT );
+
+	_CrtMemCheckpoint( &state );
+#endif
+
 	(void)printf("Bignum non-regression tests. (c) 1998-2012 C. Jullien\n");
 	(void)printf("Testing version %s ...\n\n", CBignum::version());
 
@@ -120,5 +145,11 @@ main()
 		(void)printf( "%d tests made, fails %d.\n", testcnt, failcnt );
 	else	(void)printf( "%d tests made, Ok!.\n", testcnt );
 
+#if	defined( _WINDEBUG )
+	_CrtCheckMemory();
+	_CrtDumpMemoryLeaks();
+//	_CrtMemDumpStatistics( &state );
+	(void)state;
+#endif
 	return( 0 );
 }

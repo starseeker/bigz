@@ -1,5 +1,5 @@
 //
-// $Id: CRational.h,v 1.8 2011-12-27 15:11:17 jullien Exp $
+// $Id: CRational.h,v 1.9 2011-12-27 18:54:11 jullien Exp $
 //
 
 /*
@@ -50,15 +50,20 @@ public:
 	CRational( const CBignum &n, const CBignum &d )
 		: m_q( BqCreate( n, d) ) {
 	}
-	CRational( const CBignum &n )
-		: m_q( BqCreate( n, BzFromInteger((BzInt)1) ) ) {
+	CRational( const CBignum &n ) {
+		const BigZ one = BzFromInteger((BzInt)1) ;
+		m_q = BqCreate( n, one );
+		BzFree( one );
 	}
 	CRational( const char *s )
 		: m_q( BqFromString((BzChar *)s) ) {
 	}
-	CRational( int n )
-		: m_q(BqCreate(BzFromInteger((BzInt)n),
-			       BzFromInteger((BzInt)1))) {
+	CRational( int n ) {
+		const BigZ nn  = BzFromInteger((BzInt)n) ;
+		const BigZ one = BzFromInteger((BzInt)1) ;
+		m_q = BqCreate( nn, one );
+		BzFree( one );
+		BzFree( nn  );
 	}
 #if	defined( HAVE_BQ_FROM_DOUBLE )
 	CRational( double n )
@@ -105,7 +110,7 @@ public:
 	// comparisons
 
 	friend bool operator==(const CRational& q1, const CRational& q2) {
-		return BqCompare(q1.m_q, q2.m_q) == BZ_EQ;
+		return BqCompare(q1.m_q, q2.m_q) == BQ_EQ;
 	}
 	friend bool operator==(const CRational& q, const CBignum& bn) {
 		return (q == CRational(bn));
@@ -118,7 +123,7 @@ public:
 	}
 
 	friend bool operator>(const CRational& q1, const CRational& q2) {
-		return BqCompare(q1.m_q, q2.m_q) == BZ_GT;
+		return BqCompare(q1.m_q, q2.m_q) == BQ_GT;
 	}
 	friend bool operator>(const CRational& q, const CBignum& bn) {
 		return (q == CRational(bn));
@@ -131,7 +136,7 @@ public:
 	}
 
 	friend bool operator<(const CRational& q1, const CRational& q2) {
-		return BqCompare(q1.m_q, q2.m_q) == BZ_LT;
+		return BqCompare(q1.m_q, q2.m_q) == BQ_LT;
 	}
 	friend bool operator<(const CRational& q, const CBignum& bn) {
 		return (q == CRational(bn));

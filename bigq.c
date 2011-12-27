@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.c,v 1.14 2011-12-27 16:01:14 jullien Exp $
+ * $Id: bigq.c,v 1.15 2011-12-27 18:54:12 jullien Exp $
  */
 
 /*
@@ -73,6 +73,10 @@ BqCreateInternal( const BigZ n, const BigZ d, BqCreateMode mode )
 	}
 
 	if( BzGetSign( n ) == BZ_ZERO ) {
+		if( mode == BQ_SET ) {
+			BzFree( d );
+			BzFree( n );
+		}
 		BqSetNumerator(   q, BzFromInteger((BzInt)0) );
 		BqSetDenominator( q, BzFromInteger((BzInt)1) );
 		return( q );
@@ -287,7 +291,6 @@ BqCompare( const BigQ a, const BigQ b )
 		tmp1 = BzMultiply( an, bd );
 		tmp2 = BzMultiply( ad, bn );
 		cmp  = BzCompare( tmp1, tmp2 );
-
 		BzFree( tmp2 );
 		BzFree( tmp1 );
 
@@ -423,11 +426,11 @@ BqToString( const BigQ q, int sign )
 
 		len = 0;
 		for( i = 0 ; n[i] != (BzChar)'\000' ; ++i ) {
-			len += (size_t)i;
+			++len;
 		}
 		++len; /* for '\\' */
 		for( i = 0 ; d[i] != (BzChar)'\000' ; ++i ) {
-			len += (size_t)i;
+			++len;
 		}
 		++len; /* for '\000' */
 

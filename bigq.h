@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.h,v 1.7 2011-12-27 10:47:16 jullien Exp $
+ * $Id: bigq.h,v 1.8 2011-12-27 18:54:12 jullien Exp $
  */
 
 /*
@@ -79,7 +79,7 @@ typedef	__BigQ				BigQ;
 #if	!defined( __EXTERNAL_BIGQ_MEMORY )
 #define	__toBqObj(q)			((__BigQ)q)
 #define	BQNULL				((BigQ)0)
-#define	BqAlloc()			malloc( sizeof( BigQ ) )
+#define	BqAlloc()			malloc( sizeof( struct BigQStruct ) )
 #define	BqFree( q )			free( q ) /* free(__toBqObj(q)) */
 #endif
 
@@ -96,7 +96,6 @@ extern BigQ	    BqAbs(const BigQ a);
 extern BigQ	    BqAdd(const BigQ a, const BigQ b);
 extern BigQ	    BqCreate(const BigZ n, const BigZ d);
 extern BqCmp	    BqCompare(const BigQ a, const BigQ b) BQ_PURE_FUNCTION;
-extern BigQ	    BqCopy(const BigQ a);
 extern void	    BqDelete(const BigQ a);
 extern BigQ	    BqDiv(const BigQ a, const BigQ b);
 extern BigQ	    BqFromString(const BzChar *s);
