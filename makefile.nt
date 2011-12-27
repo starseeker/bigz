@@ -1,6 +1,6 @@
 #
 #	Makefile for 'Bignums'	(c) C. Jullien
-#	$Id: makefile.nt,v 1.26 2011-12-27 15:11:17 jullien Exp $
+#	$Id: makefile.nt,v 1.27 2011-12-27 16:18:22 jullien Exp $
 #
 
 .SUFFIXES: .lsp .dat .$(SUFFIXES)
@@ -70,12 +70,6 @@ tCBignum.dat: ./lisp/gentest.lsp
 	@dos2unix -q tCBignum.dat
 
 tCBignum.obj: CBignum.h tCBignum.dat
-
-tCRational.obj: tCRational.cpp CRational.h CBignum.h
-
-tCRational.exe: bigq.obj bigz.obj bign.obj tCRational.obj CBignum.obj
-	@$(CC) $(CFLAGS) -FotCRational tCRational.obj CBignum.obj \
-	       bigq.obj bigz.obj bign.obj
 
 testbign.lsp: ./lisp/lisptests.lsp $(OLISP)
 	@$(CLISP) ./lisp/lisptests.lsp | dos2unix > testbign.lsp
@@ -181,7 +175,6 @@ MASTER		= \
 		makefile.tcc		\
 		tCBignum.cpp		\
 		tCBignum.dat		\
-		tCRational.cpp		\
 		tCBignum.dat		\
 		test/BntoBnn.h		\
 		test/bztest.c		\
