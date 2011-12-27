@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.c,v 1.13 2011-12-27 15:31:11 jullien Exp $
+ * $Id: bigq.c,v 1.14 2011-12-27 16:01:14 jullien Exp $
  */
 
 /*
@@ -267,6 +267,9 @@ BqCompare( const BigQ a, const BigQ b )
 			 *	Sign differs, easy case!
 			 */
 			if( BzGetSign( an ) == BZ_MINUS ) {
+				return( BQ_LT );
+			} else	if( BzGetSign( an ) == BZ_ZERO
+				    && BzGetSign( bn ) == BZ_PLUS ) {
 				return( BQ_LT );
 			} else	{
 				return( BQ_GT );
