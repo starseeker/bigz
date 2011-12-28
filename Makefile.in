@@ -1,6 +1,6 @@
 #
 #	Makefile for 'Bignums'	(c) C. Jullien
-#	$Id: Makefile.in,v 1.21 2011-12-27 18:54:11 jullien Exp $
+#	$Id: Makefile.in,v 1.22 2011-12-28 07:36:22 jullien Exp $
 #
 
 .SUFFIXES: .cpp .lsp .dat $(.SUFFIXES)
@@ -84,6 +84,15 @@ tests:
 
 clean:
 	@-rm bztest$(EXE) testkern$(EXE) tCBignum$(EXE) *.$(O) *.BAK *~
+
+valgrind: tCBignum$(EXE)
+	@valgrind \
+		--leak-check=summary \
+		--track-fds=yes \
+		--log-file=valgrind.log \
+                ./tCBignum$(EXE)
+        @tail -10 valgrind.log
+        @echo Consult valgrind.log for full log...
 
 lint:
 #	set LARCH_PATH=/usr/share/splint/lib
