@@ -1,5 +1,5 @@
 //
-// $Id: CBignum.h,v 1.15 2011-12-24 13:19:23 jullien Exp $
+// $Id: CBignum.h,v 1.16 2011-12-28 06:41:15 jullien Exp $
 //
 
 /*
@@ -389,8 +389,6 @@ private:
 	CBignum( const BigZ init, Flags ) : m_bz( init ) {}
 };
 
-const CBignum BzMinusOne( -1 );
-const CBignum BzZero( 0 );
 const CBignum BzOne( 1 );
 const CBignum BzTwo( 2 );
 

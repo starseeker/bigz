@@ -1,5 +1,5 @@
 #if	!defined( lint )
-static	const char rcsid[] = "$Id: tCBignum.cpp,v 1.9 2011-12-27 18:54:12 jullien Exp $";
+static	const char rcsid[] = "$Id: tCBignum.cpp,v 1.10 2011-12-28 06:41:15 jullien Exp $";
 #endif
 
 //
@@ -10,6 +10,9 @@ static	const char rcsid[] = "$Id: tCBignum.cpp,v 1.9 2011-12-27 18:54:12 jullien
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
+#ifdef WIN32
+#include <crtdbg.h>
+#endif
 #include "CBignum.h"
 #include "CRational.h"
 
@@ -39,9 +42,7 @@ ffib( const CBignum& n )
 {
 	if( n == BzOne ) {
 		return BzOne;
-	}
-
-	if( n == BzTwo ) {
+	} else	if( n == BzTwo ) {
 		return BzOne;
 	}
 
@@ -54,19 +55,24 @@ ffib( const CBignum& n )
 	}
 }
 
+static void
+checkResult(int count, const char* op, const char* expected, const char* res)
+{
+	++testcnt;
+
+	if( strcmp( expected, res ) != 0 ) {
+	    printf( "test %3d (%s) fails: expected = %16s, computed = %16s\n",
+	            count, op, res, expected );
+	    ++failcnt;
+	}
+}
+
 void
-Tz( int count, const char* op, const CBignum& n, const char * res )
+Tz( int count, const char* op, const CBignum& n, const char* res )
 {
 	const char* s = (const char *)n;
 
-	++testcnt;
-
-	if( strcmp( s, res ) != 0 ) {
-	    printf( "test %3d (%s) fails: expected = %16s, computed = %16s\n",
-	            count, op, res, s );
-	    ++failcnt;
-	}
-
+	checkResult(count, op, s, res);
 	BzFreeString( (char *)s );
 }
 
@@ -75,15 +81,14 @@ Tq( int count, const char* op, const CRational& n, const char *res )
 {
 	const char* s = (const char *)n;
 
-	++testcnt;
-
-	if( strcmp( s, res ) != 0 ) {
-	    printf( "test %3d (%s) fails: expected = %16s, computed = %16s\n",
-	            count, op, res, s );
-	    ++failcnt;
-	}
-
+	checkResult(count, op, s, res);
 	BzFreeString( (char *)s );
+}
+
+void
+Tq( int count, const char* op, bool b, const char *res )
+{
+	checkResult(count, op, (b ? "1" : "0"), res);
 }
 
 const char* X1;
@@ -119,6 +124,7 @@ main()
 	_CrtSetReportFile( _CRT_ASSERT, _CRTDBG_FILE_STDOUT );
 
 	_CrtMemCheckpoint( &state );
+	{ // Force a new block to let dtor do cleanups.
 #endif
 
 	(void)printf("Bignum non-regression tests. (c) 1998-2012 C. Jullien\n");
@@ -141,11 +147,14 @@ main()
 
 	tests();
 
-	if( failcnt != 0 )
+	if( failcnt != 0 ) {
 		(void)printf( "%d tests made, fails %d.\n", testcnt, failcnt );
-	else	(void)printf( "%d tests made, Ok!.\n", testcnt );
+	} else	{
+		(void)printf( "%d tests made, Ok!.\n", testcnt );
+	}
 
 #if	defined( _WINDEBUG )
+	}
 	_CrtCheckMemory();
 	_CrtDumpMemoryLeaks();
 //	_CrtMemDumpStatistics( &state );

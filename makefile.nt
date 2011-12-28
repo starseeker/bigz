@@ -1,6 +1,6 @@
 #
 #	Makefile for 'Bignums'	(c) C. Jullien
-#	$Id: makefile.nt,v 1.28 2011-12-27 18:54:12 jullien Exp $
+#	$Id: makefile.nt,v 1.29 2011-12-28 06:41:15 jullien Exp $
 #
 
 .SUFFIXES: .lsp .dat .$(SUFFIXES)
@@ -9,10 +9,10 @@
 # set CPU from $(CC) version found in path.
 !if [$(CC) 2>&1 | find "x86" > nul] == 0
 CPU		= i386
-ANALYSE		= -analyze:WX- -D_DEBUG -D_WINDEBUG -MTd
+ANALYSE		= -analyze:WX- # -D_DEBUG -D_WINDEBUG -MTd
 !elseif [$(CC) 2>&1 | find "x64" > nul] == 0
 CPU		= AMD64
-ANALYSE		=
+ANALYSE		= # -D_DEBUG -D_WINDEBUG -MTd
 !elseif [$(CC) 2>&1 | find "Itanium" > nul] == 0
 CPU		= IA64
 ANALYSE		=
