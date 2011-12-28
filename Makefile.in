@@ -17,8 +17,8 @@ ARFLAGS		= @AROPTS@
 DEBUG		=
 CFLAGS		= @CFLAGS@ -I. -DHAVE_CONFIG_H
 KERN		= kern
-KRNLIB		= kern.$(AEXT)
-KRNSHARED	= kern.$(SOEXT)
+KRNLIB		= libkern.$(AEXT)
+KRNSHARED	= libkern.$(SOEXT)
 LISP		= clisp
 OBJECT		= bigq.$(O) bigz.$(O) bign.$(O)
 VERSION		= 1.4.0
@@ -37,36 +37,43 @@ all: $(BINARIES) tests
 
 # KerN lib
 
+bign.$(O): bign.c bign.h
+bigz.$(O): bigz.c bigz.h bign.h
+bign.$(O): bigq.c bigq.h bigz.h bign.h
+
 $(KRNLIB): $(OBJECT)
 	@$(AR) $(ARFLAGS) $(KRNLIB) $(OBJECT)
 	-@$(RANLIB) $(KRNLIB)
 
 # KerN test
 
-testkern.$(O):
+testkern.$(O): bign.h test/testkern.c
 	@$(CC) -c $(CFLAGS) -Itest test/testkern.c
 
-testkern$(EXE): $(OBJECT) testkern.$(O)
-	@$(CC) $(CFLAGS) -o testkern$(EXE) testkern.$(O) $(OBJECT)
+testkern$(EXE): $(KRNLIB) testkern.$(O)
+	@$(CC) $(CFLAGS) -o testkern$(EXE) testkern.$(O) -L. -l$(KERN)
 
 # BZ test
 
-bztest$(EXE): $(OBJECT) bztest.$(O)
-	@$(CC) $(CFLAGS) -o bztest$(EXE) bztest.$O $(OBJECT)
+bztest$(EXE): $(KRNLIB) bztest.$(O)
+	@$(CC) $(CFLAGS) -o bztest$(EXE) bztest.$O  -L. -l$(KERN)
 
-bztest.$(O): test/bztest.c
+bztest.$(O): test/bztest.c bigz.h bign.h
 	@$(CC) -c $(CFLAGS) -Itest test/bztest.c
 
 # C++ test
 
-tCBignum$(EXE): $(OBJECT) CBignum.$(O) tCBignum.$(O)
-	@$(CPP) $(CFLAGS) -o tCBignum$(EXE) tCBignum.$(O) CBignum.$(O) $(OBJECT)
+tCBignum$(EXE): $(KRNLIB) CBignum.$(O) tCBignum.$(O)
+	@$(CPP) $(CFLAGS) -o tCBignum$(EXE) tCBignum.$(O) CBignum.$(O) \
+		-L. -l$(KERN)
 
 tCBignum.dat: ./lisp/gentest.lsp
 	@echo generating tests with $(LISP)..
 	@$(LISP) ./lisp/gentest.lsp
 
-tCBignum.$(O): CBignum.h tCBignum.cpp tCBignum.dat
+CBignum.$(O): CBignum.h CBignum.cpp bigz.h bign.h
+
+tCBignum.$(O): CBignum.h tCBignum.cpp tCBignum.dat bigz.h bign.h
 
 # Misc
 
@@ -76,7 +83,7 @@ tests:
 	./tCBignum
 
 clean:
-	@rm bztest$(EXE) testkern$(EXE) tCBignum$(EXE) *.$(O) *.BAK *~
+	@-rm bztest$(EXE) testkern$(EXE) tCBignum$(EXE) *.$(O) *.BAK *~
 
 lint:
 #	set LARCH_PATH=/usr/share/splint/lib

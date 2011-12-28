@@ -43,6 +43,8 @@
 extern	"C"	{
 #endif
 
+#include <stdlib.h>
+
 #define	BZ_PURE_FUNCTION		BN_PURE_FUNCTION
 #define	BZ_CONST_FUNCTION		BN_CONST_FUNCTION
 
