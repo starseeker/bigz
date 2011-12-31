@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.c,v 1.89 2011-12-31 11:08:06 jullien Exp $
+ * $Id: bigz.c,v 1.90 2011-12-31 11:22:42 jullien Exp $
 */
 
 /*
@@ -1016,6 +1016,7 @@ BzIsOdd( const BigZ y )
 	return( BnnIsDigitOdd( BzGetDigit( y, 0 ) ) );
 }
 
+#if	defined( BZ_OPTIMIZE_PRINT )
 /*
  * Returns two values:
  * - maxval: the maximal value in base 'base' that can fit in a BigNumDigit
@@ -1039,6 +1040,7 @@ BzMaxBase( int base, BigNumDigit* maxval, unsigned int* digits )
 	*maxval = i;
 	*digits = (unsigned int)b;
 }
+#endif	/* BZ_OPTIMIZE_PRINT */
 
 BzChar *
 BzToString( const BigZ z, BigNumDigit base, int sign )
@@ -1140,8 +1142,8 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 
 	if( BzGetSign( z ) == BZ_ZERO ) {
 		*--s = (BzChar)'0';
-#if	defined( BZ_OPTIMIZE_FOR_BASE10 )
-	} else	if( base <= (BigNumDigit)36 ) {
+#if	defined( BZ_OPTIMIZE_PRINT )
+	} else	{
 		BigNumDigit  maxval = (BigNumDigit)BZ_MAX_BASE10;
 		unsigned int digits = (unsigned int)BZ_MAX_BASE10_DIGITS;
 
@@ -1157,8 +1159,8 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 			 * compute: y div maxval => q,
 			 * returns r = y mod maxval
 			 *
-			 * maxval is the greatest integer that fits
-			 * in a BigNumDigit.
+			 * maxval is the greatest integer in base 'base'
+			 * that fits in a BigNumDigit.
 			 */
 
 			r = BnnDivideDigit( BzToBn( q ),
@@ -1196,7 +1198,8 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 			q = y;
 			y = v;
 		} while( BnnIsZero( BzToBn( y ), zl ) == BN_FALSE );
-#endif
+	}
+#else	/* BZ_OPTIMIZE_PRINT */
 	} else	do {
 		/* compute: y div base => q, returns r = y mod base */
 
@@ -1211,6 +1214,7 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 		q = y;
 		y = v;
 	} while( BnnIsZero( BzToBn( y ), zl ) == BN_FALSE );
+#endif	/* BZ_OPTIMIZE_PRINT */
 
     	/*
 	 * Add sign if needed.

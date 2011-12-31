@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.h,v 1.54 2011-12-28 07:36:22 jullien Exp $
+ * $Id: bigz.h,v 1.55 2011-12-31 11:22:42 jullien Exp $
  */
 
 /*
@@ -141,9 +141,9 @@ typedef	unsigned int			BzUInt;
 #endif
 #endif
 
-#define	BZ_OPTIMIZE_FOR_BASE10
+#define	BZ_OPTIMIZE_PRINT
 
-#if	defined( BZ_OPTIMIZE_FOR_BASE10 )
+#if	defined( BZ_OPTIMIZE_PRINT )
 /*
  *	Values should be portable for BigNumDigit size >= 32bit
  *	64bit ports may increase the two values to optimize even more.
@@ -175,7 +175,7 @@ typedef	unsigned int			BzUInt;
 #define	BZ_MAX_BASE10_DIGITS	9
 #endif	/* BZ_MAX_BASE10_DIGITS */
 #endif	/* _WIN64 */
-#endif	/* BZ_OPTIMIZE_FOR_BASE10 */
+#endif	/* BZ_OPTIMIZE_PRINT */
 
 #if	!defined( __EXTERNAL_BIGZ_MEMORY )
 #define	__toBzObj(z)			((__BigZ)z)
