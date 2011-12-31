@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.c,v 1.91 2011-12-31 12:48:47 jullien Exp $
+ * $Id: bigz.c,v 1.92 2011-12-31 14:48:08 jullien Exp $
 */
 
 /*
@@ -114,7 +114,6 @@ static const int BigHexToDigit[] = {
 		 : -1)
 #endif
 
-static int	BzStrLen( const BzChar *s ) BN_PURE_FUNCTION;
 static BzSign	BzGetOppositeSign( const BigZ z );
 
 #if	defined( BZ_DEBUG )
@@ -1112,8 +1111,16 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 		return( (BzChar *)NULL );
 	}
 
-	if( (y = BzCreate( zl )) == BZNULL ) {
+	if( len != (size_t *)NULL ) {
+		/*
+		 * set len to 0 in case BzToStringBuffer returns NULL
+		 * because of allocation failure. It should be checked by
+		 * caller that may otherwise allocate a bigger buffer.
+		 */
 		*len = 0;
+	}
+
+	if( (y = BzCreate( zl )) == BZNULL ) {
 		return( (BzChar *)NULL );
 	}
 
@@ -1129,7 +1136,6 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 		if( strg == (BzChar *)NULL ) {
 			BzFree( y );
 			BzFree( q );
-			*len = 0;
 			return( (BzChar *)NULL );
 		}
 	}
@@ -1184,7 +1190,7 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 				}
 			} else	{
 				/*
-				 * Last serie (top left). Print only required
+				 * Last serie (top left). Print only available
 				 * digits.
 				 */
 				while( r != 0 ) {
@@ -1268,12 +1274,12 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 	return( strg );
 }
 
-static	int
+size_t
 BzStrLen( const BzChar *s )
 {
-	int	len;
+	size_t	len;
 
-	for( len = 0; *s++ != (BzChar)'\000' ; ++len ) {
+	for( len = (size_t)0; *s++ != (BzChar)'\000' ; ++len ) {
 		continue;
 	}
 

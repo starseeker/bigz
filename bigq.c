@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.c,v 1.15 2011-12-27 18:54:12 jullien Exp $
+ * $Id: bigq.c,v 1.16 2011-12-31 14:48:08 jullien Exp $
  */
 
 /*
@@ -420,19 +420,10 @@ BqToString( const BigQ q, int sign )
 		}
 
 		/*
-		 * Compute total length (don't use strlen because we
-		 * don't know the exact type of BzChar - it may be wchar_t).
+		 * Compute total length
 		 */
 
-		len = 0;
-		for( i = 0 ; n[i] != (BzChar)'\000' ; ++i ) {
-			++len;
-		}
-		++len; /* for '\\' */
-		for( i = 0 ; d[i] != (BzChar)'\000' ; ++i ) {
-			++len;
-		}
-		++len; /* for '\000' */
+		len = BzStrLen(n) + BzStrLen(d) + 2; /* +2 for '/' and '\000' */
 
 		/*
 		 * Alloc result string and catenate n/d.

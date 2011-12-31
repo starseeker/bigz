@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.h,v 1.55 2011-12-31 11:22:42 jullien Exp $
+ * $Id: bigz.h,v 1.56 2011-12-31 14:48:08 jullien Exp $
  */
 
 /*
@@ -220,6 +220,7 @@ extern BigZ	    BzRem(const BigZ y, const BigZ z);
 extern BigNumBool   BzIsEven(const BigZ y) BZ_PURE_FUNCTION;
 extern BigNumBool   BzIsOdd(const BigZ y) BZ_PURE_FUNCTION;
 extern BzChar *	    BzToString(const BigZ z, BigNumDigit base, int sign);
+extern size_t       BzStrLen( const BzChar *s ) BN_PURE_FUNCTION;
 extern BzChar *	    BzToStringBuffer(const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t *len);
 extern BigZ	    BzFromString(const BzChar *s, BigNumDigit base, BzStrFlag flag);
 extern BigZ	    BzFromInteger(BzInt i);
