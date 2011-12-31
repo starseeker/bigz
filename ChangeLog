@@ -1,5 +1,7 @@
 Change log
 
+2011/12/31: Freeze tag v1.4.0 and start trunk v1.5.0.
+2011/12/31: Optimize very large bignum printing for all bases.
 2011/12/27: Add BigQ library (from bigq.c and bigq.h)
 2011/12/16: BzFromString ignore leading spaces including tab and newline.
 2011/12/06: Specialize int constants with enum.

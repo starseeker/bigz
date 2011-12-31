@@ -1,6 +1,6 @@
 #
 #	Makefile for 'Bignums'	(c) C. Jullien
-#	$Id: makefile.nt,v 1.30 2011-12-31 11:08:06 jullien Exp $
+#	$Id: makefile.nt,v 1.31 2011-12-31 16:49:56 jullien Exp $
 #
 
 .SUFFIXES: .lsp .dat .$(SUFFIXES)
@@ -32,7 +32,7 @@ CFLAGS		= $(DEBUG) $(ANALYSE) -nologo -W4 -EHsc -Gs -I.
 CLISP		= clisp # ccl
 OLISP		= ..\ntalisp-$(CPU).exe
 OBJECT		= bztest.obj bigq.obj bigz.obj bign.obj
-VERSION		= 1.4.0	
+VERSION		= 1.5.0	
 
 all: bztest.exe testkern.exe tCBignum.exe testbign.lsp
 
