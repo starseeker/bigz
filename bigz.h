@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.h,v 1.56 2011-12-31 14:48:08 jullien Exp $
+ * $Id: bigz.h,v 1.57 2011-12-31 16:34:29 jullien Exp $
  */
 
 /*
@@ -148,7 +148,7 @@ typedef	unsigned int			BzUInt;
  *	Values should be portable for BigNumDigit size >= 32bit
  *	64bit ports may increase the two values to optimize even more.
  */
-#if	defined( _WIN64 )
+#if	defined( _WIN64 ) || (defined( SIZEOF_LONG ) && (SIZEOF_LONG == 8))
 #if	!defined( BZ_MAX_BASE10 )
 /*
  *	Max power of 10 to fix in a BigNumDigit (generally machine word).
