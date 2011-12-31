@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.c,v 1.88 2011-12-24 14:38:03 jullien Exp $
+ * $Id: bigz.c,v 1.89 2011-12-31 11:08:06 jullien Exp $
 */
 
 /*
@@ -1016,6 +1016,30 @@ BzIsOdd( const BigZ y )
 	return( BnnIsDigitOdd( BzGetDigit( y, 0 ) ) );
 }
 
+/*
+ * Returns two values:
+ * - maxval: the maximal value in base 'base' that can fit in a BigNumDigit
+ * - digits: the number of digits in base 'base' that can be printed.
+ */
+
+static	void BzMaxBase( int base, BigNumDigit* maxval, unsigned int* digits );
+
+static	void
+BzMaxBase( int base, BigNumDigit* maxval, unsigned int* digits )
+{
+	BigNumDigit  i = (BigNumDigit)base;
+	double 	     f = (double)base;
+	int b;
+
+	for( b = 1 ; (double)(i * base) > (f * ((double)base - 0.01)) ; ++b ) {
+		i *= base;
+		f *= (double)base;
+	}
+
+	*maxval = i;
+	*digits = (unsigned int)b;
+}
+
 BzChar *
 BzToString( const BigZ z, BigNumDigit base, int sign )
 {
@@ -1117,34 +1141,41 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 	if( BzGetSign( z ) == BZ_ZERO ) {
 		*--s = (BzChar)'0';
 #if	defined( BZ_OPTIMIZE_FOR_BASE10 )
-	} else	if( base == (BigNumDigit)10 ) {
+	} else	if( base <= (BigNumDigit)36 ) {
+		BigNumDigit  maxval = (BigNumDigit)BZ_MAX_BASE10;
+		unsigned int digits = (unsigned int)BZ_MAX_BASE10_DIGITS;
+
+		if( base != (BigNumDigit)10 ) {
+			BzMaxBase( (int)base, &maxval, &digits );
+		}
+
 		/*
 		 * This optimization makes BigZ output 10 to 20x faster.
 		 */
 		do {
 			/*
-			 * compute: y div BZ_MAX_BASE10 => q,
-			 * returns r = y mod BZ_MAX_BASE10
+			 * compute: y div maxval => q,
+			 * returns r = y mod maxval
 			 *
-			 * BZ_MAX_BASE10 is the greatest integer that fits
+			 * maxval is the greatest integer that fits
 			 * in a BigNumDigit.
 			 */
 
 			r = BnnDivideDigit( BzToBn( q ),
 					    BzToBn( y ),
 					    zl,
-					    BZ_MAX_BASE10 );
+					    maxval );
 		
 			if( BnnIsZero( BzToBn( q ), zl ) == BN_FALSE ) {
 				/*
 				 * More digits to come on left, add exactly
-				 * BZ_MAX_BASE10_DIGITS digits with possible
+				 * the number of digits with possible
 				 * leading 0.
 				 */
 				int	i;
-				for( i = 0 ; i < BZ_MAX_BASE10_DIGITS ; ++i ) {
-					*--s = Digit[r % 10];
-					r = r / 10;
+				for( i = 0 ; i < (int)digits ; ++i ) {
+					*--s = Digit[r % base];
+					r = r / base;
 				}
 			} else	{
 				/*
@@ -1152,8 +1183,8 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 				 * digits.
 				 */
 				while( r != 0 ) {
-					*--s = Digit[r % 10];
-					r = r / 10;
+					*--s = Digit[r % base];
+					r = r / base;
 				}
 			}
 

@@ -1,5 +1,6 @@
 Change log
 
+2011/12/27: Add BigQ library (from bigq.c and bigq.h)
 2011/12/16: BzFromString ignore leading spaces including tab and newline.
 2011/12/06: Specialize int constants with enum.
 2011/12/05: Add configure scripts.

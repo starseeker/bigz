@@ -1,6 +1,6 @@
 #
 #	Makefile for 'Bignums'	(c) C. Jullien
-#	$Id: makefile.nt,v 1.29 2011-12-28 06:41:15 jullien Exp $
+#	$Id: makefile.nt,v 1.30 2011-12-31 11:08:06 jullien Exp $
 #
 
 .SUFFIXES: .lsp .dat .$(SUFFIXES)
@@ -111,6 +111,7 @@ lint:
 		-nullpass 		\
 		-nullret 		\
 		-observertrans		\
+		-realcompare 		\
 		-retalias 		\
 		-statictrans 		\
 		-temptrans 		\
