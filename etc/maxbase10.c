@@ -1,5 +1,5 @@
 /*
- * $Id: maxbase10.c,v 1.6 2011-12-31 11:08:06 jullien Exp $
+ * $Id: maxbase10.c,v 1.7 2012-01-01 19:02:39 jullien Exp $
  */
 
 /*
@@ -34,6 +34,22 @@ BzMaxBase(int base, BigNumDigit* maxval, unsigned int* digits)
 }
 
 static	void
+BzMaxBaseAlt( BigNumDigit base, BigNumDigit* maxval, unsigned int* digits )
+{
+	BigNumDigit  i;
+	BigNumDigit  v = (BigNumDigit)1;
+	unsigned int b = 0;
+
+	for( i = (~(BigNumDigit)0) ; i > base ; i /= (BigNumDigit)base ) {
+		++b;
+		v *= base;
+	}
+
+	*maxval = v;
+	*digits = b;
+}
+
+static	void
 BzPrintMacros(int base, BigNumDigit maxval, unsigned int digits)
 {
 	if( base == 10 ) {
@@ -44,7 +60,7 @@ BzPrintMacros(int base, BigNumDigit maxval, unsigned int digits)
 #endif
 	} else	{
 #if	defined( _WIN64 )
-		printf("#define BZ_MAX_BASE%02d\t\t0x%I64x\n", base, maxval );
+		printf("#define BZ_MAX_BASE%02d\t\t0x%0I64x\n", base, maxval );
 #else
 		printf("#define BZ_MAX_BASE%02d\t\t0x%x\n", base, maxval );
 #endif
@@ -57,16 +73,20 @@ main(void)
 {
 	BigNumDigit  maxval = (BigNumDigit)0;
 	unsigned int digits = (unsigned int)0;
-		
+	BigNumDigit  maxvalalt = (BigNumDigit)0;
+	unsigned int digitsalt = (unsigned int)0;
+	int	i;
 
-	BzMaxBase(2, &maxval, &digits);
-	BzPrintMacros(2, maxval, digits);
-
-	BzMaxBase(10, &maxval, &digits);
-	BzPrintMacros(10, maxval, digits);
-
-	BzMaxBase(16, &maxval, &digits);
-	BzPrintMacros(16, maxval, digits);
+	for( i = 2 ; i <= 36 ; ++i ) {
+		BzMaxBase(i, &maxval, &digits);
+//		BzPrintMacros(i, maxval, digits);
+		BzMaxBaseAlt(i, &maxvalalt, &digitsalt);
+		BzPrintMacros(i, maxval, digits);
+		if( maxval != maxvalalt || digits != digitsalt ) {
+			BzPrintMacros(i, maxval, digits);
+			BzPrintMacros(i, maxvalalt, digitsalt);
+		}
+	}
 
 	return( 0 );
 }
