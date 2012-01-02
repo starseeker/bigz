@@ -1,5 +1,5 @@
 /*
- * $Id: bign.h,v 1.27 2011-12-22 06:08:33 jullien Exp $
+ * $Id: bign.h,v 1.28 2012-01-02 07:44:57 jullien Exp $
 */
 
 /*
@@ -121,7 +121,7 @@ typedef enum	{
  */
 
 #if	!defined( BN_BYTE_SIZE )
-#define BN_BYTE_SIZE	8	/* may be 9! on 36bit computers. */
+#define BN_BYTE_SIZE	((BigNumLength)8) /* may be 9! on 36bit computers. */
 #endif
 
 #define BN_DIGIT_SIZE	(sizeof(BigNumDigit) * BN_BYTE_SIZE)

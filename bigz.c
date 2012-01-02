@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.c,v 1.94 2012-01-01 21:35:37 jullien Exp $
+ * $Id: bigz.c,v 1.95 2012-01-02 07:44:57 jullien Exp $
 */
 
 /*
@@ -204,7 +204,7 @@ BnDebug(const char *m,
 			unsigned int shift;
 			unsigned int i;
 
-			mask  = ~(unsigned int)0; /* 0xff..ff */
+			mask  = ~((unsigned int)0); /* 0xff..ff */
 			shift = (unsigned int)(isize * BN_BYTE_SIZE);
 
 			/*
@@ -1839,7 +1839,7 @@ BzXor( const BigZ y, const BigZ z )
 }
 
 BigNumBool
-BzTestBit( unsigned int bit, const BigZ z )
+BzTestBit( BigNumLength bit, const BigZ z )
 {
 	BigNumLength	zl;
 	BigNumBool	res;

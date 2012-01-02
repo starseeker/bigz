@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.h,v 1.59 2012-01-01 21:35:37 jullien Exp $
+ * $Id: bigz.h,v 1.60 2012-01-02 07:44:57 jullien Exp $
  */
 
 /*
@@ -231,7 +231,7 @@ extern BzUInt	    BzToUnsignedInteger(const BigZ z) BZ_PURE_FUNCTION;
 extern int	    BzToUnsignedIntegerPointer(const BigZ z, BzUInt *p);
 extern BigZ	    BzFromBigNum(const BigNum n, BigNumLength nl);
 extern BigNum	    BzToBigNum(const BigZ z, BigNumLength *nl);
-extern BigNumBool   BzTestBit(unsigned int bit, const BigZ z);
+extern BigNumBool   BzTestBit(BigNumLength bit, const BigZ z);
 extern BigZ	    BzNot(const BigZ z);
 extern BigZ	    BzAnd(const BigZ y, const BigZ z);
 extern BigZ	    BzOr(const BigZ y, const BigZ z);
@@ -249,6 +249,10 @@ extern BigZ	    BzLcm(const BigZ y, const BigZ z);
 extern BigZ	    BzGcd(const BigZ y, const BigZ z);
 extern BigZ	    BzRandom(const BigZ n);
 extern void	    BzSetRandom(const BigZ n);
+
+/*
+#define	BZ_DEBUG
+*/
 
 #if	defined( BZ_DEBUG )
 extern void	    BnDebug(const char *m, const BzChar *bzstr, const BigNum n, BigNumLength nl, BzSign sign);
