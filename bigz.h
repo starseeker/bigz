@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.h,v 1.58 2011-12-31 16:49:56 jullien Exp $
+ * $Id: bigz.h,v 1.59 2012-01-01 21:35:37 jullien Exp $
  */
 
 /*
@@ -159,7 +159,7 @@ typedef	unsigned int			BzUInt;
 /*
  *	Max number of digits in base 10 that fit in a BigNumDigit.
  */
-#define	BZ_MAX_BASE10_DIGITS	19
+#define	BZ_MAX_BASE10_DIGITS	((BigNumLength)19)
 #endif	/* BZ_MAX_BASE10_DIGITS */
 #else	/* _WIN64 */
 #if	!defined( BZ_MAX_BASE10 )
@@ -172,7 +172,7 @@ typedef	unsigned int			BzUInt;
 /*
  *	Max number of digits in base 10 that fit in a BigNumDigit.
  */
-#define	BZ_MAX_BASE10_DIGITS	9
+#define	BZ_MAX_BASE10_DIGITS	((BigNumLength)9)
 #endif	/* BZ_MAX_BASE10_DIGITS */
 #endif	/* _WIN64 */
 #endif	/* BZ_OPTIMIZE_PRINT */
