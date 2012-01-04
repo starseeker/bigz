@@ -1,5 +1,5 @@
 #if	!defined( lint )
-static	const char rcsid[] = "$Id: tCBignum.cpp,v 1.10 2011-12-28 06:41:15 jullien Exp $";
+static	const char rcsid[] = "$Id: tCBignum.cpp,v 1.11 2012-01-03 15:50:26 jullien Exp $";
 #endif
 
 //
@@ -133,6 +133,7 @@ main()
 	CBignum x1( ffib( 100 ) );	/* 354224848179261915075	*/
 	CBignum x2( 2 );		/* 2		     		*/
 	CBignum	x3;			/* 0				*/
+	CRational r1("0123456789/333");
 
 	Tz(   1, "++",   ++x2, 		"3"				);
 	Tz(   2, "--",	 --x1, 		"354224848179261915074"		);

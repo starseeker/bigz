@@ -1,5 +1,5 @@
 //
-// $Id: CRational.h,v 1.10 2011-12-28 06:41:15 jullien Exp $
+// $Id: CRational.h,v 1.11 2012-01-03 15:50:26 jullien Exp $
 //
 
 /*
@@ -54,15 +54,15 @@ public:
 		: m_q( BqCreate( BqGetNumerator(q.m_q),
 				 BqGetDenominator(q.m_q)) ) {
 	}
-	CRational( const char *s )
-		: m_q( BqFromString((BzChar *)s) ) {
+        CRational( const char *s, int base=10 )
+		: m_q( BqFromString((BzChar *)s, base) ) {
 	}
 #if	defined( HAVE_BQ_FROM_DOUBLE )
 	CRational( double n )
-		: m_q( BqFromDouble( n ) ) {
+		: m_q( BqFromDouble(n) ) {
 	}
 #endif
-	~CRational() { BqDelete( m_q ); }
+	~CRational() { BqDelete(m_q); }
 
 	// convertions
 

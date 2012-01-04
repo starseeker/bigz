@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.c,v 1.16 2011-12-31 14:48:08 jullien Exp $
+ * $Id: bigq.c,v 1.18 2012-01-04 07:33:16 jullien Exp $
  */
 
 /*
@@ -372,7 +372,7 @@ BqInverse( const BigQ a )
  *	the null terminating string length (including '\000').
  */
 
-static	const BzChar BqNaN[] = "#.QNaN";
+static	const char BqNaN[] = "#.QNaN";
 
 BzChar *
 BqToString( const BigQ q, int sign )
@@ -389,7 +389,7 @@ BqToString( const BigQ q, int sign )
 		 * for #.QNaN error.
 		 */
 		len = sizeof( BqNaN ); /* works because BqNaN is an array */
-		res = (BzChar *)BzStringAlloc( len );
+		res = (BzChar *)BzStringAlloc( len * sizeof( BzChar ) );
 		if( res != (BzChar *)NULL ) {
 			for( i = 0 ; BqNaN[ i ] != '\000' ; ++i ) {
 				res[ i ] = (BzChar)BqNaN[ i ];
@@ -452,7 +452,7 @@ BqToString( const BigQ q, int sign )
 }
 
 BigQ
-BqFromString( const BzChar *s )
+BqFromString( const BzChar *s, int base )
 {
 	BigZ n;
 	BigZ d;
@@ -487,8 +487,6 @@ BqFromString( const BzChar *s )
 	while( *p != (BzChar)'\000' ) {
 		if( *p == '/' ) {
 			break;
-		} else	if( !(*p >= (BzChar)'0' && *p <= (BzChar)'9') ) {
-			return( BQNULL );
 		} else	{
 			++p;
 		}
@@ -498,14 +496,25 @@ BqFromString( const BzChar *s )
 		/*
 		 * simply an integer in Z (no denominator).
 		 */
-		n = BzFromString( s, (BigNumDigit)10, BZ_UNTIL_END );
+		n = BzFromString( s, (BigNumDigit)base, BZ_UNTIL_END );
+		if( n == BZNULL ) {
+			return( BQNULL );
+		}
 		d = BzFromInteger( (BzInt)1 );
-
 		q = BqCreateInternal( n, d, BQ_SET );
 		return( q );
 	} else	{
-		n = BzFromString( s,   (BigNumDigit)10, BZ_UNTIL_INVALID );
-		d = BzFromString( p+1, (BigNumDigit)10, BZ_UNTIL_END );
+		n = BzFromString( s,   (BigNumDigit)base, BZ_UNTIL_INVALID );
+		if( n == BZNULL ) {
+			return( BQNULL );
+		}
+
+		d = BzFromString( p+1, (BigNumDigit)base, BZ_UNTIL_END );
+		if( n == BZNULL ) {
+			BzFree( n );
+			return( BQNULL );
+		}
+
 		q = BqCreateInternal( n, d, BQ_SET );
 		return( q );
 	}

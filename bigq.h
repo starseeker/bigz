@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.h,v 1.8 2011-12-27 18:54:12 jullien Exp $
+ * $Id: bigq.h,v 1.9 2012-01-03 15:50:26 jullien Exp $
  */
 
 /*
@@ -81,12 +81,11 @@ typedef	__BigQ				BigQ;
 #define	BQNULL				((BigQ)0)
 #define	BqAlloc()			malloc( sizeof( struct BigQStruct ) )
 #define	BqFree( q )			free( q ) /* free(__toBqObj(q)) */
-#endif
-
 #define BqGetNumerator(q)		(__toBqObj(q)->N)
 #define BqGetDenominator(q)		(__toBqObj(q)->D)
 #define BqSetNumerator(q,n)		(__toBqObj(q)->N = (n))
 #define BqSetDenominator(q,d)		(__toBqObj(q)->D = (d))
+#endif
 
 /*
  *	functions of bigq.c
@@ -98,7 +97,7 @@ extern BigQ	    BqCreate(const BigZ n, const BigZ d);
 extern BqCmp	    BqCompare(const BigQ a, const BigQ b) BQ_PURE_FUNCTION;
 extern void	    BqDelete(const BigQ a);
 extern BigQ	    BqDiv(const BigQ a, const BigQ b);
-extern BigQ	    BqFromString(const BzChar *s);
+extern BigQ	    BqFromString(const BzChar *s, int base);
 extern BigQ	    BqInverse(const BigQ a);
 extern BigQ	    BqMultiply(const BigQ a, const BigQ b);
 extern BigQ	    BqNegate(const BigQ a);
