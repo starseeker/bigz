@@ -2251,7 +2251,7 @@ ac_config_headers="$ac_config_headers ./config.h"
 
 
 NAME=bignum
-VERSION=`VERSION bigz.h | sed -e "s/.*\"\(.*\)\"/\1/g"`
+VERSION=`grep VERSION bigz.h | sed -e "s/.*\"\(.*\)\"/\1/g"`
 
 # User options
 
