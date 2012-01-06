@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.c,v 1.18 2012-01-04 07:33:16 jullien Exp $
+ * $Id: bigq.c,v 1.19 2012-01-06 18:57:11 jullien Exp $
  */
 
 /*
@@ -56,6 +56,12 @@ static	BigQ BqCreateInternal( const BigZ n, const BigZ d, BqCreateMode mode );
 static BigQ
 BqCreateInternal( const BigZ n, const BigZ d, BqCreateMode mode )
 {
+	/*
+	 * Constraints:
+	 * - n in Z
+	 * - d in (N \ {0})
+	 */
+
 	BigQ	q;
 	BigZ	cn;
 	BigZ	cd;
@@ -64,7 +70,7 @@ BqCreateInternal( const BigZ n, const BigZ d, BqCreateMode mode )
 		return( BQNULL );
 	}
 
-	if( BzGetSign( d ) == BZ_ZERO ) {
+	if( BzGetSign( d ) != BZ_PLUS ) {
 		return( BQNULL );
 	}
 
@@ -84,19 +90,17 @@ BqCreateInternal( const BigZ n, const BigZ d, BqCreateMode mode )
 
 	if( mode == BQ_COPY ) {
 		cn = BzCopy( n );
-		cd = BzAbs( d );
+		cd = BzCopy( d );
 
-		if( BzGetSign( n ) != BzGetSign( d ) ) {
-			BzSetSign( cn, BZ_MINUS );
-		}
 	} else	{
 		cn = n;
 		cd = d;
+	}
 
-		if( BzGetSign( n ) != BzGetSign( d ) ) {
-			BzSetSign( cn, BZ_MINUS );
-		}
-		BzSetSign( cd, BZ_PLUS );
+	if( BzGetSign( n ) != BzGetSign( d ) ) {
+		BzSetSign( cn, BZ_MINUS );
+	} else	{
+		BzSetSign( cn, BZ_PLUS );
 	}
 
 	BqSetNumerator(   q, cn );
@@ -247,6 +251,13 @@ BqDiv( const BigQ a, const BigQ b )
 		const BigZ bd = BqGetDenominator( b );
 		const BigZ n  = BzMultiply( an, bd );
 		const BigZ d  = BzMultiply( ad, bn );
+
+		if( BzGetSign( n ) != BzGetSign( d ) ) {
+			BzSetSign( n, BZ_MINUS );
+		} else	{
+			BzSetSign( n, BZ_PLUS );
+		}
+		BzSetSign( d, BZ_PLUS );
 
 		return( BqCreateInternal( n, d, BQ_SET ) );
 	}

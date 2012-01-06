@@ -2,7 +2,7 @@
 ;;;; Title:     lisptests.lsp
 ;;;; Author:    C. Jullien
 ;;;; License:   Simplified BSD license
-;;;; CVS:       $Id: lisptests.lsp,v 1.3 2011-12-22 06:36:59 jullien Exp $
+;;;; CVS:       $Id: lisptests.lsp,v 1.4 2012-01-06 18:57:11 jullien Exp $
 
 ;;;
 ;;; Simplified BSD License
@@ -174,7 +174,11 @@
               ((integerp res)
                (setf res (lowercase (format () "#x~x" res))))
               ((and (eq f '/) (rationalp res))
-               (setq res (funcall #'/ (getvalue x) (float (getvalue y))))))
+               (let ((r (funcall #'/ (getvalue x) (getvalue y)))
+                     (f (funcall #'/ (getvalue x) (float (getvalue y)))))
+                    (setf res (format nil
+                                      "~%#-rational ~a~%#+rational ~a" f r)))))
+;               (setq res (funcall #'/ (getvalue x) (float (getvalue y))))))
         (format t "(~a ~a ~a) ~40t~a~%"
                 (lowercase f)
                 (lowercase x)
