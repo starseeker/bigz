@@ -1,6 +1,6 @@
 #
 #	Makefile for 'Bignums'	(c) C. Jullien
-#	$Id: makefile.nt,v 1.31 2011-12-31 16:49:56 jullien Exp $
+#	$Id: makefile.nt,v 1.32 2012-01-09 18:12:24 jullien Exp $
 #
 
 .SUFFIXES: .lsp .dat .$(SUFFIXES)
@@ -73,9 +73,13 @@ tCBignum.obj: CBignum.h tCBignum.dat
 
 testbign.lsp: ./lisp/lisptests.lsp $(OLISP)
 	@$(CLISP) ./lisp/lisptests.lsp | dos2unix > testbign.lsp
-	@dos2unix -q testbign.lsp
 	@copy testbign.lsp $(OPENLISP)\tst\testbign.lsp > nul
 	@$(OLISP) -e "(run-test \"../../tst/testbign.lsp\")"
+
+testrtnl.lsp: ./lisp/lisprtnl.lsp $(OLISP)
+	@$(CLISP) ./lisp/lisprtnl.lsp | dos2unix > testrtnl.lsp
+	@copy testrtnl.lsp $(OPENLISP)\tst\testrtnl.lsp > nul
+	@$(OLISP) -e "(run-test \"../../tst/testrtnl.lsp\")"
 
 # Misc
 

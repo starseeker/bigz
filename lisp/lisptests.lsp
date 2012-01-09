@@ -2,7 +2,7 @@
 ;;;; Title:     lisptests.lsp
 ;;;; Author:    C. Jullien
 ;;;; License:   Simplified BSD license
-;;;; CVS:       $Id: lisptests.lsp,v 1.4 2012-01-06 18:57:11 jullien Exp $
+;;;; CVS:       $Id: lisptests.lsp,v 1.5 2012-01-09 22:39:09 jullien Exp $
 
 ;;;
 ;;; Simplified BSD License
@@ -329,7 +329,7 @@
         ;; *print-base*
         (print-header '*print-base*)
         (add-test-print-base)
-        (dolist (arg '(big5+ big5-))
+        (dolist (arg '(small1+ small1- big5+ big5-))
            (do ((base 2 (1+ base)))
                ((= base 37))
                (test-print-base base arg)))
