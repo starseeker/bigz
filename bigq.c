@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.c,v 1.19 2012-01-06 18:57:11 jullien Exp $
+ * $Id: bigq.c,v 1.20 2012-01-09 22:39:09 jullien Exp $
  */
 
 /*
@@ -306,20 +306,9 @@ BqCompare( const BigQ a, const BigQ b )
 		BzFree( tmp1 );
 
 		switch( cmp ) {
-		case BZ_LT:
-			if( BzGetSign( an ) == BZ_MINUS ) {
-				return( BQ_GT );
-			} else	{
-				return( BQ_LT );
-			}
-		case BZ_GT:
-			if( BzGetSign( an ) == BZ_MINUS ) {
-				return( BQ_LT );
-			} else	{
-				return( BQ_GT );
-			}
-		default:
-			return( BQ_EQ );
+		case BZ_LT: return( BQ_LT );
+		case BZ_GT: return( BQ_GT );
+		default:    return( BQ_EQ );
 		}
 	}
 }
