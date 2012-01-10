@@ -52,7 +52,7 @@ extern	"C"	{
  * BigZ.h: Types and structures for clients of BigZ
  */
 
-#define	BZ_VERSION			"1.5.0"
+#define	BZ_VERSION			"1.5.1"
 
 /*
  * BigZ sign

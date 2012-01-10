@@ -21,7 +21,7 @@ KRNLIB		= libkern.$(AEXT)
 KRNSHARED	= libkern.$(SOEXT)
 LISP		= clisp
 OBJECT		= bigq.$(O) bigz.$(O) bign.$(O)
-VERSION		= 1.5.0
+VERSION		= 1.5.1
 
 BINARIES	= $(KRNLIB) bztest$(EXE) testkern$(EXE) tCBignum$(EXE)
 
