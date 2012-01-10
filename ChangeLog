@@ -1,5 +1,6 @@
 Change log
 
+2012/01/09: Fix BigQ comparison.
 2011/12/31: Freeze tag v1.4.0 and start trunk v1.5.0.
 2011/12/31: Optimize very large bignum printing for all bases.
 2011/12/27: Add BigQ library (from bigq.c and bigq.h)
