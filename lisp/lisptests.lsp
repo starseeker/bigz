@@ -2,7 +2,7 @@
 ;;;; Title:     lisptests.lsp
 ;;;; Author:    C. Jullien
 ;;;; License:   Simplified BSD license
-;;;; CVS:       $Id: lisptests.lsp,v 1.6 2012-01-10 06:30:08 jullien Exp $
+;;;; CVS:       $Id: lisptests.lsp,v 1.7 2012-01-27 15:57:33 jullien Exp $
 
 ;;;
 ;;; Simplified BSD License
@@ -315,6 +315,10 @@
         ;; format
         (print-header 'format)
         (dolist (arg '(big1+ big1- big5+ big5- #36ropenlisp))
+           (call-format "~32s" arg)
+           (call-format "~32a" arg)
+           (call-format "~32@s" arg)
+           (call-format "~32@a" arg)
            (call-format "~x" arg)
            (call-format "~@d" arg)
            (call-format "~d" arg)

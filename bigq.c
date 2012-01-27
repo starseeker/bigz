@@ -519,3 +519,104 @@ BqFromString( const BzChar *s, int base )
 		return( q );
 	}
 }
+
+BigQ
+BqFromDouble( double num )
+{
+	/*
+	 * find rational approximation to given real number (Farey's method)
+	 */
+
+	BzInt	maxden = (BzInt)10000;
+	BzInt	ln = (BzInt)0;	/* lower value = 0/1 */
+	BzInt	ld = (BzInt)1;
+	BzInt	un = (BzInt)1;	/* upper value = 1/0 = oo */
+	BzInt	ud = (BzInt)0;
+	BzInt	rn = (BzInt)1;
+	BzInt	rd = (BzInt)0;
+	BigZ	n;
+	BigZ	d;
+	BigQ	q;
+	int	sign;
+
+	/* See: http://en.wikipedia.org/wiki/Farey_series
+	        http://wiki.cs.princeton.edu/index.php/Rational.ck
+	*/
+
+	if( num < (double)0.0 ) {
+		sign = -1;
+		num *= -1;
+	} else	{
+		sign = 1;
+	}
+
+	for( ;; ) {
+		BzInt	mn = ln + un;
+		BzInt	md = ld + ud;
+
+		if( (num * md) > (double)mn ) {
+			if( maxden < md ) {
+				/*
+				 * return upper.
+				 */
+				rn = un;
+				rd = ud;
+				break;
+			} else	{
+				/*
+				 * set lower to median and continue
+				 */
+				ln = mn;
+				ld = md;
+				continue;
+			}
+		} else	if( (num * md) == (double)mn ) {
+			if( maxden >= md ) {
+				/*
+				 * return median.
+				 */
+				rn = mn;
+				rd = md;
+				break;
+			} else	if( ld < ud ) {
+				/*
+				 * return lower.
+				 */
+				rn = ln;
+				rd = ld;
+				break;
+			} else	{
+				/*
+				 * return upper.
+				 */
+				rn = un;
+				rd = ud;
+				break;
+			}
+		} else	{
+			if( maxden < md ) {
+				/*
+				 * return lower.
+				 */
+				rn = ln;
+				rd = ld;
+				break;
+			} else	{
+				/*
+				 * set lower to median and continue
+				 */
+				un = mn;
+				ud = md;
+				continue;
+			}
+		}
+	}
+
+	n = BzFromInteger( sign * rn );
+	d = BzFromInteger( rd );
+	q = BqCreate( n, d );
+	BzFree( d );
+	BzFree( n );
+	
+	return( q );
+}

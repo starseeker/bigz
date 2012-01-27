@@ -103,6 +103,7 @@ extern BigQ	    BqMultiply(const BigQ a, const BigQ b);
 extern BigQ	    BqNegate(const BigQ a);
 extern BigQ	    BqSubtract(const BigQ a, const BigQ b);
 extern BzChar *	    BqToString(const BigQ q, int sign);
+extern	BigQ	    BqFromDouble( double num );
 
 #if 0
 extern BzChar *	    BqToStringBuffer(const BigQ q, int sign, BzChar *buf, size_t *len);

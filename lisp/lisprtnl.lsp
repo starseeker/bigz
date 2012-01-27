@@ -2,7 +2,7 @@
 ;;;; Title:     lisptests.lsp
 ;;;; Author:    C. Jullien
 ;;;; License:   Simplified BSD license
-;;;; CVS:       $Id: lisprtnl.lsp,v 1.1 2012-01-10 06:40:51 jullien Exp $
+;;;; CVS:       $Id: lisprtnl.lsp,v 1.3 2012-01-27 15:57:33 jullien Exp $
 
 ;;;
 ;;; Simplified BSD License
@@ -181,7 +181,6 @@
 
 (defun test-reader (x)
    (setq x (getvalue x))
-;   (dolist (fmt '("~d" "~@d" "#x~x" "#o~o" "#b~b" "#3r~3r" "#36r~36r"))
    (dolist (fmt '("~d" "~@d"))
       (setq fmt (string-append fmt "~40t~a~%"))
       (format t (lowercase (format nil fmt x x)))))
@@ -286,6 +285,13 @@
         (dolist (arg '(rat1+ rat1- rat5+ rat5-))
            (call-format "~s" arg)
            (call-format "~a" arg)
+           (call-format "~20s" arg)
+           (call-format "~20a" arg)
+           (call-format "~20@s" arg)
+           (call-format "~20@a" arg)
+           (call-format "~f" arg)
+           (call-format "~g" arg)
+           (call-format "~e" arg)
 #|
            (call-format "~x" arg)
            (call-format "~@d" arg)
@@ -294,9 +300,6 @@
            (call-format "~b" arg)
            (call-format "~3r" arg)
            (call-format "~36r" arg)
-           (call-format "~f" arg)
-           (call-format "~g" arg)
-           (call-format "~e" arg)
 |#
            t)
         ;; *print-base*
