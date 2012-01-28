@@ -2,7 +2,7 @@
 ;;;; Title:     lisptests.lsp
 ;;;; Author:    C. Jullien
 ;;;; License:   Simplified BSD license
-;;;; CVS:       $Id: lisprtnl.lsp,v 1.4 2012-01-28 07:53:27 jullien Exp $
+;;;; CVS:       $Id: lisprtnl.lsp,v 1.5 2012-01-28 11:30:30 jullien Exp $
 
 ;;;
 ;;; Simplified BSD License
@@ -60,6 +60,8 @@
 
 #+openlisp (defun getvalue (x) (if (numberp x) x (symbol-global x)))
 #-openlisp (defun getvalue (x) (if (numberp x) x (symbol-value x)))
+
+#-openlisp (setq *pi* 3.14159265358979)
 
 #+openlisp
 (defun rationalp (x)
@@ -243,6 +245,11 @@
                                 (getvalue x) (float (getvalue x)))))
    t)
 
+(defun test-rational (x)
+   (if (and (floatp x) (= (denominator (rational x)) 1))
+       (format t "(test-rational ~a)~40t~a~%" x (rational x))
+       (format t "(test-rational ~a)~40t~a~%" x x)))
+
 (defun test-rationalize (x)
    (if (and (floatp x) (= (denominator (rationalize x)) 1))
        (format t "(test-rationalize ~a)~40t~a~%" x (rationalize x))
@@ -259,6 +266,15 @@
    (format t "       (let ((n (read-from-string s)))~%")
    (format t "            (and (= n (parse-number s)) n))))~%")
    (format t "test-read-base~%~%"))
+
+(defun add-test-rational ()
+   (format t "(defun test-rational (n)~%")
+   (format t "   (let ((q (rational n)))~%")
+   (format t "        (cond~%")
+   (format t "              ((rationalp n) q)~%")
+   (format t "              ((and (floatp n) (= (denominator q) 1)) q)~%")
+   (format t "              (t (convert q <float>)))))~%")
+   (format t "test-rational~%~%"))
 
 (defun add-test-rationalize ()
    (format t "(defun test-rationalize (n)~%")
@@ -406,10 +422,15 @@
            (print-header f)
            (dolist (arg args)
               (call1 f arg)))
+        ;; rational
+        (print-header 'rational)
+        (add-test-rational)
+        (dolist (arg (list *pi* (- *pi*) 0 314 -314 32.0 -32.0 rat1+ rat1-))
+           (test-rational arg))
         ;; rationalize
         (print-header 'rationalize)
         (add-test-rationalize)
-        (dolist (arg (list 3.14159 -3.14159 0 314 -314 32.0 -32.0 rat1+ rat1-))
+        (dolist (arg (list *pi* (- *pi*) 0 314 -314 32.0 -32.0 rat1+ rat1-))
            (test-rationalize arg))
         t))
 

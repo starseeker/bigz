@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.c,v 1.22 2012-01-28 07:53:27 jullien Exp $
+ * $Id: bigq.c,v 1.25 2012-01-28 12:55:06 jullien Exp $
  */
 
 /*
@@ -538,20 +538,21 @@ BqFromDouble( double num, BzInt maxd )
 	BigQ	q;
 	int	sign;
 
-	/* See: http://en.wikipedia.org/wiki/Farey_series
-	        http://wiki.cs.princeton.edu/index.php/Rational.ck
-	*/
+	/*
+	 * See: http://en.wikipedia.org/wiki/Farey_series
+	 *      http://wiki.cs.princeton.edu/index.php/Rational.ck
+	 */
 
 	if( num < (double)0.0 ) {
 		sign = -1;
-		num *= -1;
+		num *= (double)-1.0;
 	} else	{
 		sign = 1;
 	}
 
 	for( ;; ) {
-		BzInt	mn = ln + un;
-		BzInt	md = ld + ud;
+		const BzInt	mn = ln + un;
+		const BzInt	md = ld + ud;
 
 		if( (num * md) > (double)mn ) {
 			if( maxd < md ) {
