@@ -2,7 +2,7 @@
 ;;;; Title:     lisptests.lsp
 ;;;; Author:    C. Jullien
 ;;;; License:   Simplified BSD license
-;;;; CVS:       $Id: lisprtnl.lsp,v 1.3 2012-01-27 15:57:33 jullien Exp $
+;;;; CVS:       $Id: lisprtnl.lsp,v 1.4 2012-01-28 07:53:27 jullien Exp $
 
 ;;;
 ;;; Simplified BSD License
@@ -243,6 +243,11 @@
                                 (getvalue x) (float (getvalue x)))))
    t)
 
+(defun test-rationalize (x)
+   (if (and (floatp x) (= (denominator (rationalize x)) 1))
+       (format t "(test-rationalize ~a)~40t~a~%" x (rationalize x))
+       (format t "(test-rationalize ~a)~40t~a~%" x x)))
+
 (defun add-test-print-base ()
    (format t "(defun test-print-base (n base)~%")
    (format t "   (dynamic-let ((*print-base* base))~%")
@@ -255,9 +260,18 @@
    (format t "            (and (= n (parse-number s)) n))))~%")
    (format t "test-read-base~%~%"))
 
+(defun add-test-rationalize ()
+   (format t "(defun test-rationalize (n)~%")
+   (format t "   (let ((q (rationalize n)))~%")
+   (format t "        (cond~%")
+   (format t "              ((rationalp n) q)~%")
+   (format t "              ((and (floatp n) (= (denominator q) 1)) q)~%")
+   (format t "              (t (convert q <float>)))))~%")
+   (format t "test-rationalize~%~%"))
+
 (defun test-logbitp (x)
    (setq x (getvalue x))
-  (format t "(test-logbitp #x~a)~40t\"" (lowercase (format nil "~x" x)))
+   (format t "(test-logbitp #x~a)~40t\"" (lowercase (format nil "~x" x)))
    (let ((l nil))
         (do ((i 0 (1+ i)))
             ((= i 70))
@@ -392,6 +406,11 @@
            (print-header f)
            (dolist (arg args)
               (call1 f arg)))
+        ;; rationalize
+        (print-header 'rationalize)
+        (add-test-rationalize)
+        (dolist (arg (list 3.14159 -3.14159 0 314 -314 32.0 -32.0 rat1+ rat1-))
+           (test-rationalize arg))
         t))
 
 (make-test)

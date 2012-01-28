@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.c,v 1.20 2012-01-09 22:39:09 jullien Exp $
+ * $Id: bigq.c,v 1.22 2012-01-28 07:53:27 jullien Exp $
  */
 
 /*
@@ -521,13 +521,12 @@ BqFromString( const BzChar *s, int base )
 }
 
 BigQ
-BqFromDouble( double num )
+BqFromDouble( double num, BzInt maxd )
 {
 	/*
 	 * find rational approximation to given real number (Farey's method)
 	 */
 
-	BzInt	maxden = (BzInt)10000;
 	BzInt	ln = (BzInt)0;	/* lower value = 0/1 */
 	BzInt	ld = (BzInt)1;
 	BzInt	un = (BzInt)1;	/* upper value = 1/0 = oo */
@@ -555,7 +554,7 @@ BqFromDouble( double num )
 		BzInt	md = ld + ud;
 
 		if( (num * md) > (double)mn ) {
-			if( maxden < md ) {
+			if( maxd < md ) {
 				/*
 				 * return upper.
 				 */
@@ -571,7 +570,7 @@ BqFromDouble( double num )
 				continue;
 			}
 		} else	if( (num * md) == (double)mn ) {
-			if( maxden >= md ) {
+			if( maxd >= md ) {
 				/*
 				 * return median.
 				 */
@@ -594,7 +593,7 @@ BqFromDouble( double num )
 				break;
 			}
 		} else	{
-			if( maxden < md ) {
+			if( maxd < md ) {
 				/*
 				 * return lower.
 				 */
