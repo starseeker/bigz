@@ -1,5 +1,5 @@
 //
-// $Id: CBignum.h,v 1.16 2011-12-28 06:41:15 jullien Exp $
+// $Id: CBignum.h,v 1.17 2012-02-16 13:14:54 jullien Exp $
 //
 
 /*
@@ -42,6 +42,8 @@
 #include <iostream>
 #include <stdlib.h>
 #include <bigz.h>
+
+namespace bignum {
 
 class	CBignum {
 private:
@@ -403,4 +405,7 @@ CBignum::operator--() {
 	*this -= BzOne;
 	return( *this );
 }
+
+} // namespace bignum
+
 #endif	/* __CBIGNUM_H */

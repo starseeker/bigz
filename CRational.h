@@ -1,5 +1,5 @@
 //
-// $Id: CRational.h,v 1.11 2012-01-03 15:50:26 jullien Exp $
+// $Id: CRational.h,v 1.12 2012-02-16 13:14:54 jullien Exp $
 //
 
 /*
@@ -42,6 +42,10 @@
 #include <stdlib.h>
 #include <bigq.h>
 #include <CBignum.h>
+
+namespace rational {
+
+using namespace bignum;
 
 class	CRational {
 private:
@@ -155,5 +159,7 @@ private:
 	BigQ	m_q;
 	CRational( const BigQ init, Flags ) : m_q( init ) {}
 };
+
+} // namespace rational
 
 #endif	/* __CRATIONAL_H */

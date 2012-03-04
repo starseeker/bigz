@@ -1,5 +1,5 @@
 #if	!defined( lint )
-static	const char rcsid[] = "$Id: tCBignum.cpp,v 1.11 2012-01-03 15:50:26 jullien Exp $";
+static	const char rcsid[] = "$Id: tCBignum.cpp,v 1.12 2012-02-16 13:14:54 jullien Exp $";
 #endif
 
 //
@@ -15,6 +15,9 @@ static	const char rcsid[] = "$Id: tCBignum.cpp,v 1.11 2012-01-03 15:50:26 jullie
 #endif
 #include "CBignum.h"
 #include "CRational.h"
+
+using namespace bignum;
+using namespace rational;
 
 static int testcnt = 0;
 static int failcnt = 0;

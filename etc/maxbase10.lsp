@@ -1,7 +1,7 @@
 ;;;; -*-Mode: LISP; Package:LISP; Base:10; Syntax:ISLISP -*-
 ;;;; Title:     server.lsp
 ;;;; Author:    C. Jullien
-;;;; CVS:       $Id: maxbase10.lsp,v 1.2 2012-01-01 21:35:37 jullien Exp $
+;;;; CVS:       $Id: maxbase10.lsp,v 1.3 2012-03-04 09:25:59 jullien Exp $
 
 (defun maxbase10 (bits)
    (do ((i 1 (1+ i))

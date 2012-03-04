@@ -2,7 +2,7 @@
 ;;;; Title:     lisptests.lsp
 ;;;; Author:    C. Jullien
 ;;;; License:   Simplified BSD license
-;;;; CVS:       $Id: lisprtnl.lsp,v 1.5 2012-01-28 11:30:30 jullien Exp $
+;;;; CVS:       $Id: lisprtnl.lsp,v 1.6 2012-02-16 13:14:54 jullien Exp $
 
 ;;;
 ;;; Simplified BSD License
@@ -432,6 +432,20 @@
         (add-test-rationalize)
         (dolist (arg (list *pi* (- *pi*) 0 314 -314 32.0 -32.0 rat1+ rat1-))
            (test-rationalize arg))
+        ;; tests functions requiring a float
+        (dolist (f '(sin cos tan asin acos atan sinh cosh tanh atanh exp))
+           (print-header f)
+           (call1 f rat1-)
+           (call1 f rat1+))
+        ;; tests functions requiring a positive float
+        (dolist (f '(log))
+           (print-header f)
+           (call1 f rat1+))
+        ;; tests sqrt
+        (dolist (f '(sqrt))
+           (print-header f)
+           (call1 f 5/9)
+           (call1 f 4/9))
         t))
 
 (make-test)

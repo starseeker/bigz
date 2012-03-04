@@ -1,5 +1,5 @@
 #if	!defined( lint )
-static	const char rcsid[] = "$Id: CBignum.cpp,v 1.5 2011-12-09 07:52:23 jullien Exp $";
+static	const char rcsid[] = "$Id: CBignum.cpp,v 1.6 2012-02-16 13:14:54 jullien Exp $";
 #endif
 
 /*
@@ -38,6 +38,8 @@ static	const char rcsid[] = "$Id: CBignum.cpp,v 1.5 2011-12-09 07:52:23 jullien 
 
 #include "CBignum.h"
 
+namespace bignum {
+
 const CBignum
 CBignum::operator++( int ) {
 	CBignum	bn( *this );
@@ -50,4 +52,6 @@ CBignum::operator--( int ) {
 	CBignum	bn( *this );
 	*this -= BzOne;
 	return( bn );
+}
+
 }
