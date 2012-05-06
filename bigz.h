@@ -232,6 +232,7 @@ extern int	    BzToUnsignedIntegerPointer(const BigZ z, BzUInt *p);
 extern BigZ	    BzFromBigNum(const BigNum n, BigNumLength nl);
 extern BigNum	    BzToBigNum(const BigZ z, BigNumLength *nl);
 extern BigNumBool   BzTestBit(BigNumLength bit, const BigZ z);
+extern BigNumLength BzBitCount(const BigZ z);
 extern BigZ	    BzNot(const BigZ z);
 extern BigZ	    BzAnd(const BigZ y, const BigZ z);
 extern BigZ	    BzOr(const BigZ y, const BigZ z);

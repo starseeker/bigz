@@ -34,7 +34,7 @@ OLISP		= ..\ntalisp-$(CPU).exe
 OBJECT		= bztest.obj bigq.obj bigz.obj bign.obj
 VERSION		= 1.5.1
 
-all: bztest.exe testkern.exe tCBignum.exe testbign.lsp testrtnl.lsp
+all: bztest.exe testkern.exe tCBignum.exe testbign.lsp # testrtnl.lsp
 
 .c.obj:
 	@$(CC) -c $(CFLAGS) -Tp $*.c

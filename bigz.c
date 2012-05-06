@@ -1872,6 +1872,35 @@ BzTestBit( BigNumLength bit, const BigZ z )
 	return( res );
 }
 
+BigNumLength
+BzBitCount( const BigZ z )
+{
+	/*
+	 * Returns the number of bits set in z.
+	 */
+
+	BigNumLength nl = (BigNumLength)0;
+	BigZ	y;
+
+	switch( BzGetSign( z ) ) {
+	case BZ_MINUS:
+		y = BzCopy( z );
+		BnnComplement2( BzToBn( y ), BzNumDigits( y ) );
+		BnnComplement( BzToBn( y ), BzNumDigits( y ) );
+		nl = BnnNumCount( BzToBn( y ), BzNumDigits( y ) );
+		BzFree( y );
+		break;
+	case BZ_ZERO:
+		nl = (BigNumLength)0;
+		break;
+	case BZ_PLUS:
+		nl = BnnNumCount( BzToBn( z ), BzNumDigits( z ) );
+		break;
+	}
+
+	return( nl );
+}
+
 /*
  *	Simple logical equivalence rules.
  */

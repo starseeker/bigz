@@ -159,6 +159,7 @@ extern BigNumCarry  BnnMultiply(BigNum pp, BigNumLength pl, const BigNum mm, Big
 extern BigNumCarry  BnnMultiplyDigit(BigNum pp, BigNumLength pl, const BigNum mm, BigNumLength ml, BigNumDigit d);
 extern BigNumLength BnnNumDigits(const BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
 extern BigNumLength BnnNumLength(const BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
+extern BigNumLength BnnNumCount(const BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
 extern BigNumLength BnnNumLeadingZeroBitsInDigit(BigNumDigit d) BN_CONST_FUNCTION;
 extern void	    BnnOrDigits(BigNum n, BigNumDigit d);
 extern void	    BnnSetDigit(BigNum nn, BigNumDigit d);

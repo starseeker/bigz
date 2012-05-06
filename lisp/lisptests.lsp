@@ -511,7 +511,7 @@
         (dolist (arg args)
            (test-logbitp arg))
         ;; integer-length
-        (dolist (f '(integer-length))
+        (dolist (f '(integer-length logcount))
            (print-header f)
            (dolist (arg '(big1+ big1- big5+ big5- small1+ small1-
                           1 -1 2 -2 4 -4 -5 -5 0))

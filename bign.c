@@ -174,6 +174,30 @@ BnnNumLength( const BigNum nn, BigNumLength nl )
 }
 
 BigNumLength
+BnnNumCount( const BigNum nn, BigNumLength nl )
+{
+	/*
+	 * Returns the count of bits set of N.
+	 */
+
+	BigNumLength	count = 0;
+	int	j;
+
+	for( j = 0 ; j < (int)nl ; ++j ) {
+		const BigNumDigit d = nn[ j ];
+		int	i;
+
+		for( i = (int)(BN_DIGIT_SIZE - 1) ; i >= 0 ; --i ) {
+			if( (d & (BN_ONE << (BigNumLength)i)) != 0 ) {
+				++count;
+			}
+		}
+	}
+
+	return( count );
+}
+
+BigNumLength
 BnnNumLeadingZeroBitsInDigit( BigNumDigit d )
 {
 	/*
