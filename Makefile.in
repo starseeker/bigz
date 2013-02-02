@@ -1,6 +1,6 @@
 #
 #	Makefile for 'Bignums'	(c) C. Jullien
-#	$Id: Makefile.in,v 1.26 2012-01-10 06:49:45 jullien Exp $
+#	$Id: Makefile.in,v 1.27 2013-02-02 17:55:49 jullien Exp $
 #
 
 .SUFFIXES: .cpp .lsp .dat $(.SUFFIXES)
@@ -23,7 +23,7 @@ LISP		= clisp
 OBJECT		= bigq.$(O) bigz.$(O) bign.$(O)
 VERSION		= 1.5.1
 
-BINARIES	= $(KRNLIB) bztest$(EXE) testkern$(EXE) tCBignum$(EXE)
+BINARIES	= $(KRNLIB) bztest$(EXE) testkern$(EXE) @NOCXX@tCBignum$(EXE)
 
 all: $(BINARIES) tests
 
@@ -83,7 +83,7 @@ tests:
 	./tCBignum
 
 clean:
-	@-rm bztest$(EXE) testkern$(EXE) tCBignum$(EXE) *.$(O) *.BAK *~
+	@-rm -f bztest$(EXE) testkern$(EXE) tCBignum$(EXE) *.$(O) *.BAK *~
 
 valgrind: tCBignum$(EXE)
 	@valgrind \

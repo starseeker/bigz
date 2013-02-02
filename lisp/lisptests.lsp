@@ -2,7 +2,7 @@
 ;;;; Title:     lisptests.lsp
 ;;;; Author:    C. Jullien
 ;;;; License:   Simplified BSD license
-;;;; CVS:       $Id: lisptests.lsp,v 1.7 2012-01-27 15:57:33 jullien Exp $
+;;;; CVS:       $Id: lisptests.lsp,v 1.8 2012-05-17 06:24:26 jullien Exp $
 
 ;;;
 ;;; Simplified BSD License

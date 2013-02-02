@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.c,v 1.95 2012-01-02 07:44:57 jullien Exp $
+ * $Id: bigz.c,v 1.98 2013-02-02 17:55:49 jullien Exp $
 */
 
 /*
@@ -1089,7 +1089,9 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 
 	if( base < (BigNumDigit)BZ_MIN_BASE
 	    || base > (BigNumDigit)BZ_MAX_BASE ) {
-		*len = 0;
+		if( len != 0 ) {
+			*len = 0;
+		}
 		return( (BzChar *)NULL );
 	}
 
@@ -1098,7 +1100,7 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 	 */
 
 	zl = BzNumDigits( z ) + 1;
-	sl = (BigNumLength)(BzLog[2] * BN_DIGIT_SIZE * zl / BzLog[base] + 3);
+	sl = (BigNumLength)((BzLog[2] * BN_DIGIT_SIZE * zl) / BzLog[base] + 3);
 
 	if( buf != (BzChar *)NULL
 	    && len != (size_t *)NULL

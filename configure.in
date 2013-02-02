@@ -1,7 +1,7 @@
 #
 # Autoconf script for OpenLisp.
 # By Christian Jullien (jullien@eligis.com)
-# $Id: configure.in,v 1.6 2012-01-05 09:35:03 jullien Exp $
+# $Id: configure.in,v 1.7 2013-02-02 17:55:49 jullien Exp $
 #
 # use autoconf-2.68 (works also with autoconf-2.13)
 
@@ -38,7 +38,19 @@ AC_AIX
 
 # Checks for C++ (Must be called after AC_AIX)
 
-CXX=$CC
+AC_MSG_CHECKING(for C++)
+AC_ARG_ENABLE(cxx,
+[  --enable-cxx            enable C++ lib [default=yes]],,enable_cxx=y)
+if test "$enable_cxx" = "y" || test "$enable_cxx" = "yes"
+then
+   enable_cxx=yes
+   NOCXX=""
+   AC_MSG_RESULT(yes)
+   AC_PROG_CXX
+else
+   NOCXX="# "
+   AC_MSG_RESULT(no)
+fi
 
 AC_CHECK_PROGS(MAKE, gmake, make)
 if test $MAKE = no
@@ -152,6 +164,7 @@ AC_SUBST(AEXT)
 AC_SUBST(AROPTS)
 AC_SUBST(CFLAGS)
 AC_SUBST(CXX)
+AC_SUBST(NOCXX)
 AC_SUBST(LDFLAGS)
 AC_SUBST(OPTIMS)
 AC_SUBST(PIC)
