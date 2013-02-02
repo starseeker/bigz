@@ -356,28 +356,28 @@ Generique(TestEnv *e)
 	length = genlengthvec[i];
 	n = BnCreate(type, length);
 	if((type2 = BnGetType(n)) != type) {
-		sprintf(e->hist,"BnGetType(BnCreate(%d, %d));", type, length);
+		sprintf(e->hist,"BnGetType(BnCreate(%u, %d));", type, length);
 		if(ShowDiff0(e, type, type2)) return(BN_TRUE);
 	}
 	if((length2 = BnGetSize(n)) != length) {
-		sprintf(e->hist,"BnGetSize(BnCreate(%d, %d));", type, length);
+		sprintf(e->hist,"BnGetSize(BnCreate(%u, %d));", type, length);
 		if(ShowDiff0(e, length, length2)) return(BN_TRUE);
 	}
 	if(BnFree(n) == 0) {
-		sprintf(e->hist, "BnFree(BnCreate(%d, %d));", type, length);
+		sprintf(e->hist, "BnFree(BnCreate(%u, %d));", type, length);
 		if(ShowDiff0(e, 1, 0)) return(BN_TRUE);
 	}
 	BnSetType((n = BnAlloc(length)), type);
 	if((type2 = BnGetType(n)) != type) {
-		sprintf(e->hist,"BnGetType(BnAlloc(%d, %d));", type, length);
+		sprintf(e->hist,"BnGetType(BnAlloc(%u, %d));", type, length);
 		if(ShowDiff0(e, type, type2)) return(BN_TRUE);
 	}
 	if((length2 = BnGetSize(n)) != length) {
-		sprintf(e->hist,"BnGetSize(BnAlloc(%d, %d));", type, length);
+		sprintf(e->hist,"BnGetSize(BnAlloc(%u, %d));", type, length);
 		if(ShowDiff0(e, length, length2)) return(BN_TRUE);
 	}
 	if(BnFree(n) == 0) {
-		sprintf(e->hist, "BnFree(BnAlloc(%d, %d));", type, length);
+		sprintf(e->hist, "BnFree(BnAlloc(%u, %d));", type, length);
 		if(ShowDiff0(e, 1, 0)) return(BN_TRUE);
 	}
    }
@@ -1152,7 +1152,7 @@ main(int argc, char **argv)
 		exit( 0 );
 	}
 
-	printf("sizeof(BigNumDigit) == %d\n", sizeof(BigNumDigit));
+	printf("sizeof(BigNumDigit) == %d\n", (int)sizeof(BigNumDigit));
 
 	/*
 	 * Initialization for test env.

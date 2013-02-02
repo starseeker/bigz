@@ -1,5 +1,5 @@
 /*
- static	const char rcsid[] = "$Id: bztest.c,v 1.12 2011-12-24 14:38:03 jullien Exp $";
+ static	const char rcsid[] = "$Id: bztest.c,v 1.13 2013-02-02 18:17:33 jullien Exp $";
 */
 
 /*
@@ -99,15 +99,15 @@ main()
 
    printf("BzTest v%s test suite\n", BzVersion());
 
-   printf("sizeof(BigNumDigit)  == %d\n", sizeof(BigNumDigit));
-   printf("sizeof(BigZ)         == %d\n", sizeof(BigZ));
-   printf("sizeof(BzInt)        == %d\n", sizeof(BzInt));
-   printf("sizeof(BzUInt)       == %d\n", sizeof(BzUInt));
-   printf("BZ_MAX_BASE10_DIGITS == %d\n", BZ_MAX_BASE10_DIGITS);
+   printf("sizeof(BigNumDigit)  == %d\n", (int)sizeof(BigNumDigit));
+   printf("sizeof(BigZ)         == %d\n", (int)sizeof(BigZ));
+   printf("sizeof(BzInt)        == %d\n", (int)sizeof(BzInt));
+   printf("sizeof(BzUInt)       == %d\n", (int)sizeof(BzUInt));
+   printf("BZ_MAX_BASE10_DIGITS == %d\n", (int)BZ_MAX_BASE10_DIGITS);
 #if defined( _WIN64 )
    printf("BZ_MAX_BASE10        == %I64u\n", BZ_MAX_BASE10);
 #else
-   printf("BZ_MAX_BASE10        == %lu\n", (long)BZ_MAX_BASE10);
+   printf("BZ_MAX_BASE10        == %lu\n", (unsigned long)BZ_MAX_BASE10);
 #endif
    printf("\n");
 

@@ -96,8 +96,9 @@ BigNum BnAlloc(int size) {
 	len = sizeof(struct BigNumHeader) + size * sizeof(BigNumDigit);
 
 	n = (BigNum)((char *)malloc(len) + sizeof(struct BigNumHeader));
-
-	BN_LENGTH(n) = size;
+	if (n) {
+		BN_LENGTH(n) = size;
+	}
 	return(n);
 }
  

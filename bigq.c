@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.c,v 1.25 2012-01-28 12:55:06 jullien Exp $
+ * $Id: bigq.c,v 1.26 2013-02-02 18:17:33 jullien Exp $
  */
 
 /*
@@ -430,18 +430,18 @@ BqToString( const BigQ q, int sign )
 		 */
 
 		if( (res = (BzChar *)BzStringAlloc(len)) != (BzChar *)NULL ) {
-			len = 0;
+			int pos = 0;
 			for( i = 0 ; n[i] != (BzChar)'\000' ; ++i ) {
-				res[ len++ ] = n[ i ];
+				res[ pos++ ] = n[ i ];
 			}
 
-			res[ len++ ] = (BzChar)'/';
+			res[ pos++ ] = (BzChar)'/';
 
 			for( i = 0 ; d[i] != (BzChar)'\000' ; ++i ) {
-				res[ len++ ] = d[ i ];
+				res[ pos++ ] = d[ i ];
 			}
 
-			res[ len ] = (BzChar)'\000';
+			res[ pos ] = (BzChar)'\000';
 		}
 
 		BzFreeString( d );
