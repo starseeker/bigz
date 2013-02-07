@@ -1,6 +1,6 @@
 #
 #	Makefile for 'Bignums'	(c) C. Jullien
-#	$Id: Makefile.in,v 1.27 2013-02-02 17:55:49 jullien Exp $
+#	$Id: Makefile.in,v 1.28 2013-02-07 05:53:50 jullien Exp $
 #
 
 .SUFFIXES: .cpp .lsp .dat $(.SUFFIXES)
@@ -42,6 +42,7 @@ bigz.$(O): bigz.c bigz.h bign.h
 bign.$(O): bigq.c bigq.h bigz.h bign.h
 
 $(KRNLIB): $(OBJECT)
+	@rm -f $(KRNLIB)
 	@$(AR) $(ARFLAGS) $(KRNLIB) $(OBJECT)
 	-@$(RANLIB) $(KRNLIB)
 
@@ -80,10 +81,11 @@ tCBignum.$(O): CBignum.h tCBignum.cpp tCBignum.dat bigz.h bign.h
 tests:
 	./testkern a
 	./bztest
-	./tCBignum
+	@NOCXX@./tCBignum
 
 clean:
-	@-rm -f bztest$(EXE) testkern$(EXE) tCBignum$(EXE) *.$(O) *.BAK *~
+	@-rm -f bztest$(EXE) testkern$(EXE) tCBignum$(EXE) *.$(O) *.$(AEXT)
+	@-rm \#* *.BAK *~
 
 valgrind: tCBignum$(EXE)
 	@valgrind \
