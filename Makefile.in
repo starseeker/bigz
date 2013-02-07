@@ -85,7 +85,7 @@ tests:
 
 clean:
 	@-rm -f bztest$(EXE) testkern$(EXE) tCBignum$(EXE) *.$(O) *.$(AEXT)
-	@-rm \#* *.BAK *~
+	@-rm -f \#* *.BAK *~
 
 valgrind: tCBignum$(EXE)
 	@valgrind \
