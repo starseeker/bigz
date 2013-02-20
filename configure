@@ -3700,8 +3700,8 @@ $as_echo "$ac_cv_safe_to_define___extensions__" >&6; }
 
 # Checks for C++ (Must be called after AC_AIX)
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main C++ linking" >&5
-$as_echo_n "checking for main C++ linking... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for C++" >&5
+$as_echo_n "checking for C++... " >&6; }
 # Check whether --enable-cxx was given.
 if test "${enable_cxx+set}" = set; then :
   enableval=$enable_cxx;
@@ -4723,7 +4723,7 @@ SHARED=""
 SOEXT="so"
 
 case "${CC}" in
-  gcc*)
+  gcc*|clang)
 	# We can also add -std=iso9899:1999 or -std=c99 with gcc > 3.2
 	WARNINGS="-Dlint -Wall -Wstrict-prototypes -Wshadow -Wunused"
 	CXX=g++

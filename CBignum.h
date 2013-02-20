@@ -1,5 +1,5 @@
 //
-// $Id: CBignum.h,v 1.18 2013-02-02 17:55:49 jullien Exp $
+// $Id: CBignum.h,v 1.19 2013-02-10 08:41:41 jullien Exp $
 //
 
 /*
@@ -39,8 +39,9 @@
 #if	!defined( __CBIGNUM_H )
 #define	__CBIGNUM_H
 
-#include <iostream>
 #include <stdlib.h>
+#include <iostream>
+#include <string>
 #include <bigz.h>
 
 namespace bignum {
@@ -63,6 +64,7 @@ public:
   operator int         () const { return (int)BzToInteger( m_bz );    }
   operator bool        () const { return BzGetSign( m_bz ) != BZ_ZERO; }
   operator const char* () const { return BzToString( m_bz, 10, 0 ); }
+  operator std::string () const { return std::string(BzToString(m_bz, 10, 0)); }
   operator const BigZ  () const { return m_bz; }
 
   // unary +, -, ++, --
@@ -391,19 +393,19 @@ private:
   CBignum( const BigZ init, Flags ) : m_bz( init ) {}
 };
 
-const CBignum BzOne( 1 );
-const CBignum BzTwo( 2 );
+const CBignum BzOne(1);
+const CBignum BzTwo(2);
 
 inline CBignum&
 CBignum::operator++() {
-	*this += BzOne;
-	return( *this );
+  *this += BzOne;
+  return( *this );
 }
 
 inline CBignum&
 CBignum::operator--() {
-	*this -= BzOne;
-	return( *this );
+  *this -= BzOne;
+  return( *this );
 }
 
 } // namespace bignum

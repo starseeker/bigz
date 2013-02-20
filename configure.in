@@ -1,7 +1,7 @@
 #
 # Autoconf script for OpenLisp.
 # By Christian Jullien (jullien@eligis.com)
-# $Id: configure.in,v 1.7 2013-02-02 17:55:49 jullien Exp $
+# $Id: configure.in,v 1.8 2013-02-20 06:46:14 jullien Exp $
 #
 # use autoconf-2.68 (works also with autoconf-2.13)
 
@@ -138,7 +138,7 @@ SHARED=""
 SOEXT="so"
 
 case "${CC}" in
-  gcc*)
+  gcc*|clang)
 	# We can also add -std=iso9899:1999 or -std=c99 with gcc > 3.2
 	WARNINGS="-Dlint -Wall -Wstrict-prototypes -Wshadow -Wunused"
 	CXX=g++
