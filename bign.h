@@ -1,5 +1,5 @@
 /*
- * $Id: bign.h,v 1.29 2012-05-17 06:24:26 jullien Exp $
+ * $Id: bign.h,v 1.30 2013-03-05 06:21:39 jullien Exp $
 */
 
 /*
@@ -72,6 +72,15 @@ typedef unsigned __int64	BigNumDigit;
 typedef unsigned long		BigNumDigit;
 #endif
 #endif
+
+#if	defined( __GNUC__ ) && (__GNUC__ >= 3)
+#if	!defined( BN_CONST_FUNCTION )
+#define	BN_CONST_FUNCTION	__attribute__((const))
+#endif
+#if	!defined( BN_PURE_FUNCTION )
+#define	BN_PURE_FUNCTION	__attribute__((pure))
+#endif
+#endif	/* __GNUC__ >= 3 */
 
 #if	!defined( BN_PURE_FUNCTION )
 #define	BN_PURE_FUNCTION

@@ -1,6 +1,6 @@
 #
 #	Makefile for 'Bignums'	(c) C. Jullien
-#	$Id: Makefile.in,v 1.29 2013-02-07 06:52:11 jullien Exp $
+#	$Id: Makefile.in,v 1.30 2013-03-05 06:21:39 jullien Exp $
 #
 
 .SUFFIXES: .cpp .lsp .dat $(.SUFFIXES)
@@ -15,13 +15,13 @@ AEXT		= @AEXT@
 EXE		= @EXEEXT@
 ARFLAGS		= @AROPTS@
 DEBUG		=
-CFLAGS		= @CFLAGS@ -I. -DHAVE_CONFIG_H
+CFLAGS		= @CFLAGS@ @OPTIMS@ @WARNINGS@ -I. -DHAVE_CONFIG_H
 KERN		= kern
 KRNLIB		= libkern.$(AEXT)
 KRNSHARED	= libkern.$(SOEXT)
 LISP		= clisp
 OBJECT		= bigq.$(O) bigz.$(O) bign.$(O)
-VERSION		= 1.5.1
+VERSION		= @VERSION@
 
 BINARIES	= $(KRNLIB) bztest$(EXE) testkern$(EXE) @NOCXX@tCBignum$(EXE)
 

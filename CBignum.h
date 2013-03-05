@@ -1,5 +1,5 @@
 //
-// $Id: CBignum.h,v 1.19 2013-02-10 08:41:41 jullien Exp $
+// $Id: CBignum.h,v 1.20 2013-03-05 06:21:39 jullien Exp $
 //
 
 /*
@@ -65,7 +65,7 @@ public:
   operator bool        () const { return BzGetSign( m_bz ) != BZ_ZERO; }
   operator const char* () const { return BzToString( m_bz, 10, 0 ); }
   operator std::string () const { return std::string(BzToString(m_bz, 10, 0)); }
-  operator const BigZ  () const { return m_bz; }
+  operator BigZ        () const { return m_bz; }
 
   // unary +, -, ++, --
 

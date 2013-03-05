@@ -1,5 +1,5 @@
 /*
- static	const char rcsid[] = "$Id: bztest.c,v 1.13 2013-02-02 18:17:33 jullien Exp $";
+ static	const char rcsid[] = "$Id: bztest.c,v 1.14 2013-03-05 06:21:39 jullien Exp $";
 */
 
 /*
@@ -92,7 +92,7 @@ BzFactorial( BigZ z )
 }
 
 int
-main()
+main(void)
 {
    BigZ	a;
    BigZ b;

@@ -4725,7 +4725,7 @@ SOEXT="so"
 case "${CC}" in
   gcc*|clang)
 	# We can also add -std=iso9899:1999 or -std=c99 with gcc > 3.2
-	WARNINGS="-Dlint -Wall -Wstrict-prototypes -Wshadow -Wunused"
+	WARNINGS="-Dlint -Wall -Wshadow -Wunused"
 	CXX=g++
 	OPTIMS="-finline-functions -fomit-frame-pointer -funroll-loops"
 	CCVERSION=`gcc -v 2>&1 | grep " version " | sed -e "s/^[a-z ]*\([.0-9]*\).*/\1/g"`

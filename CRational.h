@@ -1,5 +1,5 @@
 //
-// $Id: CRational.h,v 1.12 2012-02-16 13:14:54 jullien Exp $
+// $Id: CRational.h,v 1.13 2013-03-05 06:21:39 jullien Exp $
 //
 
 /*
@@ -71,7 +71,7 @@ public:
 	// convertions
 
 	operator const char* () const { return BqToString( m_q, 0 ); }
-	operator const BigQ  () const { return m_q; }
+	operator BigQ        () const { return m_q; }
 
 	// unary -
 

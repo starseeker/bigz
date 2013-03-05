@@ -1,7 +1,7 @@
 #
 # Autoconf script for OpenLisp.
 # By Christian Jullien (jullien@eligis.com)
-# $Id: configure.in,v 1.8 2013-02-20 06:46:14 jullien Exp $
+# $Id: configure.in,v 1.9 2013-03-05 06:21:39 jullien Exp $
 #
 # use autoconf-2.68 (works also with autoconf-2.13)
 
@@ -140,7 +140,7 @@ SOEXT="so"
 case "${CC}" in
   gcc*|clang)
 	# We can also add -std=iso9899:1999 or -std=c99 with gcc > 3.2
-	WARNINGS="-Dlint -Wall -Wstrict-prototypes -Wshadow -Wunused"
+	WARNINGS="-Dlint -Wall -Wshadow -Wunused"
 	CXX=g++
 	OPTIMS="-finline-functions -fomit-frame-pointer -funroll-loops"
 	CCVERSION=`gcc -v 2>&1 | grep " version " | sed -e "s/^[[a-z ]]*\([[.0-9]]*\).*/\1/g"`
@@ -186,7 +186,8 @@ Configuration:
  Source:        ${srcdir}
  Compiler:	${CC} ${CCVERSION}
  Flags:         ${CFLAGS}
- Optimizations: ${OPTIMS}
+ Optimizations:
+`for i in ${OPTIMS}; do echo \"                $i\"; done`
  Build:         ${build}
  Host:          ${host}
  Target:        ${target}

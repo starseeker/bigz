@@ -1,6 +1,6 @@
-#if	!defined( lint )
-static	char *sccsid = "@(#)testkern.c	(c) C. Jullien 1999/01/22";
-#endif
+/*
+static const char sccsid[] = "$Id: testkern.c,v 1.15 2013-03-05 06:21:39 jullien Exp $;
+*/
 
 /*
  * Simplified BSD License
@@ -813,7 +813,7 @@ TestBnShiftLeft(TestEnv *e)
 	for(nd = 0; nd <= TESTLENGTH; nd++)
 	  for(nl = 0; nl <= TESTLENGTH - nd; nl++)
 	    for(md = 0; md < 2; md++)
-	      for(s = 0; s < BN_DIGIT_SIZE; s++) {
+	      for(s = 0; s < (int)BN_DIGIT_SIZE; s++) {
 		TestCount++;
 		ResetTest(0);
 		   BnShiftLeft   (RN(0), nd, nl, RN(1), md, s);
@@ -853,7 +853,7 @@ TestBnShiftRight(TestEnv *e)
 	for(nd = 0; nd <= TESTLENGTH; nd++)
 	  for(nl = 0; nl <= TESTLENGTH - nd; nl++)
 	    for(md = 0; md < 2; md++)
-	      for(s = 0; s < BN_DIGIT_SIZE; s++) {
+	      for(s = 0; s < (int)BN_DIGIT_SIZE; s++) {
 		TestCount++;
 		ResetTest(0);
 		   BnShiftRight   (RN(0), nd, nl, RN(1), md, s);

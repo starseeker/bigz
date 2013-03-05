@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.c,v 1.98 2013-02-02 17:55:49 jullien Exp $
+ * $Id: bigz.c,v 1.99 2013-03-05 06:21:39 jullien Exp $
 */
 
 /*
@@ -637,7 +637,7 @@ BzDivide( const BigZ y, const BigZ z, BigZ *r )
 
 	yl = BzNumDigits( y );
 	zl = BzNumDigits( z );
-	ql = (BigNumLength)MaxInt( (int)yl-(int)zl+1, 1) + 1;
+	ql = (BigNumLength)MaxInt( (int)yl - (int)zl+1, 1) + 1;
 	rl = (BigNumLength)MaxInt( zl, yl ) + 1;
 
 	/*
