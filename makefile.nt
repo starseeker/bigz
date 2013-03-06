@@ -175,8 +175,9 @@ MASTER		= \
 		pdf/PRL-RR-2.pdf	\
 		pdf/RR-1016.pdf		\
 		pdf/RR-1016.ps		\
-		makefile.gnu		\
 		Makefile.in		\
+		makefile.clang		\
+		makefile.gnu		\
 		makefile.lcc		\
 		makefile.nt		\
 		makefile.tcc		\

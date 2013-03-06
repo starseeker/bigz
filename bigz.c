@@ -422,18 +422,18 @@ BzNegate( const BigZ z )
 
 	BigZ	y;
 
-	y = BzCopy( z );
-	
-	switch( BzGetSign( z ) ) {
-	case BZ_MINUS:
-		BzSetSign( y, BZ_PLUS );
-		break;
-	case BZ_ZERO:
-		BzSetSign( y, BZ_ZERO );
-		break;
-	case BZ_PLUS:
-		BzSetSign( y, BZ_MINUS );
-		break;
+	if( (y = BzCopy( z )) != BZNULL ) {
+		switch( BzGetSign( z ) ) {
+		case BZ_MINUS:
+			BzSetSign( y, BZ_PLUS );
+			break;
+		case BZ_ZERO:
+			BzSetSign( y, BZ_ZERO );
+			break;
+		case BZ_PLUS:
+			BzSetSign( y, BZ_MINUS );
+			break;
+		}
 	}
 
 	return( y );
@@ -448,10 +448,10 @@ BzAbs( const BigZ z )
 
 	BigZ	y;
 
-	y = BzCopy( z );
-
-	if( BzGetSign( z ) == BZ_MINUS ) {
-		BzSetSign( y, BZ_PLUS );
+	if( (y = BzCopy( z )) != BZNULL ) {
+		if( BzGetSign( z ) == BZ_MINUS ) {
+			BzSetSign( y, BZ_PLUS );
+		}
 	}
 
 	return( y );
@@ -975,23 +975,28 @@ BzRem( const BigZ y, const BigZ z )
 	BigZ r = BZNULL;
 	BigZ rem;
 
-	q = BzDivide( y, z, &r );
-	BzFree( q );
+	if( (q = BzDivide( y, z, &r )) != BZNULL ) {
+		BzFree( q );
 
-	if( BzGetSign( r ) == BZ_ZERO ) {
-		return( r );
-	} else	if( BzGetSign( y ) == BzGetSign( z ) ) {
-		return( r );
-	} else	if( BzGetSign( y ) == BZ_MINUS ) {
-		rem = BzSubtract( z, r );
-		BzSetSign( rem, BZ_MINUS );
-		BzFree( r );
-		return( rem );
+		if( BzGetSign( r ) == BZ_ZERO ) {
+			return( r );
+		} else	if( BzGetSign( y ) == BzGetSign( z ) ) {
+			return( r );
+		} else	if( BzGetSign( y ) == BZ_MINUS ) {
+			if( (rem = BzSubtract( z, r )) != BZNULL ) {
+				BzSetSign( rem, BZ_MINUS );
+			}
+			BzFree( r );
+			return( rem );
+		} else	{
+			if( (rem = BzSubtract( r, z )) != BZNULL ) {
+				BzSetSign( rem, BZ_PLUS );
+			}
+			BzFree( r );
+			return( rem );
+		}
 	} else	{
-		rem = BzSubtract( r, z );
-		BzSetSign( rem, BZ_PLUS );
-		BzFree( r );
-		return( rem );
+		return( BZNULL );
 	}
 }
 
@@ -1403,14 +1408,16 @@ BzFromInteger( BzInt i )
 
 	z = BzCreate( (BigNumLength)1 );
 
-	BzSetDigit( z, 0, (BigNumDigit)AbsInt( i ) );
+	if( z != BZNULL ) {
+		BzSetDigit( z, 0, (BigNumDigit)AbsInt( i ) );
 
-	if( i > 0 ) {
-		BzSetSign( z, BZ_PLUS  );
-	} else	if( i < 0 ) {
-		BzSetSign( z, BZ_MINUS );
-	} else	{
-		BzSetSign( z, BZ_ZERO  );
+		if( i > 0 ) {
+			BzSetSign( z, BZ_PLUS  );
+		} else	if( i < 0 ) {
+			BzSetSign( z, BZ_MINUS );
+		} else	{
+			BzSetSign( z, BZ_ZERO  );
+		}
 	}
 
 	return( z );
@@ -1423,8 +1430,10 @@ BzFromUnsignedInteger( BzUInt i )
 
 	z = BzCreate( (BigNumLength)1 );
 
-	BzSetDigit( z, 0, (BigNumDigit)i );
-	BzSetSign( z, ((i > (BzInt)0) ? BZ_PLUS : BZ_ZERO) );
+	if( z != BZNULL ) {
+		BzSetDigit( z, 0, (BigNumDigit)i );
+		BzSetSign( z, ((i > (BzInt)0) ? BZ_PLUS : BZ_ZERO) );
+	}
 
 	return( z );
 }
@@ -1496,18 +1505,20 @@ BzFromBigNum( const BigNum n, BigNumLength nl )
 
 	z = BzCreate( nl );
 
-	/*
-	 * set the sign of z such that the pointer n is unchanged yet
-	 */
+	if( z != BZNULL ) {
+		/*
+		 * set the sign of z such that the pointer n is unchanged yet
+		 */
 
-	if( BnnIsZero( n, nl ) == BN_TRUE  ) {
-		BzSetSign( z, BZ_ZERO );
-	} else	{
-		BzSetSign( z, BZ_PLUS );
-	}
+		if( BnnIsZero( n, nl ) == BN_TRUE  ) {
+			BzSetSign( z, BZ_ZERO );
+		} else	{
+			BzSetSign( z, BZ_PLUS );
+		}
 
-	for( i = 0 ; i < nl ; ++i ) {
-		BzSetDigit( z, i, n[i] );
+		for( i = 0 ; i < nl ; ++i ) {
+			BzSetDigit( z, i, n[i] );
+		}
 	}
 
 	return( z );
@@ -1635,34 +1646,38 @@ BzAnd( const BigZ y, const BigZ z )
 	}
 
 	if( yl < zl ) {
-		n = BzCopy( zz );
-		BzSetSign( n, BZ_PLUS );
-		if( (sign & BZ_SIGN1) == 0 ) {
-			for( l = (zl - 1) ; l >= yl ; --l ) {
-				BnnAndDigits( BzToBn( n ) + l, BN_ZERO );
+		if( (n = BzCopy( zz )) != BZNULL ) {
+			BzSetSign( n, BZ_PLUS );
+			if( (sign & BZ_SIGN1) == 0 ) {
+				for( l = (zl - 1) ; l >= yl ; --l ) {
+				  BnnAndDigits( BzToBn( n ) + l, BN_ZERO );
+				}
 			}
-		}
-		for( l = 0 ; l < yl ; ++l ) {
-			BnnAndDigits( BzToBn( n ) + l, *(BzToBn( yy ) + l) );
+			for( l = 0 ; l < yl ; ++l ) {
+			  BnnAndDigits( BzToBn( n ) + l, *(BzToBn( yy ) + l) );
+			}
 		}
 	} else	{
-		n = BzCopy( yy );
-		BzSetSign( n, BZ_PLUS );
-		if( (sign & BZ_SIGN2) == 0 ) {
-			for( l = (yl - 1) ; l >= zl ; --l ) {
-				BnnAndDigits( BzToBn( n ) + l, BN_ZERO );
+		if( (n = BzCopy( yy )) != BZNULL ) {
+			BzSetSign( n, BZ_PLUS );
+			if( (sign & BZ_SIGN2) == 0 ) {
+				for( l = (yl - 1) ; l >= zl ; --l ) {
+				  BnnAndDigits( BzToBn( n ) + l, BN_ZERO );
+				}
 			}
-		}
-		for( l = 0 ; l < zl ; ++l ) {
-			BnnAndDigits( BzToBn( n ) + l, *(BzToBn( zz ) + l) );
+			for( l = 0 ; l < zl ; ++l ) {
+			  BnnAndDigits( BzToBn( n ) + l, *(BzToBn( zz ) + l) );
+			}
 		}
 	}
 
-	if( BnnIsZero( BzToBn( n ), BzNumDigits( n ) ) == BN_TRUE ) {
-		BzSetSign( n, BZ_ZERO );
-	} else	if( sign == (unsigned int)(BZ_SIGN1 | BZ_SIGN2) ) {
-		BnnComplement2( BzToBn( n ), BzNumDigits( n ) );
-		BzSetSign( n, BZ_MINUS );
+	if( n != BZNULL ) {
+		if( BnnIsZero( BzToBn( n ), BzNumDigits( n ) ) == BN_TRUE ) {
+			BzSetSign( n, BZ_ZERO );
+		} else	if( sign == (unsigned int)(BZ_SIGN1 | BZ_SIGN2) ) {
+			BnnComplement2( BzToBn( n ), BzNumDigits( n ) );
+			BzSetSign( n, BZ_MINUS );
+		}
 	}
 
 	/*
@@ -1715,34 +1730,38 @@ BzOr( const BigZ y, const BigZ z )
 	}
 
 	if( yl < zl ) {
-		n = BzCopy( zz );
-		BzSetSign( n, BZ_PLUS );
-		if( (sign & BZ_SIGN1) != 0 ) {
-			for( l = (zl - 1) ; l >= yl ; --l ) {
-				BnnAndDigits( BzToBn(n) + l, BN_ZERO );
+		if( (n = BzCopy( zz )) != BZNULL ) {
+			BzSetSign( n, BZ_PLUS );
+			if( (sign & BZ_SIGN1) != 0 ) {
+				for( l = (zl - 1) ; l >= yl ; --l ) {
+				  BnnAndDigits( BzToBn(n) + l, BN_ZERO );
+				}
 			}
-		}
-		for( l = 0 ; l < yl ; ++l ) {
-			BnnOrDigits( BzToBn( n ) + l, *(BzToBn( yy ) + l) );
+			for( l = 0 ; l < yl ; ++l ) {
+			  BnnOrDigits( BzToBn( n ) + l, *(BzToBn( yy ) + l) );
+			}
 		}
 	} else	{
-		n = BzCopy( yy );
-		BzSetSign( n, BZ_PLUS );
-		if( (sign & BZ_SIGN2) != 0 ) {
-			for( l = (yl - 1) ; l >= zl ; --l ) {
-				BnnAndDigits( BzToBn(n) + l, BN_ZERO );
+		if( (n = BzCopy( yy )) != BZNULL ) {
+			BzSetSign( n, BZ_PLUS );
+			if( (sign & BZ_SIGN2) != 0 ) {
+				for( l = (yl - 1) ; l >= zl ; --l ) {
+				  BnnAndDigits( BzToBn(n) + l, BN_ZERO );
+				}
 			}
-		}
-		for( l = 0 ; l < zl ; ++l ) {
-			BnnOrDigits( BzToBn( n ) + l, *(BzToBn( zz ) + l) );
+			for( l = 0 ; l < zl ; ++l ) {
+			  BnnOrDigits( BzToBn( n ) + l, *(BzToBn( zz ) + l) );
+			}
 		}
 	}
 
-	if( BnnIsZero( BzToBn( n ), BzNumDigits( n ) ) == BN_TRUE ) {
-		BzSetSign( n, BZ_ZERO );
-	} else	if( sign != 0 ) {
-		BnnComplement2( BzToBn( n ), BzNumDigits( n ) );
-		BzSetSign( n, BZ_MINUS );
+	if( n != BZNULL ) {
+		if( BnnIsZero( BzToBn( n ), BzNumDigits( n ) ) == BN_TRUE ) {
+			BzSetSign( n, BZ_ZERO );
+		} else	if( sign != 0 ) {
+			BnnComplement2( BzToBn( n ), BzNumDigits( n ) );
+			BzSetSign( n, BZ_MINUS );
+		}
 	}
 
 	/*
@@ -1795,34 +1814,38 @@ BzXor( const BigZ y, const BigZ z )
 	}
 
 	if( yl < zl ) {
-		n = BzCopy( zz );
-		BzSetSign( n, BZ_PLUS );
-		if( (sign & BZ_SIGN1) != 0 ) {
-			for( l = (zl - 1) ; l >= yl ; --l ) {
-				BnnXorDigits( BzToBn(n) + l, BN_COMPLEMENT );
+		if( (n = BzCopy( zz )) != BZNULL ) {
+			BzSetSign( n, BZ_PLUS );
+			if( (sign & BZ_SIGN1) != 0 ) {
+				for( l = (zl - 1) ; l >= yl ; --l ) {
+				  BnnXorDigits( BzToBn(n) + l, BN_COMPLEMENT );
+				}
 			}
-		}
-		for( l = 0 ; l < yl ; ++l ) {
-			BnnXorDigits( BzToBn( n ) + l, *(BzToBn( yy ) + l) );
+			for( l = 0 ; l < yl ; ++l ) {
+			  BnnXorDigits( BzToBn( n ) + l, *(BzToBn( yy ) + l) );
+			}
 		}
 	} else	{
-		n = BzCopy( yy );
-		BzSetSign( n, BZ_PLUS );
-		if( (sign & BZ_SIGN2) != 0 ) {
-			for( l = (yl - 1) ; l >= zl ; --l ) {
-				BnnXorDigits( BzToBn(n) + l, BN_COMPLEMENT );
+		if( (n = BzCopy( yy )) != BZNULL ) {
+			BzSetSign( n, BZ_PLUS );
+			if( (sign & BZ_SIGN2) != 0 ) {
+				for( l = (yl - 1) ; l >= zl ; --l ) {
+				  BnnXorDigits( BzToBn(n) + l, BN_COMPLEMENT );
+				}
 			}
-		}
-		for( l = 0 ; l < zl ; ++l ) {
-			BnnXorDigits( BzToBn( n ) + l, *(BzToBn( zz ) + l) );
+			for( l = 0 ; l < zl ; ++l ) {
+			  BnnXorDigits( BzToBn( n ) + l, *(BzToBn( zz ) + l) );
+			}
 		}
 	}
 
-	if( BnnIsZero( BzToBn( n ), BzNumDigits( n ) ) == BN_TRUE ) {
-		BzSetSign( n, BZ_ZERO );
-	} else	if( sign == BZ_SIGN1 || sign == BZ_SIGN2 ) {
-		BnnComplement2( BzToBn( n ), BzNumDigits( n ) );
-		BzSetSign( n, BZ_MINUS );
+	if( n != BZNULL ) {
+		if( BnnIsZero( BzToBn( n ), BzNumDigits( n ) ) == BN_TRUE ) {
+			BzSetSign( n, BZ_ZERO );
+		} else	if( sign == BZ_SIGN1 || sign == BZ_SIGN2 ) {
+			BnnComplement2( BzToBn( n ), BzNumDigits( n ) );
+			BzSetSign( n, BZ_MINUS );
+		}
 	}
 
 	/*
@@ -2105,17 +2128,19 @@ BzLcm( const BigZ y, const BigZ z )
 	 * Returns lcm( Y, Z ).
 	 */
 
-	a = BzMultiply( y, z );
-	b = BzGcd( y, z );
+	r = BZNULL;
 
-	if( BzGetSign( a ) == BZ_MINUS ) {
-		BzSetSign( a, BZ_PLUS );
+	if( (a = BzMultiply( y, z )) != BZNULL ) {
+		if( BzGetSign( a ) == BZ_MINUS ) {
+			BzSetSign( a, BZ_PLUS );
+		}
+
+		if( (b = BzGcd( y, z )) != BZNULL ) {
+			r = BzTruncate( a, b );
+			BzFree( b );
+		}
+		BzFree( a );
 	}
-
-	r = BzTruncate( a, b );
-
-	BzFree( b );
-	BzFree( a );
 
 	return( r );
 }
