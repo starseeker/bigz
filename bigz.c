@@ -721,7 +721,10 @@ BzDiv( const BigZ y, const BigZ z )
 	BigZ	r = BZNULL;
 
 	q = BzDivide( y, z, &r );
-	BzFree( r );
+
+	if( r != BZNULL ) {
+		BzFree( r );
+	}
 
 	return( q );
 }
@@ -774,7 +777,10 @@ BzFloor( const BigZ y, const BigZ z )
 	BigZ	r = BZNULL;
 
 	q = BzDivide( y, z, &r );
-	BzFree( r );
+
+	if( r != BZNULL ) {
+		BzFree( r );
+	}
 
 	return( q );
 }
@@ -790,7 +796,10 @@ BzCeiling( const BigZ y, const BigZ z )
 	BigZ		r = BZNULL;
 	BigNumLength	ql;
 
-	q  = BzDivide( y, z, &r );
+	if( (q = BzDivide( y, z, &r )) == BZNULL ) {
+		return( BZNULL );
+	}
+
 	ql = BzNumDigits( q );
 
 	if( BzGetSign( q ) == BZ_PLUS && BzGetSign( r ) != BZ_ZERO ) {
@@ -832,7 +841,10 @@ BzRound( const BigZ y, const BigZ z )
 	BigZ		r = BZNULL;
 	BigNumLength	ql;
 
-	q  = BzDivide( y, z, &r );
+	if( (q = BzDivide( y, z, &r )) == BZNULL ) {
+		return( BZNULL );
+	}
+
 	ql = BzNumDigits( q );
 
 	if( BzGetSign( q ) == BZ_PLUS && BzGetSign( r ) != BZ_ZERO ) {
@@ -1585,27 +1597,29 @@ BzNot( const BigZ z )
 
 	switch( BzGetSign( z ) ) {
 	case BZ_MINUS:
-		y = BzCopy( z );
-		BnnComplement2( BzToBn( y ), BzNumDigits( y ) );
-		BnnComplement( BzToBn( y ), BzNumDigits( y ) );
-		if( BnnIsZero( BzToBn( y ), BzNumDigits( y ) ) == BN_TRUE ) {
-			/*
-			 * ~(-1) -> 0
-			 */
-			BzSetSign( y, BZ_ZERO );
-		} else	{
-			BzSetSign( y, BZ_PLUS );
-		}
-		break;
+	     if( (y = BzCopy( z )) != BZNULL ) {
+	       BnnComplement2( BzToBn( y ), BzNumDigits( y ) );
+	       BnnComplement( BzToBn( y ), BzNumDigits( y ) );
+	       if( BnnIsZero( BzToBn( y ), BzNumDigits( y ) ) == BN_TRUE ) {
+		 /*
+		  * ~(-1) -> 0
+		  */
+		 BzSetSign( y, BZ_ZERO );
+	       } else {
+		 BzSetSign( y, BZ_PLUS );
+	       }
+	     }
+	     break;
 	case BZ_ZERO:
-		y = BzFromInteger( (BzInt)-1 );
-		break;
+	     y = BzFromInteger( (BzInt)-1 );
+	     break;
 	default: /* case BZ_PLUS: */
-		y = BzCopy( z );
-		BnnComplement( BzToBn( y ), BzNumDigits( y ) );
-		BnnComplement2( BzToBn( y ), BzNumDigits( y ) );
-		BzSetSign( y, BZ_MINUS );
-		break;
+	     if( (y = BzCopy( z )) != BZNULL ) {
+		     BnnComplement( BzToBn( y ), BzNumDigits( y ) );
+		     BnnComplement2( BzToBn( y ), BzNumDigits( y ) );
+		     BzSetSign( y, BZ_MINUS );
+	     }
+	     break;
 	}
 
 	return( y );
@@ -1630,7 +1644,9 @@ BzAnd( const BigZ y, const BigZ z )
 	zl = BzNumDigits( z );
 
 	if( BzGetSign( y ) == BZ_MINUS ) {
-		yy = BzCopy( y );
+		if( (yy = BzCopy( y )) == BZNULL ) {
+			return( BZNULL );
+		}
 		BnnComplement2( BzToBn( yy ), yl );
 		sign |= BZ_SIGN1;
 	} else	{
@@ -1638,7 +1654,12 @@ BzAnd( const BigZ y, const BigZ z )
 	}
 
 	if( BzGetSign( z ) == BZ_MINUS ) {
-		zz = BzCopy( z );
+		if( (zz = BzCopy( z )) == BZNULL ) {
+			if( (sign & BZ_SIGN1) != 0 ) {
+				BzFree( yy );
+			}
+			return( BZNULL );
+		}
 		BnnComplement2( BzToBn( zz ), zl );
 		sign |= BZ_SIGN2;
 	} else	{
@@ -1714,7 +1735,9 @@ BzOr( const BigZ y, const BigZ z )
 	zl = BzNumDigits( z );
 
 	if( BzGetSign( y ) == BZ_MINUS ) {
-		yy = BzCopy( y );
+		if( (yy = BzCopy( y )) == BZNULL ) {
+			return( BZNULL );
+		}
 		BnnComplement2( BzToBn( yy ), yl );
 		sign |= BZ_SIGN1;
 	} else	{
@@ -1722,7 +1745,12 @@ BzOr( const BigZ y, const BigZ z )
 	}
 
 	if( BzGetSign( z ) == BZ_MINUS ) {
-		zz = BzCopy( z );
+		if( (zz = BzCopy( z )) == BZNULL ) {
+			if( (sign & BZ_SIGN1) != 0 ) {
+				BzFree( yy );
+			}
+			return( BZNULL );
+		}
 		BnnComplement2( BzToBn( zz ), zl );
 		sign |= BZ_SIGN2;
 	} else	{
@@ -1798,7 +1826,9 @@ BzXor( const BigZ y, const BigZ z )
 	zl = BzNumDigits( z );
 
 	if( BzGetSign( y ) == BZ_MINUS ) {
-		yy = BzCopy( y );
+		if( (yy = BzCopy( y )) == BZNULL ) {
+			return( BZNULL );
+		}
 		BnnComplement2( BzToBn( yy ), yl );
 		sign |= BZ_SIGN1;
 	} else	{
@@ -1806,7 +1836,12 @@ BzXor( const BigZ y, const BigZ z )
 	}
 
 	if( BzGetSign( z ) == BZ_MINUS ) {
-		zz = BzCopy( z );
+		if( (zz = BzCopy( z )) == BZNULL ) {
+			if( (sign & BZ_SIGN1) != 0 ) {
+				BzFree( yy );
+			}
+			return( BZNULL );
+		}
 		BnnComplement2( BzToBn( zz ), zl );
 		sign |= BZ_SIGN2;
 	} else	{
@@ -1883,8 +1918,14 @@ BzTestBit( BigNumLength bit, const BigZ z )
 	bit = (bit % BN_DIGIT_SIZE);
 
 	if( BzGetSign( z ) == BZ_MINUS ) {
-		BigZ y = BzCopy( z );
-		BigNumLength yl = BzNumDigits( y );
+		BigZ y;
+		BigNumLength yl;
+
+		if( (y = BzCopy( z )) == BZNULL ) {
+			return( BN_FALSE );
+		}
+
+		yl = BzNumDigits( y );
 
 		BnnComplement2( BzToBn( y ), yl );
 		BzSetSign( y, BZ_PLUS );
@@ -1909,7 +1950,9 @@ BzBitCount( const BigZ z )
 
 	switch( BzGetSign( z ) ) {
 	case BZ_MINUS:
-		y = BzCopy( z );
+		if( (y = BzCopy( z )) == BZNULL ) {
+			return( (BigNumLength)0 );
+		}
 		BnnComplement2( BzToBn( y ), BzNumDigits( y ) );
 		BnnComplement( BzToBn( y ), BzNumDigits( y ) );
 		nl = BnnNumCount( BzToBn( y ), BzNumDigits( y ) );
@@ -2035,12 +2078,20 @@ BzAsh( const BigZ y, int n )
 		BigZ	one;
 		BigZ	d;
 
-		if( BzGetSign( y ) == BZ_ZERO ) {
+		if( y == BZNULL ) {
+			return( BZNULL );
+		} else	if( BzGetSign( y ) == BZ_ZERO ) {
 			return( BzCopy( y ) );
 		}
 
-		one = BzFromInteger( (BzInt)1 );
-		d   = BzAsh( one, -n );
+		if( (one = BzFromInteger( (BzInt)1 )) == BZNULL ) {
+			return( BZNULL );
+		}
+
+		if( (d = BzAsh( one, -n )) == BZNULL ) {
+			BzFree( one );
+			return( BZNULL );
+		}
 
 		z = BzFloor( y, d );
 		BzFree( d );
@@ -2157,15 +2208,32 @@ BzGcd( const BigZ y, const BigZ z )
 	} else	if( BzGetSign( z ) == BZ_ZERO ) {
 		return( BzAbs( y ) );
 	} else	{
-		BigZ yc = BzAbs( y ); /* a fresh copy */
-		BigZ zc = BzAbs( z ); /* a fresh copy */
+		BigZ yc;
+		BigZ zc;
 		BigZ tmp;
+
+		if( (yc = BzAbs( y )) == BZNULL ) {
+			/* a fresh copy failed */
+			return( BZNULL );
+		}
+
+		if( (zc = BzAbs( z )) == BZNULL ) {
+			/* a fresh copy failed */
+			BzFree( yc );
+			return( BZNULL );
+		}
 
 		while( BzGetSign( zc ) != BZ_ZERO ) {
 			tmp = BzMod( yc, zc );
 			BzFree( yc );
-			yc = zc;
-			zc = tmp;
+
+			if( tmp == BZNULL ) {
+				yc = BZNULL;
+				break;
+			} else {
+				yc = zc;
+				zc = tmp;
+			}
 		}
 	
 		BzFree( zc );
@@ -2191,7 +2259,10 @@ BzRandom( const BigZ n )
 	 * we loop until BigNumDigit is filled.
 	 */
 
-	r   = BzCopy( n );
+	if( (r = BzCopy( n )) == BZNULL) {
+		return( BZNULL );
+	}
+
 	len = BzGetSize( n );
 
 	for( i = 0 ; i < len ; ++i ) {

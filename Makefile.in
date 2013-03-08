@@ -134,6 +134,7 @@ lint:
 		-nullret 		\
 		-mustfreefresh 		\
 		-realcompare		\
+		-realrelatecompare	\
 		-temptrans 		\
 	        bigq.c
 
@@ -177,6 +178,7 @@ MASTER		= \
 		pdf/RR-1016.pdf		\
 		pdf/RR-1016.ps		\
 		makefile.gnu		\
+		makefile.clang		\
 		Makefile.in		\
 		makefile.lcc		\
 		makefile.nt		\

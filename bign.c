@@ -706,6 +706,11 @@ BnnDivideDigit( BigNum qq, BigNum nn, BigNumLength nl, BigNumDigit d )
 	ch = HIGH( d );
 	cl = LOW( d );
 
+	/*
+	 * At this point ch can't be == 0; d has been shifted by k
+	 * (the number of leading 0).
+	 */
+
 	rl = *(--nn);
 
 	while( nl-- != 0 ) {
@@ -904,6 +909,7 @@ BnnDivideHelper( BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl )
 	QApp = BN_ZERO;
 	nl += 1;
 	ni = nl-dl;
+
 	while( ni != 0 ) {
 		/*
 		 * Compute the approximate quotient
