@@ -6044,7 +6044,8 @@ Configuration:
  Source:        ${srcdir}
  Compiler:	${CC} ${CCVERSION}
  Flags:         ${CFLAGS}
- Optimizations: ${OPTIMS}
+ Optimizations:
+`for i in ${OPTIMS}; do echo \"                $i\"; done`
  Build:         ${build}
  Host:          ${host}
  Target:        ${target}

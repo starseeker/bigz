@@ -1,6 +1,6 @@
 #
 #	Makefile for 'Bignums'	(c) C. Jullien
-#	$Id: makefile.nt,v 1.37 2013-03-06 06:29:41 jullien Exp $
+#	$Id: makefile.nt,v 1.38 2013-03-10 15:54:40 jullien Exp $
 #
 
 .SUFFIXES: .lsp .dat .$(SUFFIXES)

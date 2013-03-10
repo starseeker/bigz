@@ -1,5 +1,5 @@
 /*
- static char rcsid[] = "$Id: config.h.in,v 1.4 2011-12-31 16:34:30 jullien Exp $";
+ static char rcsid[] = "$Id: config.h.in,v 1.5 2013-03-10 15:54:40 jullien Exp $";
  */
 
 /*
@@ -32,6 +32,9 @@
 
 /* Define if you have the <string.h> header file. */
 #undef HAVE_STRING_H
+
+/* Define if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
 
 /*
  *	Compilation features

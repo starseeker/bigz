@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.h,v 1.63 2013-02-10 08:41:41 jullien Exp $
+ * $Id: bigz.h,v 1.64 2013-03-10 15:54:40 jullien Exp $
  */
 
 /*
@@ -44,6 +44,10 @@ extern	"C"	{
 #endif
 
 #include <stdlib.h>
+
+#if	defined( HAVE_STDINT_H )
+#include <stdint.h>
+#endif
 
 #define	BZ_PURE_FUNCTION		BN_PURE_FUNCTION
 #define	BZ_CONST_FUNCTION		BN_CONST_FUNCTION
@@ -128,7 +132,11 @@ typedef char				BzChar;
 #if	defined( _WIN64 )
 typedef	__int64				BzInt;
 #else
+#if	defined( HAVE_STDINT_H ) && ( SIZEOF_VOID_P >= 8 )
+typedef	int64_t				BzInt;
+#else
 typedef	int				BzInt;
+#endif
 #endif
 #endif
 
@@ -137,7 +145,11 @@ typedef	int				BzInt;
 #if	defined( _WIN64 )
 typedef	unsigned __int64		BzUInt;
 #else
+#if	defined( HAVE_STDINT_H ) && ( SIZEOF_VOID_P >= 8 )
+typedef	uint64_t			BzUInt;
+#else
 typedef	unsigned int			BzUInt;
+#endif
 #endif
 #endif
 
