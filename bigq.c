@@ -503,7 +503,6 @@ BqFromString( const BzChar *s, int base )
 		q = BqCreateInternal( n, d, BQ_SET );
 		return( q );
 	} else	{
-		printf("<str: %s>\n", s);
 		n = BzFromString( s, (BigNumDigit)base, BZ_UNTIL_INVALID );
 		if( n == BZNULL ) {
 			return( BQNULL );
@@ -511,10 +510,8 @@ BqFromString( const BzChar *s, int base )
 
 		++p; // skip slash
 
-		printf("<str: %s>\n", p);
 		d = BzFromString( p, (BigNumDigit)base, BZ_UNTIL_END );
 		if( d == BZNULL ) {
-		printf("Err <str: %s>\n", p);
 			BzFree( n );
 			return( BQNULL );
 		}

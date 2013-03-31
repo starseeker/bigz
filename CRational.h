@@ -53,11 +53,9 @@ private:
 public:
 	CRational( const CBignum& n = 0, const CBignum& d = 1)
 		: m_q( BqCreate( n, d) ) {
-		printf("from bn\n");
 	}
 	CRational( int n )
 		: m_q( BqCreate( CBignum(n), CBignum(1) ) ) {
-		printf("from int\n");
 	}
 	CRational( const CRational& q )
 		: m_q( BqCreate( BqGetNumerator(q.m_q),
@@ -65,7 +63,6 @@ public:
 	}
         CRational( const char* s, int base=10 )
 		: m_q( BqFromString((BzChar *)s, base) ) {
-		printf("from str\n");
 	}
 #if	defined( HAVE_BQ_FROM_DOUBLE )
 	CRational( double n )

@@ -80,7 +80,7 @@ tCBignum.$(O): CBignum.h tCBignum.cpp tCBignum.dat bigz.h bign.h
 tCRational.$(O): CRational.h tCRational.cpp bigz.h bign.h bigq.h
 
 tCRational$(EXE): $(KRNLIB) CRational.h tCRational.$(O)
-	@$(CPP) $(CFLAGS) -o tCRational$(EXE) tCRational$(O) -L. -l$(KERN)
+	@$(CPP) $(CFLAGS) -o tCRational$(EXE) tCRational.$(O) -L. -l$(KERN)
 
 # Misc
 
