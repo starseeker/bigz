@@ -185,6 +185,7 @@ MASTER		= \
 		tCBignum.cpp		\
 		tCBignum.dat		\
 		tCBignum.dat		\
+		tCRational.cpp		\
 		test/BntoBnn.h		\
 		test/bztest.c		\
 		test/testkern.c
