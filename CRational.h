@@ -1,5 +1,5 @@
 //
-// $Id: CRational.h,v 1.13 2013-03-05 06:21:39 jullien Exp $
+// $Id: CRational.h,v 1.14 2013-03-31 09:14:38 jullien Exp $
 //
 
 /*
@@ -51,15 +51,21 @@ class	CRational {
 private:
 	enum	Flags { ASSIGN };
 public:
-	CRational( const CBignum &n = 0, const CBignum &d = 1)
+	CRational( const CBignum& n = 0, const CBignum& d = 1)
 		: m_q( BqCreate( n, d) ) {
+		printf("from bn\n");
 	}
-	CRational( const CRational &q )
+	CRational( int n )
+		: m_q( BqCreate( CBignum(n), CBignum(1) ) ) {
+		printf("from int\n");
+	}
+	CRational( const CRational& q )
 		: m_q( BqCreate( BqGetNumerator(q.m_q),
 				 BqGetDenominator(q.m_q)) ) {
 	}
-        CRational( const char *s, int base=10 )
+        CRational( const char* s, int base=10 )
 		: m_q( BqFromString((BzChar *)s, base) ) {
+		printf("from str\n");
 	}
 #if	defined( HAVE_BQ_FROM_DOUBLE )
 	CRational( double n )

@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.c,v 1.26 2013-02-02 18:17:33 jullien Exp $
+ * $Id: bigq.c,v 1.28 2013-03-31 09:14:38 jullien Exp $
  */
 
 /*
@@ -91,7 +91,6 @@ BqCreateInternal( const BigZ n, const BigZ d, BqCreateMode mode )
 	if( mode == BQ_COPY ) {
 		cn = BzCopy( n );
 		cd = BzCopy( d );
-
 	} else	{
 		cn = n;
 		cd = d;
@@ -504,13 +503,18 @@ BqFromString( const BzChar *s, int base )
 		q = BqCreateInternal( n, d, BQ_SET );
 		return( q );
 	} else	{
-		n = BzFromString( s,   (BigNumDigit)base, BZ_UNTIL_INVALID );
+		printf("<str: %s>\n", s);
+		n = BzFromString( s, (BigNumDigit)base, BZ_UNTIL_INVALID );
 		if( n == BZNULL ) {
 			return( BQNULL );
 		}
 
-		d = BzFromString( p+1, (BigNumDigit)base, BZ_UNTIL_END );
-		if( n == BZNULL ) {
+		++p; // skip slash
+
+		printf("<str: %s>\n", p);
+		d = BzFromString( p, (BigNumDigit)base, BZ_UNTIL_END );
+		if( d == BZNULL ) {
+		printf("Err <str: %s>\n", p);
 			BzFree( n );
 			return( BQNULL );
 		}
