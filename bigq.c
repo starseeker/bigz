@@ -515,7 +515,9 @@ BqFromString( const BzChar *s, int base )
 			return( BQNULL );
 		}
 
-		q = BqCreateInternal( n, d, BQ_SET );
+		q = BqCreateInternal( n, d, BQ_COPY );
+		BzFree( d );
+		BzFree( n );
 		return( q );
 	}
 }

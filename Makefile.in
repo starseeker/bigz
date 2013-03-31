@@ -23,7 +23,8 @@ LISP		= clisp
 OBJECT		= bigq.$(O) bigz.$(O) bign.$(O)
 VERSION		= @VERSION@
 
-BINARIES	= $(KRNLIB) bztest$(EXE) testkern$(EXE) @NOCXX@tCBignum$(EXE)
+BINARIES	= $(KRNLIB) bztest$(EXE) testkern$(EXE) \
+		  @NOCXX@tCBignum$(EXE) tCRational$(EXE)
 
 all: $(BINARIES) tests
 
@@ -76,12 +77,18 @@ CBignum.$(O): CBignum.h CBignum.cpp bigz.h bign.h
 
 tCBignum.$(O): CBignum.h tCBignum.cpp tCBignum.dat bigz.h bign.h
 
+tCRational.$(O): CRational.h tCRational.cpp bigz.h bign.h bigq.h
+
+tCRational$(EXE): $(KRNLIB) CRational.h tCRational.$(O)
+	@$(CPP) $(CFLAGS) -o tCRational$(EXE) tCRational$(O) -L. -l$(KERN)
+
 # Misc
 
 tests:
 	./testkern a
 	./bztest
 	@NOCXX@./tCBignum
+	@NOCXX@./tCRational
 
 clean:
 	@-rm -f bztest$(EXE) testkern$(EXE) tCBignum$(EXE) *.$(O) *.$(AEXT)
