@@ -378,7 +378,7 @@ BqInverse( const BigQ a )
 		const BigZ an  = BqGetNumerator(   a );
 		const BigZ ad  = BqGetDenominator( a );
 
-		return( BqCreateInternal( an, ad, BQ_COPY ) );
+		return( BqCreateInternal( ad, an, BQ_COPY ) );
 	}
 }
 

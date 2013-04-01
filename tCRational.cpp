@@ -65,7 +65,7 @@ main()
 
   check(CRational( 0 ),     0, 1);
   check(CRational( 1 ),     1, 1);
-  check(CRational( -2 ),    -2, 1);
+  check(CRational( -2 ),   -2, 1);
   check(CRational( 0,  1),  0, 1);
   check(CRational( 0,  9),  0, 1);
   check(CRational( 0, -9),  0, 1);
@@ -79,22 +79,29 @@ main()
   check(CRational("-3/-9"),  1, 3);
   check(CRational("-3/-9"),  1, 3);
 
-  check(q1,       -2, 3);
-  check(abs(q1),   2, 3);
-  check(abs(q2),   2, 3);
-  check(q2 + q5,   1, 1);
-  check(q1 - q5,  -1, 1);
-  check(q1 + q2,   0, 1);
-  check(q1 + q2,   0, 1);
-  check((q1 * q2),  -4, 9);
-  check((q2 * q2),   4, 9);
-  check(q1 / q3,  -6, 5);
-  check(q3 - q1,  11, 9);
+  check(q1,          -2, 3);
+  check(inverse(q1), -3, 2);
+  check(abs(q1),      2, 3);
+  check(abs(q2),      2, 3);
+  check(q2 + q5,      1, 1);
+  check(q1 - q5,     -1, 1);
+  check(q1 + q2,      0, 1);
+  check(q1 + q2,      0, 1);
+  check((q1 * q2),   -4, 9);
+  check((q2 * q2),    4, 9);
+  check(q1 / q3,     -6, 5);
+  check(q3 - q1,     11, 9);
+  check(q1 * 3,      -2, 1);
+  check(q2 * 3,       2, 1);
+  check(q1 * zero,    0, 1);
+  check(q2 * zero,    0, 1);
 
   std::cout << err << std::endl;
-//  std::cout << (q1 * -3) << std::endl;
   compare(q3, q1, "<", false);
   compare(q3, q1, ">", true);
+  compare(q3, q1, ">=", true);
+  compare(q3, q3, ">=", true);
+  compare(q1, q1, ">=", true);
   compare(q3, q1, "==", false);
   compare(q3, q1, "!=", true);
 

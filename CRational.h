@@ -160,6 +160,9 @@ public:
 	friend CRational abs(const CRational& q) {
 		return CRational(BqAbs(q.m_q), ASSIGN);
 	}
+	friend CRational inverse(const CRational& q) {
+		return CRational(BqInverse(q.m_q), ASSIGN);
+	}
 
 	// output
 	friend std::ostream& operator<<(std::ostream& os, const CRational& q) {
