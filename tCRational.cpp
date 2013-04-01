@@ -1,5 +1,5 @@
 #if	!defined( lint )
-static	const char rcsid[] = "$Id: tCRational.cpp,v 1.12 2013-03-31 09:14:38 jullien Exp $";
+static	const char rcsid[] = "$Id: tCRational.cpp,v 1.13 2013-04-01 08:23:31 jullien Exp $";
 #endif
 
 //
@@ -14,6 +14,38 @@ static	const char rcsid[] = "$Id: tCRational.cpp,v 1.12 2013-03-31 09:14:38 jull
 
 using namespace rational;
 
+void
+compare(const CRational& r1, const CRational& r2, const char* op, bool res) {
+  bool cmp = false;
+
+  if (strcmp(op, "==") == 0) {
+    cmp = (r1 == r2);
+  } else if (strcmp(op, "!=") == 0) {
+    cmp = (r1 != r2);
+  } else if (strcmp(op, ">") == 0) {
+    cmp = (r1 > r2);
+  } else if (strcmp(op, ">=") == 0) {
+    cmp = (r1 >= r2);
+  } else if (strcmp(op, "<") == 0) {
+    cmp = (r1 < r2);
+  } else if (strcmp(op, "<=") == 0) {
+    cmp = (r1 <= r2);
+  }
+
+  if (cmp != res) {
+   std::cerr << r1 << " " << op << " " << r2
+             << " should be " << (res ? "true" : "false")
+             << std::endl;
+  }
+}
+
+void
+check(const CRational& r, const CBignum& n, const CBignum& d) {
+  if (r.numerator() != n || r.denominator() != d) {
+    std::cerr << r << " != " << n << "/" << d << std::endl;
+  }
+}
+
 int
 main()
 {
@@ -24,35 +56,47 @@ main()
   CRational q3(5, 9);
   CRational q4("87384004098848212735349875629364987687687667720",
                "93495466257274887265487820984675290489826754805");
+  CRational q5(1, 3);
+
   CRational pi("22/7");
   CRational one(1);
   CRational zero(0);
-  CRational x("1/6");
-  CRational y("1/3");
-  CRational z("-1/3");
   CRational err(5, 0);
 
-  std::cout << z << std::endl;
-  std::cout << one << std::endl;
-  std::cout << zero << std::endl;
-  std::cout << -zero << std::endl;
+  check(CRational( 0 ),     0, 1);
+  check(CRational( 1 ),     1, 1);
+  check(CRational( -2 ),    -2, 1);
+  check(CRational( 0,  1),  0, 1);
+  check(CRational( 0,  9),  0, 1);
+  check(CRational( 0, -9),  0, 1);
+  check(CRational( 3,  9),  1, 3);
+  check(CRational(-3,  9), -1, 3);
+  check(CRational(-3, -9),  1, 3);
+  check(CRational(-3, -9),  1, 3);
+
+  check(CRational("3/9"),    1, 3);
+  check(CRational("-3/ 9"), -1, 3);
+  check(CRational("-3/-9"),  1, 3);
+  check(CRational("-3/-9"),  1, 3);
+
+  check(q1,       -2, 3);
+  check(abs(q1),   2, 3);
+  check(abs(q2),   2, 3);
+  check(q2 + q5,   1, 1);
+  check(q1 - q5,  -1, 1);
+  check(q1 + q2,   0, 1);
+  check(q1 + q2,   0, 1);
+  check((q1 * q2),  -4, 9);
+  check((q2 * q2),   4, 9);
+  check(q1 / q3,  -6, 5);
+  check(q3 - q1,  11, 9);
+
   std::cout << err << std::endl;
-  std::cout << pi << std::endl;
-  std::cout << q1 << std::endl;
-  std::cout << q4 << std::endl;
-  std::cout << -q1 << std::endl;
-  std::cout << q2 << std::endl;
-  std::cout << abs(q2) << std::endl;
-  std::cout << (q1 + q2) << std::endl;
-  std::cout << (q1 * q2) << std::endl;
 //  std::cout << (q1 * -3) << std::endl;
-  std::cout << ((q1 * q2) + q3) << std::endl;
-  std::cout << (q1 - q3) << std::endl;
-  std::cout << (q1 / q3) << std::endl;
-  std::cout << (q3 - q1) << std::endl;
-  std::cout << (q3 < q1) << std::endl;
-  std::cout << (q3 > q1) << std::endl;
-  std::cout << (q1 < zero) << std::endl;
+  compare(q3, q1, "<", false);
+  compare(q3, q1, ">", true);
+  compare(q3, q1, "==", false);
+  compare(q3, q1, "!=", true);
 
   return( 0 );
 }

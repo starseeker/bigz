@@ -1,5 +1,5 @@
 //
-// $Id: CRational.h,v 1.14 2013-03-31 09:14:38 jullien Exp $
+// $Id: CRational.h,v 1.16 2013-04-01 08:23:31 jullien Exp $
 //
 
 /*
@@ -53,6 +53,7 @@ private:
 public:
 	CRational( const CBignum& n = 0, const CBignum& d = 1)
 		: m_q( BqCreate( n, d) ) {
+
 	}
 	CRational( int n )
 		: m_q( BqCreate( CBignum(n), CBignum(1) ) ) {
@@ -61,8 +62,8 @@ public:
 		: m_q( BqCreate( BqGetNumerator(q.m_q),
 				 BqGetDenominator(q.m_q)) ) {
 	}
-        CRational( const char* s, int base=10 )
-		: m_q( BqFromString((BzChar *)s, base) ) {
+        CRational( const char* s )
+		: m_q( BqFromString((BzChar *)s, 10) ) {
 	}
 #if	defined( HAVE_BQ_FROM_DOUBLE )
 	CRational( double n )
@@ -70,6 +71,14 @@ public:
 	}
 #endif
 	~CRational() { BqDelete(m_q); }
+
+	const CBignum numerator() const {
+		return BqGetNumerator(m_q);
+	}
+
+	const CBignum denominator() const {
+		return BqGetDenominator(m_q);
+	}
 
 	// convertions
 
@@ -117,8 +126,9 @@ public:
 	friend bool operator==(const CBignum& bn, const CRational& q) {
 		return (CRational(bn) == q);
 	}
-	friend bool operator!=(const CRational& q1, const CBignum& q2) {
-		return !(q1 != q2);
+
+	friend bool operator!=(const CRational& q1, const CRational& q2) {
+		return !(q1 == q2);
 	}
 
 	friend bool operator>(const CRational& q1, const CRational& q2) {

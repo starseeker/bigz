@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.c,v 1.28 2013-03-31 09:14:38 jullien Exp $
+ * $Id: bigq.c,v 1.30 2013-04-01 08:23:57 jullien Exp $
  */
 
 /*
@@ -70,9 +70,15 @@ BqCreateInternal( const BigZ n, const BigZ d, BqCreateMode mode )
 		return( BQNULL );
 	}
 
+#if	defined( BQ_POSITIVE_DENOMINATOR )
 	if( BzGetSign( d ) != BZ_PLUS ) {
 		return( BQNULL );
 	}
+#else
+	if( BzGetSign( d ) == BZ_ZERO ) {
+		return( BQNULL );
+	}
+#endif
 
 	if( (q = (BigQ)BqAlloc()) == 0 ) {
 		return( BQNULL );
@@ -83,6 +89,7 @@ BqCreateInternal( const BigZ n, const BigZ d, BqCreateMode mode )
 			BzFree( d );
 			BzFree( n );
 		}
+
 		BqSetNumerator(   q, BzFromInteger((BzInt)0) );
 		BqSetDenominator( q, BzFromInteger((BzInt)1) );
 		return( q );
@@ -90,10 +97,19 @@ BqCreateInternal( const BigZ n, const BigZ d, BqCreateMode mode )
 
 	if( mode == BQ_COPY ) {
 		cn = BzCopy( n );
-		cd = BzCopy( d );
+		cd = BzAbs( d ); 
+
+		if( BzGetSign( n ) != BzGetSign( d ) ) {
+			BzSetSign( cn, BZ_MINUS );
+		}
 	} else	{
 		cn = n;
 		cd = d;
+
+		if( BzGetSign( n ) != BzGetSign( d ) ) {
+			BzSetSign( cn, BZ_MINUS );
+		}
+		BzSetSign( cd, BZ_PLUS );
 	}
 
 	if( BzGetSign( n ) != BzGetSign( d ) ) {
