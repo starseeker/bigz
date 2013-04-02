@@ -10,6 +10,7 @@ static	const char rcsid[] = "$Id: tCRational.cpp,v 1.13 2013-04-01 08:23:31 jull
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
+#include <sstream>
 #include "CRational.h"
 
 using namespace rational;
@@ -61,7 +62,6 @@ main()
   CRational pi("22/7");
   CRational one(1);
   CRational zero(0);
-  CRational err(5, 0);
 
   check(CRational( 0 ),     0, 1);
   check(CRational( 1 ),     1, 1);
@@ -96,7 +96,6 @@ main()
   check(q1 * zero,    0, 1);
   check(q2 * zero,    0, 1);
 
-  std::cout << err << std::endl;
   compare(q3, q1, "<", false);
   compare(q3, q1, ">", true);
   compare(q3, q1, ">=", true);
@@ -104,6 +103,15 @@ main()
   compare(q1, q1, ">=", true);
   compare(q3, q1, "==", false);
   compare(q3, q1, "!=", true);
+
+  // Check #.QNaN
+  CRational err(5, 0);
+  std::ostringstream oss(std::ostringstream::out);
+  oss << err;
+
+  if (oss.str() != std::string("#.QNaN")) {
+    std::cerr << err << " != #.QNaN" << std::endl;
+  }
 
   return( 0 );
 }
