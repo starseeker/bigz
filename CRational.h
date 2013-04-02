@@ -84,6 +84,7 @@ public:
 
 	operator const char* () const { return BqToString( m_q, 0 ); }
 	operator BigQ        () const { return m_q; }
+	operator double      () const { return BqToDouble(m_q); }
 
 	// unary -
 

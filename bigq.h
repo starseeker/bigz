@@ -31,19 +31,19 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#if	!defined( __BIGQ_H )
-#define	__BIGQ_H
+#if     !defined( __BIGQ_H )
+#define __BIGQ_H
 
-#if	!defined( __BIGZ_H )
+#if     !defined( __BIGZ_H )
 #include "bigz.h"
 #endif
 
-#if	defined( __cplusplus )
-extern	"C"	{
+#if     defined( __cplusplus )
+extern  "C"     {
 #endif
 
-#define	BQ_PURE_FUNCTION		BN_PURE_FUNCTION
-#define	BQ_CONST_FUNCTION		BN_CONST_FUNCTION
+#define BQ_PURE_FUNCTION                BN_PURE_FUNCTION
+#define BQ_CONST_FUNCTION               BN_CONST_FUNCTION
 
 /*
  * BigQ.h: Types and structures for clients of BigQ
@@ -54,10 +54,10 @@ extern	"C"	{
  */
 
 typedef enum {
-	BQ_LT    = BN_LT,
-	BQ_EQ    = BN_EQ,
-	BQ_GT    = BN_GT,
-	BQ_ERR   = 100
+        BQ_LT    = BN_LT,
+        BQ_EQ    = BN_EQ,
+        BQ_GT    = BN_GT,
+        BQ_ERR   = 100
 } BqCmp;
 
 /*
@@ -65,52 +65,53 @@ typedef enum {
  */
 
 struct BigQStruct {
-	BigZ	N;
-	BigZ	D;
+        BigZ    N;
+        BigZ    D;
 };
 
 typedef struct BigQStruct * __BigQ;
 
-#if	!defined( BQ_RATIONAL_TYPE )
-#define	BQ_RATIONAL_TYPE
-typedef	__BigQ				BigQ;
+#if     !defined( BQ_RATIONAL_TYPE )
+#define BQ_RATIONAL_TYPE
+typedef __BigQ                          BigQ;
 #endif
 
-#if	!defined( __EXTERNAL_BIGQ_MEMORY )
-#define	__toBqObj(q)			((__BigQ)q)
-#define	BQNULL				((BigQ)0)
-#define	BqAlloc()			malloc( sizeof( struct BigQStruct ) )
-#define	BqFree( q )			free( q ) /* free(__toBqObj(q)) */
-#define BqGetNumerator(q)		(__toBqObj(q)->N)
-#define BqGetDenominator(q)		(__toBqObj(q)->D)
-#define BqSetNumerator(q,n)		(__toBqObj(q)->N = (n))
-#define BqSetDenominator(q,d)		(__toBqObj(q)->D = (d))
+#if     !defined( __EXTERNAL_BIGQ_MEMORY )
+#define __toBqObj(q)                    ((__BigQ)q)
+#define BQNULL                          ((BigQ)0)
+#define BqAlloc()                       malloc( sizeof( struct BigQStruct ) )
+#define BqFree( q )                     free( q ) /* free(__toBqObj(q)) */
+#define BqGetNumerator(q)               (__toBqObj(q)->N)
+#define BqGetDenominator(q)             (__toBqObj(q)->D)
+#define BqSetNumerator(q,n)             (__toBqObj(q)->N = (n))
+#define BqSetDenominator(q,d)           (__toBqObj(q)->D = (d))
 #endif
 
 /*
- *	functions of bigq.c
+ *      functions of bigq.c
  */
 
-extern BigQ	    BqAbs(const BigQ a);
-extern BigQ	    BqAdd(const BigQ a, const BigQ b);
-extern BigQ	    BqCreate(const BigZ n, const BigZ d);
-extern BqCmp	    BqCompare(const BigQ a, const BigQ b) BQ_PURE_FUNCTION;
-extern void	    BqDelete(const BigQ a);
-extern BigQ	    BqDiv(const BigQ a, const BigQ b);
-extern BigQ	    BqFromString(const BzChar *s, int base);
-extern BigQ	    BqInverse(const BigQ a);
-extern BigQ	    BqMultiply(const BigQ a, const BigQ b);
-extern BigQ	    BqNegate(const BigQ a);
-extern BigQ	    BqSubtract(const BigQ a, const BigQ b);
-extern BzChar *	    BqToString(const BigQ q, int sign);
-extern	BigQ	    BqFromDouble( double num, BzInt maxd );
+extern BigQ         BqAbs(const BigQ a);
+extern BigQ         BqAdd(const BigQ a, const BigQ b);
+extern BigQ         BqCreate(const BigZ n, const BigZ d);
+extern BqCmp        BqCompare(const BigQ a, const BigQ b) BQ_PURE_FUNCTION;
+extern void         BqDelete(const BigQ a);
+extern BigQ         BqDiv(const BigQ a, const BigQ b);
+extern BigQ         BqFromString(const BzChar *s, int base);
+extern BigQ         BqInverse(const BigQ a);
+extern BigQ         BqMultiply(const BigQ a, const BigQ b);
+extern BigQ         BqNegate(const BigQ a);
+extern BigQ         BqSubtract(const BigQ a, const BigQ b);
+extern BzChar *     BqToString(const BigQ q, int sign);
+extern BigQ         BqFromDouble(double num, BzInt maxd);
+extern double       BqToDouble(const BigQ a);
 
 #if 0
-extern BzChar *	    BqToStringBuffer(const BigQ q, int sign, BzChar *buf, size_t *len);
+extern BzChar *     BqToStringBuffer(const BigQ q, int sign, BzChar *buf, size_t *len);
 #endif
 
-#if	defined( __cplusplus )
+#if     defined( __cplusplus )
 }
 #endif
 
-#endif	/* __BIGQ_H */
+#endif  /* __BIGQ_H */

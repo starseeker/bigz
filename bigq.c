@@ -639,3 +639,21 @@ BqFromDouble( double num, BzInt maxd )
 	
 	return( q );
 }
+
+double
+BqToDouble(const BigQ a)
+{
+  BzInt  in;
+  BzUInt id;
+
+  if( BzToIntegerPointer(BqGetNumerator(a), &in)
+      && BzToUnsignedIntegerPointer(BqGetDenominator(a), &id) ) {
+    return (double)in / (double)id;
+  } else {
+#if defined(NAN)
+    return NAN;
+#else
+    return 0.0;
+#endif
+  }
+}

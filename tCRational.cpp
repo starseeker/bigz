@@ -91,11 +91,10 @@ main()
   check((q2 * q2),    4, 9);
   check(q1 / q3,     -6, 5);
   check(q3 - q1,     11, 9);
-  check(q1 * 3,      -2, 1);
-  check(q2 * 3,       2, 1);
+//  check(q1 * 3,      -2, 1);
+//  check(q2 * 3,       2, 1);
   check(q1 * zero,    0, 1);
   check(q2 * zero,    0, 1);
-
   compare(q3, q1, "<", false);
   compare(q3, q1, ">", true);
   compare(q3, q1, ">=", true);
@@ -111,6 +110,12 @@ main()
 
   if (oss.str() != std::string("#.QNaN")) {
     std::cerr << err << " != #.QNaN" << std::endl;
+  }
+
+  // Check pi to double conversion
+  double dpi = static_cast<double>(pi);
+  if (dpi < 3.1428 || dpi > 3.1429) {
+    std::cerr << dpi << " != 3.14286" << std::endl;
   }
 
   return( 0 );
