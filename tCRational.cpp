@@ -1,5 +1,5 @@
 #if	!defined( lint )
-static	const char rcsid[] = "$Id: tCRational.cpp,v 1.13 2013-04-01 08:23:31 jullien Exp $";
+static	const char rcsid[] = "$Id: tCRational.cpp,v 1.15 2013-04-03 05:36:54 jullien Exp $";
 #endif
 
 //
@@ -34,9 +34,9 @@ compare(const CRational& r1, const CRational& r2, const char* op, bool res) {
   }
 
   if (cmp != res) {
-   std::cerr << r1 << " " << op << " " << r2
-             << " should be " << (res ? "true" : "false")
-             << std::endl;
+    std::cerr << r1 << " " << op << " " << r2
+              << " should be " << (res ? "true" : "false")
+              << std::endl;
   }
 }
 
@@ -50,7 +50,7 @@ check(const CRational& r, const CBignum& n, const CBignum& d) {
 int
 main()
 {
-  (void)printf("Rational non-regression tests. (c) 2012-2013 C. Jullien\n");
+  (void)printf("Rational non-regression tests. (c) 2012-2014 C. Jullien\n");
 
   CRational q1(-4, 6);
   CRational q2(4, 6);

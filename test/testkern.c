@@ -1,5 +1,5 @@
 /*
-static const char sccsid[] = "$Id: testkern.c,v 1.15 2013-03-05 06:21:39 jullien Exp $;
+static const char sccsid[] = "$Id: testkern.c,v 1.16 2013/06/18 05:21:59 jullien Exp $;
 */
 
 /*
@@ -51,8 +51,35 @@ static const char sccsid[] = "$Id: testkern.c,v 1.15 2013-03-05 06:21:39 jullien
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "bign.h"
 #include "BntoBnn.h"
+
+#if defined(PROFILE_TIME) && defined(CLOCK_PROCESS_CPUTIME_ID)
+static timespec
+show_time(timespec* start, timespec* end)
+{
+	timespec temp;
+	if ((end.tv_nsec-start.tv_nsec) < 0) {
+		temp.tv_sec  = end.tv_sec-start.tv_sec-1;
+		temp.tv_nsec = 1000000000+end.tv_nsec-start.tv_nsec;
+	} else {
+		temp.tv_sec  = end.tv_sec-start.tv_sec;
+		temp.tv_nsec = end.tv_nsec-start.tv_nsec;
+	}
+	(void)printf("%d:%ld\n", tremp.tv_sec, temp.tv_nsec);
+}
+
+static timespec _start_time;
+static timespec _stop_time;
+
+#define	CLOCK_START	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &_start_time);
+#define	CLOCK_STOP	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &_stop_time);\
+			show_time(&_start_time, &_stop_time);
+#else
+#define	CLOCK_START
+#define	CLOCK_STOP
+#endif
 
 /*
  *	test structure.
@@ -68,7 +95,7 @@ struct testenv {
 typedef struct testenv TestEnv;
 
 extern void	seetest(int n);
-extern void	dotest(TestEnv *e, int n);
+extern void	dotest(TestEnv *e, int n, int repeat);
 extern void	ErrorPrint(TestEnv *e);
 extern void	ResetTest(int n);
 extern int	CheckSubRange(int x, int nd, int nl);
@@ -157,13 +184,18 @@ seetest(int n)
 }
 
 void
-dotest(TestEnv *e, int n)
+dotest(TestEnv *e, int n, in repeat)
 {
+	int i;
 	seetest(n);
 	TestCount = 0;
 	e->name = AllTest[n].NameFnt;
-	if(((AllTest[n].TestFnt) (e)) && e->flag > 1)
-		exit(0);
+	CLOCK_START
+	for (i = 0; i < repeat; ++i) {
+		if(((AllTest[n].TestFnt) (e)) && e->flag > 1)
+			exit(0);
+	}
+	CLOCK_STOP
 	printf("%d tests were performed\n", TestCount);
 }
 
@@ -1175,9 +1207,11 @@ main(int argc, char **argv)
 
 	BnSetDigit(NumbProto, 0, 0);		/* First 2 -> 0 */
 	BnSetDigit(NumbProto, 1, 0);
-	for( i=0 ; i < TESTLENGTH/4 - 1 ; i++ )
+
+	for( i=0 ; i < TESTLENGTH/4 - 1 ; i++ ) {
 		/* 1, 2, 3, ... */
 		BnSetDigit(NumbProto, (BigNumDigit)(i+2), (BigNumDigit)(i+1));
+	}
 
 	/*
 	 * The 2nd quarter is the 1st shifted by BN_DIGIT_SIZE - 2.
@@ -1218,7 +1252,7 @@ main(int argc, char **argv)
 			e->flag = atoi(&argv[i][1]);
 		} else if(argv[i][0] == 'a') {
 			for(i = 0; i < SizeAllTest; i++)
-				dotest(e, i);
+				dotest(e, i, 1);
 		} else if(argv[i][0] == 'v') {
 			for(j = 0; j < SizeAllTest; j++)
 				seetest(j);
@@ -1226,7 +1260,7 @@ main(int argc, char **argv)
 			nbtest = atoi(argv[i]);
 			if((nbtest < 0) || (nbtest >= SizeAllTest))
 				printf("test no %d is invalid\n", nbtest);
-			else	dotest(e, nbtest);
+			else	dotest(e, nbtest, 1);
 		}
 	}
 	return( 0 );

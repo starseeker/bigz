@@ -130,7 +130,7 @@ main()
   { // Force a new block to let dtor do cleanups.
 #endif
 
-    (void)printf("Bignum non-regression tests. (c) 1998-2013 C. Jullien\n");
+    (void)printf("Bignum non-regression tests. (c) 1998-2014 C. Jullien\n");
     (void)printf("Testing version %s ...\n\n", CBignum::version());
 
     CBignum x1( ffib( 100 ) );      /* 354224848179261915075        */
