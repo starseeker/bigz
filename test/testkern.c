@@ -55,23 +55,27 @@ static const char sccsid[] = "$Id: testkern.c,v 1.16 2013/06/18 05:21:59 jullien
 #include "bign.h"
 #include "BntoBnn.h"
 
-#if defined(PROFILE_TIME) && defined(CLOCK_PROCESS_CPUTIME_ID)
-static timespec
-show_time(timespec* start, timespec* end)
+#define	NO_SHOW_TIME
+
+#if defined(SHOW_TIME) && defined(CLOCK_PROCESS_CPUTIME_ID)
+static struct timespec show_time(struct timespec* start, struct timespec* end);
+
+static struct timespec
+show_time(struct timespec* start, struct timespec* end)
 {
-	timespec temp;
-	if ((end.tv_nsec-start.tv_nsec) < 0) {
-		temp.tv_sec  = end.tv_sec-start.tv_sec-1;
-		temp.tv_nsec = 1000000000+end.tv_nsec-start.tv_nsec;
+	struct timespec temp;
+	if ((end->tv_nsec - start->tv_nsec) < 0) {
+		temp.tv_sec  = end->tv_sec-start->tv_sec-1;
+		temp.tv_nsec = 1000000000+end->tv_nsec-start->tv_nsec;
 	} else {
-		temp.tv_sec  = end.tv_sec-start.tv_sec;
-		temp.tv_nsec = end.tv_nsec-start.tv_nsec;
+		temp.tv_sec  = end->tv_sec-start->tv_sec;
+		temp.tv_nsec = end->tv_nsec-start->tv_nsec;
 	}
-	(void)printf("%d:%ld\n", tremp.tv_sec, temp.tv_nsec);
+	(void)printf("%ds %ldns\n", temp.tv_sec, temp.tv_nsec);
 }
 
-static timespec _start_time;
-static timespec _stop_time;
+static struct timespec _start_time;
+static struct timespec _stop_time;
 
 #define	CLOCK_START	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &_start_time);
 #define	CLOCK_STOP	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &_stop_time);\
@@ -184,7 +188,7 @@ seetest(int n)
 }
 
 void
-dotest(TestEnv *e, int n, in repeat)
+dotest(TestEnv *e, int n, int repeat)
 {
 	int i;
 	seetest(n);
