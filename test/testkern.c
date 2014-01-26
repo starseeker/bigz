@@ -51,6 +51,7 @@ static const char sccsid[] = "$Id: testkern.c,v 1.16 2013/06/18 05:21:59 jullien
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <time.h>
 #include "bign.h"
 #include "BntoBnn.h"
@@ -63,15 +64,16 @@ static struct timespec show_time(struct timespec* start, struct timespec* end);
 static struct timespec
 show_time(struct timespec* start, struct timespec* end)
 {
+	static const uint64_t clockPrecision = 1000000000;
 	struct timespec temp;
 	if ((end->tv_nsec - start->tv_nsec) < 0) {
-		temp.tv_sec  = end->tv_sec-start->tv_sec-1;
-		temp.tv_nsec = 1000000000+end->tv_nsec-start->tv_nsec;
+		temp.tv_sec  = end->tv_sec - start->tv_sec - 1;
+		temp.tv_nsec = clockPrecision + end->tv_nsec-start->tv_nsec;
 	} else {
-		temp.tv_sec  = end->tv_sec-start->tv_sec;
-		temp.tv_nsec = end->tv_nsec-start->tv_nsec;
+		temp.tv_sec  = end->tv_sec  - start->tv_sec;
+		temp.tv_nsec = end->tv_nsec - start->tv_nsec;
 	}
-	(void)printf("%ds %ldns\n", temp.tv_sec, temp.tv_nsec);
+	(void)printf("%ldns\n", temp.tv_sec * clockPrecision + temp.tv_nsec);
 }
 
 static struct timespec _start_time;
