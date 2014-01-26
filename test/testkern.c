@@ -56,12 +56,12 @@ static const char sccsid[] = "$Id: testkern.c,v 1.16 2013/06/18 05:21:59 jullien
 #include "bign.h"
 #include "BntoBnn.h"
 
-#define	NO_SHOW_TIME
+#define	SHOW_TIME
+
+static uint64_t NsTime = 0;
 
 #if defined(SHOW_TIME) && defined(CLOCK_PROCESS_CPUTIME_ID)
 static struct timespec show_time(struct timespec* start, struct timespec* end);
-
-static uint64_t _nsTime = 0;
 
 static struct timespec
 show_time(struct timespec* start, struct timespec* end)
@@ -76,7 +76,7 @@ show_time(struct timespec* start, struct timespec* end)
 		temp.tv_nsec = end->tv_nsec - start->tv_nsec;
 	}
 
-	_nsTime = temp.tv_sec * clockPrecision + temp.tv_nsec;
+	NsTime = temp.tv_sec * clockPrecision + temp.tv_nsec;
 }
 
 static struct timespec _start_time;
@@ -206,10 +206,10 @@ dotest(TestEnv *e, int n, int repeat)
 			exit(0);
 	}
 	CLOCK_STOP
-	if (_nsTime) {
-		(void)printf("%d tests were performed in %ldns\n",
+	if (NsTime) {
+		(void)printf("%d tests were performed in %lldns\n",
 			     TestCount,
-			     _nsTime);
+			     NsTime);
 	} else {
 		(void)printf("%d tests were performed\n", TestCount);
 	}
