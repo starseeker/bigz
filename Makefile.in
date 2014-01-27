@@ -16,6 +16,7 @@ EXE		= @EXEEXT@
 ARFLAGS		= @AROPTS@
 DEBUG		=
 CFLAGS		= @CFLAGS@ @OPTIMS@ @WARNINGS@ -I. -DHAVE_CONFIG_H
+LIBS		= @LIBS@
 KERN		= kern
 KRNLIB		= libkern.$(AEXT)
 KRNSHARED	= libkern.$(SOEXT)
@@ -53,7 +54,7 @@ testkern.$(O): bign.h test/testkern.c
 	@$(CC) -c $(CFLAGS) -Itest test/testkern.c
 
 testkern$(EXE): $(KRNLIB) testkern.$(O)
-	@$(CC) $(CFLAGS) -o testkern$(EXE) testkern.$(O) -L. -l$(KERN)
+	@$(CC) $(CFLAGS) -o testkern$(EXE) testkern.$(O) -L. -l$(KERN) $(LIBS)
 
 # BZ test
 

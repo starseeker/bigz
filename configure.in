@@ -19,7 +19,7 @@ AC_CONFIG_HEADER(./config.h)
 
 # make sure we are using a recent autoconf version
 
-AC_PREREQ(2.68)
+AC_PREREQ(2.63)
 
 NAME=bignum
 VERSION=`grep VERSION bigz.h | sed -e "s/.*\"\(.*\)\"/\1/g"`
@@ -69,6 +69,16 @@ if test $RANLIB = no; then
   RANLIB="echo INFO: no ranlib on this system "
 fi
 AC_SUBST(RANLIB)
+
+AC_CHECK_PROGS(LDCONFIG, ldconfig, no)
+if test $LDCONFIG = no; then
+  LDCONFIG="echo INFO: no ldconfig on this system "
+fi
+AC_SUBST(LDCONFIG)
+
+# testkern can mesure time using clock_gettime which is generally in librt.
+
+AC_CHECK_FUNC([clock_gettime],,   [AC_CHECK_LIB(rt,     clock_gettime)])
 
 # Checks for header files.
 
@@ -163,6 +173,7 @@ esac
 AC_SUBST(AEXT)
 AC_SUBST(AROPTS)
 AC_SUBST(CFLAGS)
+AC_SUBST(LIBS)
 AC_SUBST(CXX)
 AC_SUBST(NOCXX)
 AC_SUBST(LDFLAGS)
