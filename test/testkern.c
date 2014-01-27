@@ -57,6 +57,7 @@ static const char sccsid[] = "$Id: testkern.c,v 1.16 2013/06/18 05:21:59 jullien
 #include "BntoBnn.h"
 
 static uint64_t NsTime = 0;
+#define BN_CLOCK_PRECISION ((uint64_t)1000000000)
 
 #if defined(HAVE_LIBRT) && defined(CLOCK_PROCESS_CPUTIME_ID)
 static void show_time(struct timespec* start, struct timespec* end);
@@ -64,7 +65,7 @@ static void show_time(struct timespec* start, struct timespec* end);
 static void
 show_time(struct timespec* start, struct timespec* end)
 {
-	static const uint64_t clockPrecision = 1000000000;
+	static const uint64_t clockPrecision = BN_CLOCK_PRECISION;
 	struct timespec temp;
 	if ((end->tv_nsec - start->tv_nsec) < 0) {
 		temp.tv_sec  = end->tv_sec - start->tv_sec - 1;
@@ -199,12 +200,14 @@ dotest(TestEnv *e, int n, int repeat)
 	e->name = AllTest[n].NameFnt;
 	CLOCK_START
 	for (i = 0; i < repeat; ++i) {
-		if(((AllTest[n].TestFnt) (e)) && e->flag > 1)
+		if (((AllTest[n].TestFnt) (e)) && e->flag > 1)
 			exit(0);
 	}
 	CLOCK_STOP
 	if (NsTime) {
-		(void)printf("%d tests were performed in %ldns\n", TestCount, NsTime);
+    double cpuTime = ((double)NsTime / (double)BN_CLOCK_PRECISION) / repeat;
+
+		(void)printf("%d tests were performed in %10.8f s\n", TestCount, cpuTime);
 	} else {
 		(void)printf("%d tests were performed\n", TestCount);
 	}
@@ -1257,19 +1260,23 @@ main(int argc, char **argv)
 	 */
 
 	SizeAllTest = (sizeof(AllTest)/sizeof(AllTest[0]));
-	for( i = 1; i < argc ; i++ ) {
+	for (i = 1; i < argc ; i++) {
 		if(argv[i][0] == 'm') {
 			/* 0 = No skip; 1 = skip to next; else STOP */
 			e->flag = atoi(&argv[i][1]);
-		} else if(argv[i][0] == 'a') {
-			for(i = 0; i < SizeAllTest; i++)
+		} else if (argv[i][0] == 'a') {
+			for (i = 0; i < SizeAllTest; i++)
 				dotest(e, i, 1);
-		} else if(argv[i][0] == 'v') {
-			for(j = 0; j < SizeAllTest; j++)
+		} else if (argv[i][0] == 'A') {
+      /* do all tests 10 times to compute more accurate time */
+			for (i = 0; i < SizeAllTest; i++)
+				dotest(e, i, 10);
+		} else if (argv[i][0] == 'v') {
+			for (j = 0; j < SizeAllTest; j++)
 				seetest(j);
 		} else {
 			nbtest = atoi(argv[i]);
-			if((nbtest < 0) || (nbtest >= SizeAllTest))
+			if ((nbtest < 0) || (nbtest >= SizeAllTest))
 				printf("test no %d is invalid\n", nbtest);
 			else	dotest(e, nbtest, 1);
 		}
