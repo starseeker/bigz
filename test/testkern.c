@@ -69,7 +69,6 @@ show_time(struct timespec* start, struct timespec* end)
 {
 	static const uint64_t clockPrecision = BN_CLOCK_PRECISION;
 	struct timespec temp;
-	printf("%ld\n", start->tv_nsec);
 
 	if ((end->tv_nsec - start->tv_nsec) < 0) {
 		temp.tv_sec  = end->tv_sec - start->tv_sec - 1;
