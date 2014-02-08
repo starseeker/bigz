@@ -60,6 +60,8 @@ static uint64_t NsTime = 0;
 #define BN_CLOCK_PRECISION ((uint64_t)1000000000)
 
 #if defined(HAVE_LIBRT) && defined(CLOCK_PROCESS_CPUTIME_ID)
+#define	BN_CLOCK_TYPE	   CLOCK_PROCESS_CPUTIME_ID
+
 static void show_time(struct timespec* start, struct timespec* end);
 
 static void
@@ -67,6 +69,8 @@ show_time(struct timespec* start, struct timespec* end)
 {
 	static const uint64_t clockPrecision = BN_CLOCK_PRECISION;
 	struct timespec temp;
+	printf("%ld\n", start->tv_nsec);
+
 	if ((end->tv_nsec - start->tv_nsec) < 0) {
 		temp.tv_sec  = end->tv_sec - start->tv_sec - 1;
 		temp.tv_nsec = clockPrecision + end->tv_nsec-start->tv_nsec;
@@ -81,8 +85,8 @@ show_time(struct timespec* start, struct timespec* end)
 static struct timespec _start_time;
 static struct timespec _stop_time;
 
-#define	CLOCK_START	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &_start_time);
-#define	CLOCK_STOP	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &_stop_time);\
+#define	CLOCK_START	clock_gettime(BN_CLOCK_TYPE, &_start_time);
+#define	CLOCK_STOP	clock_gettime(BN_CLOCK_TYPE, &_stop_time);\
 			show_time(&_start_time, &_stop_time);
 #else
 #define	CLOCK_START
@@ -205,9 +209,12 @@ dotest(TestEnv *e, int n, int repeat)
 	}
 	CLOCK_STOP
 	if (NsTime) {
-    double cpuTime = ((double)NsTime / (double)BN_CLOCK_PRECISION) / repeat;
+		double cpuTime;
+		cpuTime = ((double)NsTime/(double)BN_CLOCK_PRECISION)/repeat;
 
-		(void)printf("%d tests were performed in %10.8f s\n", TestCount, cpuTime);
+		(void)printf("%d tests were performed in %10.8f s\n",
+			     TestCount, (double)cpuTime);
+
 	} else {
 		(void)printf("%d tests were performed\n", TestCount);
 	}
