@@ -1,5 +1,5 @@
 #if     !defined( lint )
-static  const char rcsid[] = "$Id: tCBignum.cpp,v 1.15 2014/02/16 10:47:18 jullien Exp $";
+static  const char rcsid[] = "$Id: tCBignum.cpp,v 1.16 2014/02/16 16:31:31 jullien Exp $";
 #endif
 
 //
@@ -16,82 +16,78 @@ static  const char rcsid[] = "$Id: tCBignum.cpp,v 1.15 2014/02/16 10:47:18 julli
 #include "CBignum.h"
 #include "CRational.h"
 
-using namespace bignum;
-using namespace rational;
+using bignum::CBignum;
+using bignum::one;
+using bignum::two;
+using rational::CRational;
 
 static int testcnt = 0;
 static int failcnt = 0;
 
 CBignum
-fib( const CBignum& n )
-{
-        if( n == BzOne ) {
-                return BzOne;
-        } else  if( n == BzTwo ) {
-                return BzOne;
-        } else  {
-                return( fib( n - BzOne ) + fib( n - BzTwo ) );
-        }
+fib(const CBignum& n) {
+  if (n == one) {
+    return one;
+  } else if (n == two) {
+    return one;
+  } else {
+    return fib(n - one) + fib(n - two);
+  }
 }
 
 CBignum
-square( const CBignum& bn )
-{
-        return bn * bn;
+square(const CBignum& bn) {
+  return bn * bn;
 }
 
 CBignum
-ffib( const CBignum& n )
-{
-        if( n == BzOne ) {
-                return BzOne;
-        } else  if( n == BzTwo ) {
-                return BzOne;
-        }
+ffib(const CBignum& n) {
+  if (n == one) {
+    return one;
+  } else if (n == two) {
+    return one;
+  } else {
+    const CBignum ndiv2(n / two);
 
-        CBignum ndiv2( n / BzTwo );
-
-        if( oddp( n ) ) {
-          return square(ffib(ndiv2))         + square(ffib(ndiv2 + BzOne));
-        } else {
-          return square(ffib(ndiv2 + BzOne)) - square(ffib(ndiv2 - BzOne));
-        }
+    if (oddp(n)) {
+      return square(ffib(ndiv2))       + square(ffib(ndiv2 + one));
+    } else {
+      return square(ffib(ndiv2 + one)) - square(ffib(ndiv2 - one));
+    }
+  }
 }
 
 static void
-checkResult(int count, const char* op, const char* expected, const char* res)
-{
-        ++testcnt;
+checkResult(int count, const char* op, const char* expected, const char* res) {
+  ++testcnt;
 
-        if( strcmp( expected, res ) != 0 ) {
-            printf( "test %3d (%s) fails: expected = %16s, computed = %16s\n",
-                    count, op, res, expected );
-            ++failcnt;
-        }
+  if (strcmp(expected, res) != 0) {
+    printf( "test %3d (%s) fails: expected = %16s, computed = %16s\n",
+            count, op, res, expected );
+    ++failcnt;
+  }
 }
 
 void
-Tz( int count, const char* op, const CBignum& n, const char* res )
-{
-        const char* s = (const char *)n;
+Tz(int count, const char* op, const CBignum& n, const char* res) {
+  const char* s = (const char *)n;
 
-        checkResult(count, op, s, res);
-        BzFreeString( (char *)s );
+  checkResult(count, op, s, res);
+  BzFreeString((char *)s);
 }
 
 void
-Tq( int count, const char* op, const CRational& n, const char *res )
-{
-        const char* s = (const char *)n;
+Tq(int count, const char* op, const CRational& n, const char *res) {
+  const char* s = (const char *)n;
 
-        checkResult(count, op, s, res);
-        BzFreeString( (char *)s );
+  checkResult(count, op, s, res);
+  BzFreeString((char *)s);
 }
 
 void
-Tq( int count, const char* op, bool b, const char *res )
+Tq(int count, const char* op, bool b, const char *res)
 {
-        checkResult(count, op, (b ? "1" : "0"), res);
+  checkResult(count, op, (b ? "1" : "0"), res);
 }
 
 const char* X1;
@@ -133,9 +129,9 @@ main()
     (void)printf("Bignum non-regression tests. (c) 1998-2014 C. Jullien\n");
     (void)printf("Testing version %s ...\n\n", CBignum::version());
 
-    CBignum x1( ffib( 100 ) );      /* 354224848179261915075        */
-    CBignum x2( 2 );                /* 2                            */
-    CBignum x3;                     /* 0                            */
+    CBignum x1(ffib(100));      /* 354224848179261915075        */
+    CBignum x2(2);              /* 2                            */
+    CBignum x3;                 /* 0                            */
     CRational r1("0123456789/333");
 
     Tz(   1, "++",   ++x2,           "3"                            );
@@ -153,10 +149,18 @@ main()
 
     tests();
 
-    if( failcnt != 0 ) {
-      (void)printf( "%d tests made, fails %d.\n", testcnt, failcnt );
+#if 0
+    CBignum y(1);
+    y <<= 80;
+    std::cout << y << std::endl;
+    std::cout << std::hex << y << std::endl;
+    std::cout << std::oct << y << std::endl;
+#endif
+
+    if (failcnt != 0) {
+      (void)printf("%d tests made, fails %d.\n", testcnt, failcnt);
     } else  {
-      (void)printf( "%d tests made, Ok!.\n", testcnt );
+      (void)printf("%d tests made, Ok!.\n", testcnt);
     }
 
 #if     defined( _WINDEBUG )
@@ -166,5 +170,5 @@ main()
 // _CrtMemDumpStatistics( &state );
   (void)state;
 #endif
-  return( 0 );
+  return 0;
 }

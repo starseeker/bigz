@@ -1,5 +1,5 @@
 //
-// $Id: CRational.h,v 1.18 2013-04-03 05:36:54 jullien Exp $
+// $Id: CRational.h,v 1.19 2014/02/16 13:57:06 jullien Exp $
 //
 
 /*

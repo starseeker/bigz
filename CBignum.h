@@ -1,5 +1,5 @@
 //
-// $Id: CBignum.h,v 1.22 2014/02/16 10:47:18 jullien Exp $
+// $Id: CBignum.h,v 1.24 2014/02/16 16:31:31 jullien Exp $
 //
 
 /*
@@ -394,9 +394,19 @@ class CBignum {
   // output
 
   friend std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
-    const char* rep = BzToString(bn.m_bz, 10, 0);
-    os << rep;
-    BzFreeString((void *)rep);
+    const char* res;
+    std::ios_base::fmtflags ioflags = os.flags();
+    if (ioflags & std::ios::hex) {
+      res = BzToString(bn.m_bz, 16, 0);
+      os << "0x";
+    } else if (ioflags & std::ios::oct) {
+      res = BzToString(bn.m_bz, 8, 0);
+      os << "0";
+    } else {
+      res = BzToString(bn.m_bz, 10, 0);
+    }
+    os << res;
+    BzFreeString((void *)res);
     return os;
   }
   
@@ -414,18 +424,18 @@ private:
   CBignum(const BigZ init, Flags) : m_bz(init) {}
 };
 
-const CBignum BzOne(1);
-const CBignum BzTwo(2);
+extern const CBignum one;
+extern const CBignum two;
 
 inline CBignum&
 CBignum::operator++() {
-  *this += BzOne;
+  *this += one;
   return *this;
 }
 
 inline CBignum&
 CBignum::operator--() {
-  *this -= BzOne;
+  *this -= one;
   return *this;
 }
 } // namespace bignum
