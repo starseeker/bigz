@@ -93,6 +93,7 @@ class CRational {
 
 #if defined(BN_CPP11)
   CRational& operator=(CRational&& rhs) {
+    BqDelete(m_q);
     m_q = rhs.m_q;
     rhs.m_q = 0;
     return *this;

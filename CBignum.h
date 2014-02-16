@@ -355,6 +355,7 @@ class CBignum {
   // Move assignment
   CBignum& operator=(CBignum&& rhs) {
     if (this != &rhs) {
+      BzFree(m_bz);
       m_bz = rhs.m_bz;
       rhs.m_bz = 0;
     }
