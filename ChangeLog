@@ -1,5 +1,7 @@
 Change log
 
+2014/02/16: Add C++11 features when available.
+2014/02/16: Check for tcc and remove C++ support if found.
 2013/02/20: Add clang support (no warning detected).
 2013/02/08: Change version to 1.5.2.
 2013/02/02: C++ is optional with ./configure.

@@ -32,11 +32,15 @@
  */
 
 //
-//	CRational.h :	
+//      CRational.h :   
 //
 
-#if	!defined( __CRATIONAL_H )
-#define	__CRATIONAL_H_H
+#if     !defined(__CRATIONAL_H)
+#define __CRATIONAL_H_H
+
+#if __cplusplus >= 201103L
+#define	BN_CPP11
+#endif
 
 #include <iostream>
 #include <stdlib.h>
@@ -47,136 +51,150 @@ namespace rational {
 
 using namespace bignum;
 
-class	CRational {
-private:
-	enum	Flags { ASSIGN };
-public:
-	CRational( const CBignum& n = 0, const CBignum& d = 1)
-		: m_q( BqCreate( n, d) ) {
-
-	}
-	CRational( int n )
-		: m_q( BqCreate( CBignum(n), CBignum(1) ) ) {
-	}
-	CRational( const CRational& q )
-		: m_q( BqCreate( BqGetNumerator(q.m_q),
-				 BqGetDenominator(q.m_q)) ) {
-	}
-        CRational( const char* s )
-		: m_q( BqFromString((BzChar *)s, 10) ) {
-	}
-#if	defined( HAVE_BQ_FROM_DOUBLE )
-	CRational( double n )
-		: m_q( BqFromDouble(n) ) {
-	}
+class CRational {
+ private:
+   enum Flags { ASSIGN };
+ public:
+   CRational(const CBignum& n = 0, const CBignum& d = 1)
+     : m_q(BqCreate(n, d)) {
+   }
+  CRational(int n)
+     : m_q(BqCreate(CBignum(n), CBignum(1))) {
+   }
+  CRational(const CRational& q)
+     : m_q(BqCreate(BqGetNumerator(q.m_q), BqGetDenominator(q.m_q))) {
+   }
+#if defined(BN_CPP11)
+  CRational(CRational&& rhs)      : m_q(rhs.m_q) { rhs.m_q = 0; }
 #endif
-	~CRational() { BqDelete(m_q); }
+  CRational(const char* s)
+    : m_q(BqFromString((BzChar *)s, 10)) {
+   }
+#if     defined(HAVE_BQ_FROM_DOUBLE)
+  CRational(double n)
+    : m_q(BqFromDouble(n)) {
+   }
+#endif
+   ~CRational() { if (m_q) BqDelete(m_q); }
 
-	const CBignum numerator() const {
-		return BqGetNumerator(m_q);
-	}
+  const CBignum numerator() const {
+    return BqGetNumerator(m_q);
+  }
 
-	const CBignum denominator() const {
-		return BqGetDenominator(m_q);
-	}
+  const CBignum denominator() const {
+    return BqGetDenominator(m_q);
+  }
 
-	// convertions
+  CRational& operator=(const CRational& rhs) {
+    BqDelete(m_q);
+    m_q = BqCreate(rhs.numerator(), rhs.denominator());
+    return *this;
+  }
 
-	operator const char* () const { return BqToString( m_q, 0 ); }
-	operator BigQ        () const { return m_q; }
-	operator double      () const { return BqToDouble(m_q); }
+#if defined(BN_CPP11)
+  CRational& operator=(CRational&& rhs) {
+    m_q = rhs.m_q;
+    rhs.m_q = 0;
+    return *this;
+  }
+#endif
 
-	// unary -
+  // convertions
 
-	friend CRational operator-(const CRational& q ) {
-		return( CRational(BqNegate(q.m_q), ASSIGN ) );
-	}
+  operator const char* () const { return BqToString(m_q, 0); }
+  operator BigQ        () const { return m_q; }
+  operator double      () const { return BqToDouble(m_q); }
 
-	// binary +
+  // unary -
 
-	friend CRational operator+(const CRational& q1, const CRational& q2) {
-		return CRational(BqAdd(q1.m_q, q2.m_q), ASSIGN);
-	}
+  friend CRational operator-(const CRational& q) {
+    return(CRational(BqNegate(q.m_q), ASSIGN));
+  }
 
-	// binary -
+  // binary +
 
-	friend CRational operator-(const CRational& q1, const CRational& q2) {
-		return CRational(BqSubtract(q1.m_q, q2.m_q), ASSIGN);
-	}
+  friend CRational operator+(const CRational& q1, const CRational& q2) {
+    return CRational(BqAdd(q1.m_q, q2.m_q), ASSIGN);
+  }
 
-	// binary *
+  // binary -
 
-	friend CRational operator*(const CRational& q1, const CRational& q2) {
-		return CRational(BqMultiply(q1.m_q, q2.m_q), ASSIGN);
-	}
+  friend CRational operator-(const CRational& q1, const CRational& q2) {
+    return CRational(BqSubtract(q1.m_q, q2.m_q), ASSIGN);
+  }
 
-	// binary /
+  // binary *
 
-	friend CRational operator/(const CRational& q1, const CRational& q2) {
-		return CRational(BqDiv(q1.m_q, q2.m_q), ASSIGN);
-	}
+  friend CRational operator*(const CRational& q1, const CRational& q2) {
+    return CRational(BqMultiply(q1.m_q, q2.m_q), ASSIGN);
+  }
 
-	// comparisons
+  // binary /
 
-	friend bool operator==(const CRational& q1, const CRational& q2) {
-		return BqCompare(q1.m_q, q2.m_q) == BQ_EQ;
-	}
-	friend bool operator==(const CRational& q, const CBignum& bn) {
-		return (q == CRational(bn));
-	}
-	friend bool operator==(const CBignum& bn, const CRational& q) {
-		return (CRational(bn) == q);
-	}
+  friend CRational operator/(const CRational& q1, const CRational& q2) {
+    return CRational(BqDiv(q1.m_q, q2.m_q), ASSIGN);
+  }
 
-	friend bool operator!=(const CRational& q1, const CRational& q2) {
-		return !(q1 == q2);
-	}
+  // comparisons
 
-	friend bool operator>(const CRational& q1, const CRational& q2) {
-		return BqCompare(q1.m_q, q2.m_q) == BQ_GT;
-	}
-	friend bool operator>(const CRational& q, const CBignum& bn) {
-		return (q == CRational(bn));
-	}
-	friend bool operator>(const CBignum& bn, const CRational& q) {
-		return (CRational(bn) == q);
-	}
-	friend bool operator<=(const CRational& a, const CRational& b) {
-		return !(a > b);
-	}
+  friend bool operator==(const CRational& q1, const CRational& q2) {
+    return BqCompare(q1.m_q, q2.m_q) == BQ_EQ;
+  }
+  friend bool operator==(const CRational& q, const CBignum& bn) {
+    return (q == CRational(bn));
+  }
+  friend bool operator==(const CBignum& bn, const CRational& q) {
+    return (CRational(bn) == q);
+  }
 
-	friend bool operator<(const CRational& q1, const CRational& q2) {
-		return BqCompare(q1.m_q, q2.m_q) == BQ_LT;
-	}
-	friend bool operator<(const CRational& q, const CBignum& bn) {
-		return (q == CRational(bn));
-	}
-	friend bool operator<(const CBignum& bn, const CRational& q) {
-		return (CRational(bn) == q);
-	}
-	friend bool operator>=(const CRational& a, const CRational& b) {
-		return !(a < b);
-	}
+  friend bool operator!=(const CRational& q1, const CRational& q2) {
+    return !(q1 == q2);
+  }
 
-	friend CRational abs(const CRational& q) {
-		return CRational(BqAbs(q.m_q), ASSIGN);
-	}
-	friend CRational inverse(const CRational& q) {
-		return CRational(BqInverse(q.m_q), ASSIGN);
-	}
+  friend bool operator>(const CRational& q1, const CRational& q2) {
+    return BqCompare(q1.m_q, q2.m_q) == BQ_GT;
+  }
+  friend bool operator>(const CRational& q, const CBignum& bn) {
+    return (q == CRational(bn));
+  }
+  friend bool operator>(const CBignum& bn, const CRational& q) {
+    return (CRational(bn) == q);
+  }
+  friend bool operator<=(const CRational& a, const CRational& b) {
+    return !(a > b);
+  }
 
-	// output
-	friend std::ostream& operator<<(std::ostream& os, const CRational& q) {
-		BzChar *s = BqToString(q, 0);
-		os << s;
-		BzFreeString( (void *)s );
-		return os;
-	}
-private:
-	BigQ	m_q;
-	CRational( const BigQ init, Flags ) : m_q( init ) {}
+  friend bool operator<(const CRational& q1, const CRational& q2) {
+    return BqCompare(q1.m_q, q2.m_q) == BQ_LT;
+  }
+  friend bool operator<(const CRational& q, const CBignum& bn) {
+    return (q == CRational(bn));
+  }
+  friend bool operator<(const CBignum& bn, const CRational& q) {
+    return (CRational(bn) == q);
+  }
+  friend bool operator>=(const CRational& a, const CRational& b) {
+    return !(a < b);
+  }
+
+  friend CRational abs(const CRational& q) {
+    return CRational(BqAbs(q.m_q), ASSIGN);
+  }
+  friend CRational inverse(const CRational& q) {
+    return CRational(BqInverse(q.m_q), ASSIGN);
+  }
+
+  // output
+  friend std::ostream& operator<<(std::ostream& os, const CRational& q) {
+    BzChar *s = BqToString(q, 0);
+    os << s;
+    BzFreeString((void *)s);
+    return os;
+  }
+
+ private:
+   BigQ m_q;
+   CRational(const BigQ init, Flags) : m_q(init) {}
 };
-
 } // namespace rational
-
-#endif	/* __CRATIONAL_H */
+#endif  /* __CRATIONAL_H */
