@@ -1,7 +1,7 @@
 #
 # Autoconf script for OpenLisp.
 # By Christian Jullien (jullien@eligis.com)
-# $Id: configure.in,v 1.9 2013-03-05 06:21:39 jullien Exp $
+# $Id: configure.in,v 1.11 2014/02/16 08:17:42 jullien Exp $
 #
 # use autoconf-2.68 (works also with autoconf-2.13)
 
@@ -47,6 +47,8 @@ then
    NOCXX=""
    AC_MSG_RESULT(yes)
    AC_PROG_CXX
+#   AX_CHECK_COMPILE_FLAG([-std=c++11], [
+#                           CXXFLAGS="$CXXFLAGS -std=c++11"])   NOCXX=""
 else
    NOCXX="# "
    AC_MSG_RESULT(no)
@@ -163,6 +165,10 @@ case "${CC}" in
 	  WARNINGS="$WARNINGS $UNUSED"
 	fi
 	;;
+  *tcc*)
+        # No C++ with tcc
+        NOCXX=""
+        ;;
   icc)
 	OPTIMS="-g -O3 -mcpu=pentiumpro -axi -ip -unroll -I."
 	;;

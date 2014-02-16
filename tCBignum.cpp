@@ -1,5 +1,5 @@
 #if     !defined( lint )
-static  const char rcsid[] = "$Id: tCBignum.cpp,v 1.13 2013-02-10 08:41:41 jullien Exp $";
+static  const char rcsid[] = "$Id: tCBignum.cpp,v 1.15 2014/02/16 10:47:18 jullien Exp $";
 #endif
 
 //
@@ -148,6 +148,8 @@ main()
     Tz(   8, "/=",   x3 /= x2+2,     "212534908907557149044"        );
     Tz(   9, "%=",   x3 %= 19,       "13"                           );
     Tz(  10, "exp",  x2 = x3*3+x1/2, "531337272268892872650"        );
+    // C++ move operator
+    Tz(  11, "mov",  x2 = x1+x2+x3,  "1594011816806678617885"       );
 
     tests();
 

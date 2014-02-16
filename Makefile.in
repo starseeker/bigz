@@ -1,6 +1,6 @@
 #
 #	Makefile for 'Bignums'	(c) C. Jullien
-#	$Id: Makefile.in,v 1.35 2013/06/18 05:21:59 jullien Exp $
+#	$Id: Makefile.in,v 1.38 2014/02/16 10:47:18 jullien Exp $
 #
 
 .SUFFIXES: .cpp .lsp .dat $(.SUFFIXES)
@@ -16,6 +16,7 @@ EXE		= @EXEEXT@
 ARFLAGS		= @AROPTS@
 DEBUG		=
 CFLAGS		= @CFLAGS@ @OPTIMS@ @WARNINGS@ -I. -DHAVE_CONFIG_H
+CXXFLAGS	= @CXXFLAGS@
 LIBS		= @LIBS@
 KERN		= kern
 KRNLIB		= libkern.$(AEXT)
@@ -35,7 +36,7 @@ all: $(BINARIES) tests
 
 .cpp.$(O):
 	@echo $*.cpp
-	@$(CPP) -c $(CFLAGS) $*.cpp
+	@$(CPP) -c $(CFLAGS) $(CXXFLAGS) $*.cpp
 
 # KerN lib
 
@@ -67,7 +68,8 @@ bztest.$(O): test/bztest.c bigz.h bign.h
 # C++ test
 
 tCBignum$(EXE): $(KRNLIB) CBignum.$(O) tCBignum.$(O)
-	@$(CPP) $(CFLAGS) -o tCBignum$(EXE) tCBignum.$(O) CBignum.$(O) \
+	@$(CPP) $(CFLAGS) -o tCBignum$(EXE) \
+		tCBignum.$(O) CBignum.$(O) \
 		-L. -l$(KERN)
 
 tCBignum.dat: ./lisp/gentest.lsp
@@ -185,6 +187,7 @@ MASTER		= \
 		pdf/PRL-RR-2.pdf	\
 		pdf/RR-1016.pdf		\
 		pdf/RR-1016.ps		\
+	        m4/*.m4                 \
 		makefile.gnu		\
 		makefile.clang		\
 		Makefile.in		\
