@@ -1,12 +1,11 @@
 //
-// $Id: CBignum.h,v 1.25 2014/02/16 17:14:10 jullien Exp $
+// $Id: CBignum.h,v 1.26 2014/02/16 18:49:23 jullien Exp $
 //
 
 /*
  * Simplified BSD License
  *
- * Copyright (c) 1988-1989, Digital Equipment Corporation & INRIA.
- * Copyright (c) 1992-2012, Eligis
+ * Copyright (c) 1992-2014, Eligis
  * All rights reserved.
  *
  * Redistribution and  use in  source and binary  forms, with  or without

@@ -65,8 +65,8 @@ bztest.o:
 
 # C++ test
 
-tCBignum.exe: bigz.o bign.o CBignum.o tCBignum.o CBignum.h tCBignum.dat
-	@$(CPP) $(CFLAGS) -o tCBignum tCBignum.o CBignum.o bigz.o bign.o
+tCBignum.exe: bigz.o bign.o CBignum.o CRational.o tCBignum.o CBignum.h tCBignum.dat
+	@$(CPP) $(CFLAGS) -o tCBignum tCBignum.o CBignum.o CRational.o bigz.o bign.o
 
 tCBignum.dat: gentest.lsp
 	@echo generating tests with $(LISP)..

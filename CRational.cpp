@@ -5,8 +5,7 @@ static	const char rcsid[] = "$Id: CRational.cpp,v 1.9 2014/02/16 17:14:10 jullie
 /*
  * Simplified BSD License
  *
- * Copyright (c) 1988-1989, Digital Equipment Corporation & INRIA.
- * Copyright (c) 1992-2012, Eligis
+ * Copyright (c) 1992-2014, Eligis
  * All rights reserved.
  *
  * Redistribution and  use in  source and binary  forms, with  or without
