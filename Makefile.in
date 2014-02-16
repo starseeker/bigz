@@ -67,9 +67,9 @@ bztest.$(O): test/bztest.c bigz.h bign.h
 
 # C++ test
 
-tCBignum$(EXE): $(KRNLIB) CBignum.$(O) tCBignum.$(O)
+tCBignum$(EXE): $(KRNLIB) CBignum.$(O) CRational.$(O) tCBignum.$(O)
 	@$(CPP) $(CFLAGS) -o tCBignum$(EXE) \
-		tCBignum.$(O) CBignum.$(O) \
+		tCBignum.$(O) CBignum.$(O) CRational.$(O) \
 		-L. -l$(KERN)
 
 tCBignum.dat: ./lisp/gentest.lsp
@@ -80,10 +80,14 @@ CBignum.$(O): CBignum.h CBignum.cpp bigz.h bign.h
 
 tCBignum.$(O): CBignum.h tCBignum.cpp tCBignum.dat bigz.h bign.h
 
+CRational.$(O): CRational.h CRational.cpp bigz.h bign.h bigq.h
+
 tCRational.$(O): CRational.h tCRational.cpp bigz.h bign.h bigq.h
 
-tCRational$(EXE): $(KRNLIB) CRational.h tCRational.$(O)
-	@$(CPP) $(CFLAGS) -o tCRational$(EXE) tCRational.$(O) -L. -l$(KERN)
+tCRational$(EXE): $(KRNLIB) CRational.h tCRational.$(O) CRational.$(O)
+	@$(CPP) $(CFLAGS) -o tCRational$(EXE) \
+		tCRational.$(O) CRational.$(O) CBignum.$(O) \
+		-L. -l$(KERN)
 
 # Misc
 
@@ -164,6 +168,7 @@ MASTER		= \
 		bzf.c			\
 		CBignum.cpp		\
 		CBignum.h		\
+		CRational.cpp		\
 		CRational.h		\
 		conf/config.guess	\
 		conf/config.sub		\

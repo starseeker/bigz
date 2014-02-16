@@ -1,12 +1,12 @@
 #if	!defined( lint )
-static	const char rcsid[] = "$Id: CBignum.cpp,v 1.9 2014/02/16 17:14:10 jullien Exp $";
+static	const char rcsid[] = "$Id: CRational.cpp,v 1.9 2014/02/16 17:14:10 jullien Exp $";
 #endif
 
 /*
  * Simplified BSD License
  *
  * Copyright (c) 1988-1989, Digital Equipment Corporation & INRIA.
- * Copyright (c) 1992-2014, Eligis
+ * Copyright (c) 1992-2012, Eligis
  * All rights reserved.
  *
  * Redistribution and  use in  source and binary  forms, with  or without
@@ -33,7 +33,7 @@ static	const char rcsid[] = "$Id: CBignum.cpp,v 1.9 2014/02/16 17:14:10 jullien 
  */
 
 //
-//	CBignum.cpp :	
+//	CRational.cpp :	
 //
 
 #include <string.h>
@@ -41,22 +41,33 @@ static	const char rcsid[] = "$Id: CBignum.cpp,v 1.9 2014/02/16 17:14:10 jullien 
 #include <ostream>
 #include <iomanip>
 #include <string>
-#include "CBignum.h"
+#include "CRational.h"
 
-namespace bignum {
+namespace rational {
 
-extern const CBignum one(1);
-extern const CBignum two(2);
+/**
+ * Print CRational only in base 10, honnor setw and setfill options.
+ */
+std::ostream& operator<<(std::ostream& os, const CRational& q) {
+  BzChar *s = BqToString(q, 0);
+  size_t len = strlen((char *)s);
+  if (len < (size_t)os.width()) {
+   const std::string pad((size_t)os.width() - len, os.fill());
+   os << std::setw(0) << pad;
+  }
+  os << s;
+  BzFreeString((void *)s);
+  return os;
+}
 
-std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
-  const char* res;
+#if 0
 
   std::ios_base::fmtflags ioflags = os.flags();
   if (ioflags & std::ios::hex) {
     res = BzToString(bn.m_bz, 16, 0);
     size_t len = strlen(res) + 2;
     if (len < (size_t)os.width()) {
-     const std::string pad((size_t)os.width() - len, os.fill());
+     const std::string pad(os.width() - len, os.fill());
      os << std::setw(0) << pad;
     }
     os << "0x";
@@ -64,7 +75,7 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
     res = BzToString(bn.m_bz, 8, 0);
     size_t len = strlen(res) + 1;
     if (len < (size_t)os.width()) {
-     const std::string pad((size_t)os.width() - len, os.fill());
+     const std::string pad(os.width() - len, os.fill());
      os << std::setw(0) << pad;
     }
     os << "0";
@@ -72,7 +83,7 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
     res = BzToString(bn.m_bz, 10, 0);
     size_t len = strlen(res);
     if (len < (size_t)os.width()) {
-     const std::string pad((size_t)os.width() - len, os.fill());
+     const std::string pad(os.width() - len, os.fill());
      os << std::setw(0) << pad;
     }
   }
@@ -80,18 +91,5 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
   BzFreeString((void *)res);
   return os;
 }
-
-const CBignum
-CBignum::operator++(int) {
-	CBignum	bn(*this);
-	*this += one;
-	return bn;
-}
-
-const CBignum
-CBignum::operator--(int) {
-	CBignum	bn(*this);
-	*this -= one;
-	return bn;
-}
+#endif
 } // namespace bignum

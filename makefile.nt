@@ -60,8 +60,8 @@ bztest.obj: test\bztest.c
 
 # C++ test
 
-tCBignum.exe: bigq.obj bigz.obj bign.obj CBignum.obj tCBignum.obj
-	@$(CC) $(CFLAGS) -FotCBignum tCBignum.obj CBignum.obj \
+tCBignum.exe: bigq.obj bigz.obj bign.obj CBignum.obj CRational.obj tCBignum.obj
+	@$(CC) $(CFLAGS) -FotCBignum tCBignum.obj CBignum.obj CRational.obj \
 		bigq.obj bigz.obj bign.obj
 
 tCBignum.dat: ./lisp/gentest.lsp
@@ -70,11 +70,11 @@ tCBignum.dat: ./lisp/gentest.lsp
 	@dos2unix -q tCBignum.dat
 
 tCBignum.obj: CBignum.h tCBignum.dat
-
+CRational.obj: CRational.h CRational.cpp bigz.h bign.h bigq.h
 tCRational.obj: CRational.h tCRational.cpp bigz.h bign.h bigq.h
 
-tCRational.exe: CRational.h tCRational.obj bigq.obj bigz.obj bign.obj
-	@$(CC) $(CFLAGS) -FotCRational tCRational.obj \
+tCRational.exe: CRational.h CRational.obj tCRational.obj bigq.obj bigz.obj bign.obj
+	@$(CC) $(CFLAGS) -FotCRational tCRational.obj CRational.obj \
 		bigq.obj bigz.obj bign.obj
 
 testbign.lsp: ./lisp/lisptests.lsp $(OLISP)
@@ -158,6 +158,7 @@ MASTER		= \
 		bzf.c			      \
 		CBignum.cpp		      \
 		CBignum.h		      \
+		CRational.cpp		      \
 		CRational.h		      \
 		conf/config.guess	      \
 		conf/config.sub		      \

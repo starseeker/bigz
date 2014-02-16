@@ -186,12 +186,7 @@ class CRational {
   }
 
   // output
-  friend std::ostream& operator<<(std::ostream& os, const CRational& q) {
-    BzChar *s = BqToString(q, 0);
-    os << s;
-    BzFreeString((void *)s);
-    return os;
-  }
+  friend std::ostream& operator<<(std::ostream& os, const CRational& q);
 
  private:
    BigQ m_q;

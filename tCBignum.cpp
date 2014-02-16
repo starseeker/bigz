@@ -159,6 +159,8 @@ main()
               << std::hex << y << std::endl;
     std::cout << std::setw(32) << std::setfill('.')
               << std::oct << y << std::endl;
+    std::cout << std::setw(32) << std::setfill('.')
+              << std::dec << r1 << std::endl;
 #endif
 
     if (failcnt != 0) {
