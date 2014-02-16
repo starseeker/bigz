@@ -1,5 +1,5 @@
 #if	!defined( lint )
-static	const char rcsid[] = "$Id: CBignum.cpp,v 1.8 2014/02/16 16:31:31 jullien Exp $";
+static	const char rcsid[] = "$Id: CBignum.cpp,v 1.9 2014/02/16 17:14:10 jullien Exp $";
 #endif
 
 /*
@@ -36,12 +36,50 @@ static	const char rcsid[] = "$Id: CBignum.cpp,v 1.8 2014/02/16 16:31:31 jullien 
 //	CBignum.cpp :	
 //
 
+#include <string.h>
+#include <stdio.h>
+#include <ostream>
+#include <iomanip>
+#include <string>
 #include "CBignum.h"
 
 namespace bignum {
 
 extern const CBignum one(1);
 extern const CBignum two(2);
+
+std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
+  const char* res;
+
+  std::ios_base::fmtflags ioflags = os.flags();
+  if (ioflags & std::ios::hex) {
+    res = BzToString(bn.m_bz, 16, 0);
+    size_t len = strlen(res) + 2;
+    if (len < (size_t)os.width()) {
+     const std::string pad(os.width() - len, os.fill());
+     os << std::setw(0) << pad;
+    }
+    os << "0x";
+  } else if (ioflags & std::ios::oct) {
+    res = BzToString(bn.m_bz, 8, 0);
+    size_t len = strlen(res) + 1;
+    if (len < (size_t)os.width()) {
+     const std::string pad(os.width() - len, os.fill());
+     os << std::setw(0) << pad;
+    }
+    os << "0";
+  } else {
+    res = BzToString(bn.m_bz, 10, 0);
+    size_t len = strlen(res);
+    if (len < (size_t)os.width()) {
+     const std::string pad(os.width() - len, os.fill());
+     os << std::setw(0) << pad;
+    }
+  }
+  os << res;
+  BzFreeString((void *)res);
+  return os;
+}
 
 const CBignum
 CBignum::operator++(int) {
@@ -56,5 +94,4 @@ CBignum::operator--(int) {
 	*this -= one;
 	return bn;
 }
-
-}
+} // namespace bignum

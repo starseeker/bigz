@@ -1,5 +1,5 @@
 //
-// $Id: CBignum.h,v 1.24 2014/02/16 16:31:31 jullien Exp $
+// $Id: CBignum.h,v 1.25 2014/02/16 17:14:10 jullien Exp $
 //
 
 /*
@@ -393,22 +393,7 @@ class CBignum {
 
   // output
 
-  friend std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
-    const char* res;
-    std::ios_base::fmtflags ioflags = os.flags();
-    if (ioflags & std::ios::hex) {
-      res = BzToString(bn.m_bz, 16, 0);
-      os << "0x";
-    } else if (ioflags & std::ios::oct) {
-      res = BzToString(bn.m_bz, 8, 0);
-      os << "0";
-    } else {
-      res = BzToString(bn.m_bz, 10, 0);
-    }
-    os << res;
-    BzFreeString((void *)res);
-    return os;
-  }
+  friend std::ostream& operator<<(std::ostream& os, const CBignum& bn);
   
   // version
   static const char *version() { return BzVersion(); }

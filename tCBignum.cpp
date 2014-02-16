@@ -1,5 +1,5 @@
 #if     !defined( lint )
-static  const char rcsid[] = "$Id: tCBignum.cpp,v 1.16 2014/02/16 16:31:31 jullien Exp $";
+static  const char rcsid[] = "$Id: tCBignum.cpp,v 1.17 2014/02/16 17:14:10 jullien Exp $";
 #endif
 
 //
@@ -10,6 +10,7 @@ static  const char rcsid[] = "$Id: tCBignum.cpp,v 1.16 2014/02/16 16:31:31 julli
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
+#include <iomanip>
 #ifdef WIN32
 #include <crtdbg.h>
 #endif
@@ -149,12 +150,15 @@ main()
 
     tests();
 
-#if 0
+#if 1
     CBignum y(1);
     y <<= 80;
-    std::cout << y << std::endl;
-    std::cout << std::hex << y << std::endl;
-    std::cout << std::oct << y << std::endl;
+    std::cout << std::setw(32) << std::setfill('.')
+              << std::dec << y << std::endl;
+    std::cout << std::setw(32) << std::setfill('.')
+              << std::hex << y << std::endl;
+    std::cout << std::setw(32) << std::setfill('.')
+              << std::oct << y << std::endl;
 #endif
 
     if (failcnt != 0) {

@@ -1,6 +1,6 @@
 Change log
 
-2014/02/16: Add support for hex/dec/oct C++ ios.
+2014/02/16: Add support for hex/dec/oct and setw/setfill C++ ios.
 2014/02/16: Add C++11 features when available.
 2014/02/16: Check for tcc and remove C++ support if found.
 2013/02/20: Add clang support (no warning detected).
