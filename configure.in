@@ -47,8 +47,10 @@ then
    NOCXX=""
    AC_MSG_RESULT(yes)
    AC_PROG_CXX
+   AC_LANG(C++)
    AX_CHECK_COMPILE_FLAG([-std=c++11], [
                            CXXFLAGS="$CXXFLAGS -std=c++11"])   NOCXX=""
+   AC_LANG(C)
 else
    NOCXX="# "
    AC_MSG_RESULT(no)

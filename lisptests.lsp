@@ -5,8 +5,7 @@
 ;;;; CVS:       $Id: lisptests.lsp,v 1.26 2011-12-08 12:27:13 jullien Exp $
 
 ;;;
-;;; Copyright (c) 1988-1989, Digital Equipment Corporation & INRIA.
-;;; Copyright (c) 1992-2012, Eligis
+;;; Copyright (c) 1992-2014, Eligis
 ;;; All rights reserved.
 ;;;
 ;;; Redistribution and  use in  source and binary  forms, with  or without
