@@ -149,6 +149,7 @@ MASTER		= \
 		LICENSE			      \
 		NEWS			      \
 		README			      \
+		autogen.sh		      \
 		bign.c			      \
 		bign.h			      \
 		bigq.c			      \
@@ -180,10 +181,10 @@ MASTER		= \
 		lisp/gentest.lsp	      \
 		lisp/lisptests.lsp	      \
 		lisp/lisprtnl.lsp	      \
-	        m4/ax_check_compile_flag.m4   \
 		pdf/PRL-RR-2.pdf	      \
 		pdf/RR-1016.pdf		      \
 		pdf/RR-1016.ps		      \
+	        m4/ax_check_compile_flag.m4   \
 		Makefile.in		      \
 		makefile.clang		      \
 		makefile.gnu		      \
