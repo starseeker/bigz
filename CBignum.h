@@ -54,7 +54,7 @@ class CRational;
 
 namespace bignum {
 class CBignum {
- friend rational::CRational;
+ friend class rational::CRational;
  private:
   enum	Flags { ASSIGN };
  public:
