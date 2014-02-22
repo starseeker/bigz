@@ -48,9 +48,13 @@
 #include <utility>
 #include <bigz.h>
 
-namespace bignum {
+namespace rational {
+class CRational;
+}
 
+namespace bignum {
 class CBignum {
+ friend rational::CRational;
  private:
   enum	Flags { ASSIGN };
  public:
@@ -66,16 +70,22 @@ class CBignum {
   CBignum(const char* init, int base = 10)
 	  : m_bz(BzFromString(init, base, BZ_UNTIL_END)) {}
   CBignum(bool b)	      : m_bz(BzFromInteger(b ? 1 : 0)) {}
-  ~CBignum() { if (m_bz) BzFree(m_bz); }
+  ~CBignum() {
+    if (m_bz) {
+      BzFree(m_bz);
+    }
+  }
 
   // convertions
 
   operator int         () const { return (int)BzToInteger(m_bz);    }
   operator bool        () const { return BzGetSign(m_bz) != BZ_ZERO; }
-  operator const char* () const { return BzToString(m_bz, 10, 0); }
-  operator std::string () const { return std::string(BzToString(m_bz, 10, 0)); }
+  operator std::string () const throw();
+
+ private:
   operator BigZ        () const { return m_bz; }
 
+ public:
   // unary +, -, ++, --
 
   friend CBignum operator+(const CBignum& bz1) {
@@ -320,11 +330,11 @@ class CBignum {
     return ((i % 2) == 1);
   }
 
-  friend int length(const CBignum& bz) {
+  friend unsigned int length(const CBignum& bz) {
     return BzLength(bz.m_bz);
   }
 
-  friend int length(int i) {
+  friend unsigned int length(int i) {
     return length(CBignum(i));
   }
 

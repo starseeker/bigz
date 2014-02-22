@@ -1,7 +1,7 @@
 #
 # Autoconf script for OpenLisp.
 # By Christian Jullien (jullien@eligis.com)
-# $Id: configure.in,v 1.12 2014/02/16 10:53:32 jullien Exp $
+# $Id: configure.in,v 1.14 2014/02/17 18:52:34 jullien Exp $
 #
 # use autoconf-2.68 (works also with autoconf-2.13)
 

@@ -42,7 +42,8 @@
 #define	BN_CPP11
 #endif
 
-#include <iostream>
+#include <ostream>
+#include <string>
 #include <stdlib.h>
 #include <bigq.h>
 #include <CBignum.h>
@@ -65,7 +66,10 @@ class CRational {
      : m_q(BqCreate(BqGetNumerator(q.m_q), BqGetDenominator(q.m_q))) {
    }
 #if defined(BN_CPP11)
-  CRational(CRational&& rhs)      : m_q(rhs.m_q) { rhs.m_q = 0; }
+  CRational(CRational&& rhs)
+    : m_q(rhs.m_q) {
+    rhs.m_q = 0;
+  }
 #endif
   CRational(const char* s)
     : m_q(BqFromString((BzChar *)s, 10)) {
@@ -102,9 +106,10 @@ class CRational {
 
   // convertions
 
-  operator const char* () const { return BqToString(m_q, 0); }
-  operator BigQ        () const { return m_q; }
-  operator double      () const { return BqToDouble(m_q); }
+  operator double () const throw() {
+    return BqToDouble(m_q);
+  }
+  operator std::string () const throw();
 
   // unary -
 

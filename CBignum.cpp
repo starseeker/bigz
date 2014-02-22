@@ -38,15 +38,22 @@ static	const char rcsid[] = "$Id: CBignum.cpp,v 1.10 2014/02/16 18:16:20 jullien
 
 #include <string.h>
 #include <stdio.h>
+#include <string>
 #include <ostream>
 #include <iomanip>
-#include <string>
 #include "CBignum.h"
 
 namespace bignum {
 
 extern const CBignum one(1);
 extern const CBignum two(2);
+
+CBignum::operator std::string () const throw() {
+ const char* s = BzToString(m_bz, 10, 0);
+ std::string res(s);
+ BzFreeString((void *)s);
+ return res;
+}
 
 std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
   const char* res;

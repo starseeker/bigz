@@ -59,35 +59,36 @@ ffib(const CBignum& n) {
 }
 
 static void
-checkResult(int count, const char* op, const char* expected, const char* res) {
+checkResult(int count,
+            const char* op,
+            const std::string& expected,
+            const std::string& res) {
   ++testcnt;
 
-  if (strcmp(expected, res) != 0) {
-    printf( "test %3d (%s) fails: expected = %16s, computed = %16s\n",
-            count, op, res, expected );
+  if (res != expected) {
+    (void)printf("test %3d (%s) fails: expected = %16s, computed = %16s\n",
+                 count, op, res.c_str(), expected.c_str());
     ++failcnt;
   }
 }
 
 void
-Tz(int count, const char* op, const CBignum& n, const char* res) {
-  const char* s = (const char *)n;
-
-  checkResult(count, op, s, res);
-  BzFreeString((char *)s);
+Tz(int count, const char* op, unsigned int n, const char* expected) {
+ checkResult(count, op, CBignum(n), expected);
 }
 
 void
-Tq(int count, const char* op, const CRational& n, const char *res) {
-  const char* s = (const char *)n;
-
-  checkResult(count, op, s, res);
-  BzFreeString((char *)s);
+Tz(int count, const char* op, const CBignum& n, const char* expected) {
+  checkResult(count, op, n, expected);
 }
 
 void
-Tq(int count, const char* op, bool b, const char *res)
-{
+Tz(int count, const char* op, const CRational& n, const char *expected) {
+  checkResult(count, op, n, expected);
+}
+
+void
+Tz(int count, const char* op, bool b, const char *res) {
   checkResult(count, op, (b ? "1" : "0"), res);
 }
 

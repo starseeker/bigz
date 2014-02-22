@@ -44,11 +44,18 @@ static	const char rcsid[] = "$Id: CRational.cpp,v 1.9 2014/02/16 17:14:10 jullie
 
 namespace rational {
 
+CRational::operator std::string () const throw() {
+ const char* s = BqToString(m_q, 0);
+ std::string res(s);
+ BzFreeString((void *)s);
+ return res;
+}
+
 /**
  * Print CRational only in base 10, honnor setw and setfill options.
  */
 std::ostream& operator<<(std::ostream& os, const CRational& q) {
-  BzChar *s = BqToString(q, 0);
+  BzChar *s = BqToString(q.m_q, 0);
   size_t len = strlen((char *)s);
   if (len < (size_t)os.width()) {
    const std::string pad((size_t)os.width() - len, os.fill());
@@ -58,37 +65,4 @@ std::ostream& operator<<(std::ostream& os, const CRational& q) {
   BzFreeString((void *)s);
   return os;
 }
-
-#if 0
-
-  std::ios_base::fmtflags ioflags = os.flags();
-  if (ioflags & std::ios::hex) {
-    res = BzToString(bn.m_bz, 16, 0);
-    size_t len = strlen(res) + 2;
-    if (len < (size_t)os.width()) {
-     const std::string pad(os.width() - len, os.fill());
-     os << std::setw(0) << pad;
-    }
-    os << "0x";
-  } else if (ioflags & std::ios::oct) {
-    res = BzToString(bn.m_bz, 8, 0);
-    size_t len = strlen(res) + 1;
-    if (len < (size_t)os.width()) {
-     const std::string pad(os.width() - len, os.fill());
-     os << std::setw(0) << pad;
-    }
-    os << "0";
-  } else {
-    res = BzToString(bn.m_bz, 10, 0);
-    size_t len = strlen(res);
-    if (len < (size_t)os.width()) {
-     const std::string pad(os.width() - len, os.fill());
-     os << std::setw(0) << pad;
-    }
-  }
-  os << res;
-  BzFreeString((void *)res);
-  return os;
-}
-#endif
-} // namespace bignum
+} // namespace rational

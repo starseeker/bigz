@@ -389,7 +389,7 @@
       (setq *test* "Tz")
       (testz)
       (setq *type* "CRational")
-      (setq *test* "Tq")
+      (setq *test* "Tz")
       (testq)
       (call-tests))
       
