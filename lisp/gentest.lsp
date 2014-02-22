@@ -1,5 +1,5 @@
 ;;;; -*-Mode:LISP; Package:LISP; Base:10; Syntax:ISLISP -*-
-;;;; Date:	$Id: gentest.lsp,v 1.5 2011-12-27 16:01:14 jullien Exp $
+;;;; Date:	$Id: gentest.lsp,v 1.7 2014/02/22 19:18:21 jullien Exp $
 ;;;; Title:	gentest.lsp
 ;;;; License:   Simplified BSD license
 ;;;; Author:	C. Jullien
@@ -370,8 +370,8 @@
 
    (unary-functions
 	    1/3 2/3 -2/7 1/6
-	   (list #'abs #'-)
-	   (list "abs" "-"))
+	   (list #'abs #'- #'numerator #'denominator)
+	   (list "abs" "-" "numerator" "denominator"))
    t)
 
 ;;; Generate the tests.

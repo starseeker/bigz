@@ -1,6 +1,6 @@
 #
 #	Makefile for 'Bignums'	(c) C. Jullien
-#	$Id: Makefile.in,v 1.40 2014/02/17 06:04:37 jullien Exp $
+#	$Id: Makefile.in,v 1.41 2014/02/22 19:18:20 jullien Exp $
 #
 
 .SUFFIXES: .cpp .lsp .dat $(.SUFFIXES)
@@ -26,7 +26,7 @@ OBJECT		= bigq.$(O) bigz.$(O) bign.$(O)
 VERSION		= @VERSION@
 
 BINARIES	= $(KRNLIB) bztest$(EXE) testkern$(EXE) \
-		  @NOCXX@tCBignum$(EXE) tCRational$(EXE)
+		  @NOCXX@tCBignum$(EXE)
 
 all: $(BINARIES) tests
 
@@ -82,20 +82,12 @@ tCBignum.$(O): CBignum.h tCBignum.cpp tCBignum.dat bigz.h bign.h
 
 CRational.$(O): CRational.h CRational.cpp bigz.h bign.h bigq.h
 
-tCRational.$(O): CRational.h tCRational.cpp bigz.h bign.h bigq.h
-
-tCRational$(EXE): $(KRNLIB) CRational.h tCRational.$(O) CRational.$(O)
-	@$(CPP) $(CFLAGS) -o tCRational$(EXE) \
-		tCRational.$(O) CRational.$(O) CBignum.$(O) \
-		-L. -l$(KERN)
-
 # Misc
 
 tests:
 	./testkern a
 	./bztest
 	@NOCXX@./tCBignum
-	@NOCXX@./tCRational
 
 clean:
 	@-rm -f bztest$(EXE) testkern$(EXE) tCBignum$(EXE) *.$(O) *.$(AEXT)
@@ -204,7 +196,6 @@ MASTER		= \
 		tCBignum.cpp		      \
 		tCBignum.dat		      \
 		tCBignum.dat		      \
-		tCRational.cpp		      \
 		test/BntoBnn.h		      \
 		test/bztest.c		      \
 		test/testkern.c

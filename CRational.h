@@ -1,5 +1,5 @@
 //
-// $Id: CRational.h,v 1.21 2014/02/16 18:49:23 jullien Exp $
+// $Id: CRational.h,v 1.23 2014/02/22 19:18:20 jullien Exp $
 //
 
 /*
@@ -85,8 +85,16 @@ class CRational {
     return BqGetNumerator(m_q);
   }
 
+  friend CBignum numerator(const CRational& q) {
+    return q.numerator();
+  }
+
   const CBignum denominator() const {
     return BqGetDenominator(m_q);
+  }
+
+  friend CBignum denominator(const CRational& q) {
+    return q.denominator();
   }
 
   CRational& operator=(const CRational& rhs) {
@@ -114,7 +122,7 @@ class CRational {
   // unary -
 
   friend CRational operator-(const CRational& q) {
-    return(CRational(BqNegate(q.m_q), ASSIGN));
+    return CRational(BqNegate(q.m_q), ASSIGN);
   }
 
   // binary +

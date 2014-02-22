@@ -1630,6 +1630,14 @@ test25(void)
  Tz(1290, "-       ", - (CRational(X2)), "-2/3"                     );
  Tz(1291, "-       ", - (CRational(Y1)), "2/7"                      );
  Tz(1292, "-       ", - (CRational(Y2)), "-1/6"                     );
+ Tz(1293, "numerator", numerator(CRational(X1)), "1"                );
+ Tz(1294, "numerator", numerator(CRational(X2)), "2"                );
+ Tz(1295, "numerator", numerator(CRational(Y1)), "-2"               );
+ Tz(1296, "numerator", numerator(CRational(Y2)), "1"                );
+ Tz(1297, "denominator", denominator(CRational(X1)), "3"            );
+ Tz(1298, "denominator", denominator(CRational(X2)), "3"            );
+ Tz(1299, "denominator", denominator(CRational(Y1)), "7"            );
+ Tz(1300, "denominator", denominator(CRational(Y2)), "6"            );
 }
 
 void tests(void);
