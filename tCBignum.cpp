@@ -1,5 +1,5 @@
 #if     !defined( lint )
-static  const char rcsid[] = "$Id: tCBignum.cpp,v 1.20 2014/02/22 19:18:21 jullien Exp $";
+static  const char rcsid[] = "$Id: tCBignum.cpp,v 1.21 2014/02/23 06:42:31 jullien Exp $";
 #endif
 
 //
@@ -140,12 +140,13 @@ main()
     CRational q2(4, 6);
     CRational q3(5, 9);
     CRational q4("87384004098848212735349875629364987687687667720",
-                 "93495466257274887265487820984675290489826754805");
+                 "9349546625727488726548782098467529048982675");
     CRational q5(1, 3);
 
     CRational pi("22/7");
     CRational rOne(1);
     CRational rZero(0);
+    CBignum bn = q4;
 
     // Check pi to double conversion
     double dpi = static_cast<double>(pi);
@@ -163,9 +164,10 @@ main()
     Tz(   8, "/=",   x3 /= x2+2,       "212534908907557149044"        );
     Tz(   9, "%=",   x3 %= 19,         "13"                           );
     Tz(  10, "exp",  x2 = x3*3+x1/2,   "531337272268892872650"        );
-    // C++ move operator
+    // C++11 move operator
     Tz(  11, "mov",  x2 = x1+x2+x3,    "1594011816806678617885"       );
     Tz(  12, "nan",  CRational(5, 0),  "#.QNaN"                       );
+    Tz(  12, "q->z", bn == 9346,       "1"                            );
 
     tests();
 

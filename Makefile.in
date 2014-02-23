@@ -1,6 +1,6 @@
 #
 #	Makefile for 'Bignums'	(c) C. Jullien
-#	$Id: Makefile.in,v 1.41 2014/02/22 19:18:20 jullien Exp $
+#	$Id: Makefile.in,v 1.42 2014/02/23 06:42:30 jullien Exp $
 #
 
 .SUFFIXES: .cpp .lsp .dat $(.SUFFIXES)
@@ -74,7 +74,7 @@ tCBignum$(EXE): $(KRNLIB) CBignum.$(O) CRational.$(O) tCBignum.$(O)
 
 tCBignum.dat: ./lisp/gentest.lsp
 	@echo generating tests with $(LISP)..
-	@$(LISP) ./lisp/gentest.lsp
+	@$(LISP) ./lisp/gentest.lsp > tCBignum.cpp
 
 CBignum.$(O): CBignum.h CBignum.cpp bigz.h bign.h
 

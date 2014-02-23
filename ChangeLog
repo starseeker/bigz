@@ -1,5 +1,6 @@
 Change log
 
+2014/02/23: Change version to 1.5.3.
 2014/02/22: tCRational.cpp is removed, now part of tCBignum.cpp.
 2014/02/16: Add support for hex/dec/oct and setw/setfill C++ ios.
 2014/02/16: Add C++11 features when available.

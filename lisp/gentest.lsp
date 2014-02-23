@@ -1,5 +1,5 @@
 ;;;; -*-Mode:LISP; Package:LISP; Base:10; Syntax:ISLISP -*-
-;;;; Date:	$Id: gentest.lsp,v 1.7 2014/02/22 19:18:21 jullien Exp $
+;;;; Date:	$Id: gentest.lsp,v 1.8 2014/02/23 06:42:31 jullien Exp $
 ;;;; Title:	gentest.lsp
 ;;;; License:   Simplified BSD license
 ;;;; Author:	C. Jullien
@@ -358,15 +358,15 @@
    (numeric-operators
 	    1/3 1 -2/7 -2
 	    (list #'+ #'- #'/ #'*
-		  #'< #'<= #'= #'> #'>=)
+		  #'< #'<= #'= #'/= #'> #'>=)
 	    (list "+" "-" "/" "*"
-		  "<" "<=" "==" ">" ">="))
+		  "<" "<=" "==" "!=" ">" ">="))
    (numeric-operators
 	    1/3 0 0 -2/7
 	    (list #'+ #'- #'*
-		  #'< #'<= #'= #'> #'>=)
+		  #'< #'<= #'=  #'/= #'> #'>=)
 	    (list "+" "-" "*"
-		  "<" "<=" "==" ">" ">="))
+		  "<" "<=" "==" "!=" ">" ">="))
 
    (unary-functions
 	    1/3 2/3 -2/7 1/6
@@ -384,7 +384,7 @@
 #-openlisp
 (let ((*type* nil)
       (*cnt* 0)
-      (*test nil))
+      (*test* nil))
       (setq *type* "CBignum")
       (setq *test* "Tz")
       (testz)
