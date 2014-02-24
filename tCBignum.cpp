@@ -1,5 +1,5 @@
 #if     !defined( lint )
-static  const char rcsid[] = "$Id: tCBignum.cpp,v 1.21 2014/02/23 06:42:31 jullien Exp $";
+static  const char rcsid[] = "$Id: tCBignum.cpp,v 1.22 2014/02/24 06:23:31 jullien Exp $";
 #endif
 
 //
@@ -142,15 +142,16 @@ main()
     CRational q4("87384004098848212735349875629364987687687667720",
                  "9349546625727488726548782098467529048982675");
     CRational q5(1, 3);
+    CRational q6(1);
 
-    CRational pi("22/7");
+    CRational pi("355/113");
     CRational rOne(1);
     CRational rZero(0);
     CBignum bn = q4;
 
     // Check pi to double conversion
     double dpi = static_cast<double>(pi);
-    if (dpi < 3.1428 || dpi > 3.1429) {
+    if (dpi < 3.14159 || dpi > 3.14160) {
       std::cerr << dpi << " != 3.14286" << std::endl;
     }
 

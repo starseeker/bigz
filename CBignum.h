@@ -1,5 +1,5 @@
 //
-// $Id: CBignum.h,v 1.27 2014/02/22 18:00:55 jullien Exp $
+// $Id: CBignum.h,v 1.28 2014/02/24 06:23:31 jullien Exp $
 //
 
 /*
@@ -96,9 +96,9 @@ class CBignum {
   }
 
   inline CBignum&	operator++();
-  const  CBignum	operator++(int);
+         CBignum	operator++(int);
   inline CBignum&	operator--();
-  const  CBignum	operator--(int);
+         CBignum	operator--(int);
 
   // binary +, - *, /, %
 

@@ -65,4 +65,18 @@ std::ostream& operator<<(std::ostream& os, const CRational& q) {
   BzFreeString((void *)s);
   return os;
 }
+
+inline CRational
+CRational::operator++(int) {
+  CRational q(*this);
+  *this = *this + CRational(one);
+  return q;
+}
+
+inline CRational
+CRational::operator--(int) {
+  CRational q(*this);
+  *this = *this - CRational(one);
+  return q;
+}
 } // namespace rational

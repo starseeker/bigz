@@ -1,5 +1,5 @@
 #if	!defined( lint )
-static	const char rcsid[] = "$Id: CBignum.cpp,v 1.11 2014/02/22 18:00:55 jullien Exp $";
+static	const char rcsid[] = "$Id: CBignum.cpp,v 1.12 2014/02/24 06:23:31 jullien Exp $";
 #endif
 
 /*
@@ -88,14 +88,14 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
   return os;
 }
 
-const CBignum
+CBignum
 CBignum::operator++(int) {
 	CBignum	bn(*this);
 	*this += one;
 	return bn;
 }
 
-const CBignum
+CBignum
 CBignum::operator--(int) {
 	CBignum	bn(*this);
 	*this -= one;

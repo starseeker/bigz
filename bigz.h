@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.h,v 1.67 2014/02/23 06:42:31 jullien Exp $
+ * $Id: bigz.h,v 1.68 2014/02/24 06:23:31 jullien Exp $
  */
 
 /*
@@ -163,7 +163,7 @@ typedef	unsigned int			BzUInt;
 #if	defined( _WIN64 ) || (defined( SIZEOF_LONG ) && (SIZEOF_LONG == 8))
 #if	!defined( BZ_MAX_BASE10 )
 /*
- *	Max power of 10 to fix in a BigNumDigit (generally machine word).
+ *	Max power of 10 to fit in a BigNumDigit (generally machine word).
  */
 #define	BZ_MAX_BASE10		((BigNumDigit)10000000000000000000UL)
 #endif	/* BZ_MAX_BASE10 */

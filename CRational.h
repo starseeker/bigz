@@ -1,5 +1,5 @@
 //
-// $Id: CRational.h,v 1.24 2014/02/23 06:42:30 jullien Exp $
+// $Id: CRational.h,v 1.25 2014/02/24 06:23:31 jullien Exp $
 //
 
 /*
@@ -56,12 +56,17 @@ class CRational {
  private:
    enum Flags { ASSIGN };
  public:
-   CRational(const CBignum& n = 0, const CBignum& d = 1)
+   CRational(const CBignum& n = 0)
+     : m_q(BqCreate(n, one)) {
+   }
+   CRational(const CBignum& n, const CBignum& d)
      : m_q(BqCreate(n, d)) {
    }
+#if 0
   CRational(int n)
-     : m_q(BqCreate(CBignum(n), CBignum(1))) {
+     : m_q(BqCreate(CBignum(n), one))) {
    }
+#endif
   CRational(const CRational& q)
      : m_q(BqCreate(BqGetNumerator(q.m_q), BqGetDenominator(q.m_q))) {
    }
@@ -79,7 +84,11 @@ class CRational {
     : m_q(BqFromDouble(n)) {
    }
 #endif
-   ~CRational() { if (m_q) BqDelete(m_q); }
+   ~CRational() {
+     if (m_q) {
+       BqDelete(m_q);
+     }
+   }
 
   const CBignum numerator() const {
     return BqGetNumerator(m_q);
@@ -127,6 +136,13 @@ class CRational {
   friend CRational operator-(const CRational& q) {
     return CRational(BqNegate(q.m_q), ASSIGN);
   }
+
+  // unary ++, --
+
+  inline CRational&	operator++();
+         CRational	operator++(int);
+  inline CRational&	operator--();
+         CRational	operator--(int);
 
   // binary +
 
@@ -208,5 +224,17 @@ class CRational {
    BigQ m_q;
    CRational(const BigQ init, Flags) : m_q(init) {}
 };
+
+inline CRational&
+CRational::operator++() {
+  *this = *this + CRational(one);
+  return *this;
+}
+
+inline CRational&
+CRational::operator--() {
+  *this = *this - CRational(one);
+  return *this;
+}
 } // namespace rational
 #endif  /* __CRATIONAL_H */

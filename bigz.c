@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.c,v 1.103 2014/02/16 18:49:23 jullien Exp $
+ * $Id: bigz.c,v 1.104 2014/02/24 06:23:31 jullien Exp $
 */
 
 /*
@@ -1039,7 +1039,8 @@ BzIsOdd( const BigZ y )
  * - digits: the number of digits in base 'base' that can be printed.
  */
 
-static	void BzMaxBase( BigNumDigit base, BigNumDigit* maxval, BigNumLength* digits );
+static	void
+BzMaxBase( BigNumDigit base, BigNumDigit* maxval, BigNumLength* digits );
 
 static	void
 BzMaxBase( BigNumDigit base, BigNumDigit* maxval, BigNumLength* digits )
@@ -1048,7 +1049,7 @@ BzMaxBase( BigNumDigit base, BigNumDigit* maxval, BigNumLength* digits )
 	BigNumDigit  v = (BigNumDigit)1;
 	BigNumLength b = 0;
 
-	for( i = BN_COMPLEMENT ; i > base ; i /= (BigNumDigit)base ) {
+	for( i = BN_COMPLEMENT ; i >= base ; i /= (BigNumDigit)base ) {
 		++b;
 		v *= base;
 	}
@@ -1176,6 +1177,11 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 		BigNumLength digits = BZ_MAX_BASE10_DIGITS;
 
 		if( base != (BigNumDigit)10 ) {
+			/*
+			 * Compute maxval and digits that can be used with
+			 * this base. NOTE: this not optimal! We should compute
+			 * a table for this.
+			 */
 			BzMaxBase( base, &maxval, &digits );
 		}
 
