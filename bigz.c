@@ -1173,8 +1173,8 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 		*--s = (BzChar)'0';
 #if	defined( BZ_OPTIMIZE_PRINT )
 	} else	{
-		BigNumDigit  maxval = BZ_MAX_BASE10;
-		BigNumLength digits = BZ_MAX_BASE10_DIGITS;
+		BigNumDigit  maxval = (BigNumDigit)BZ_MAX_BASE10;
+		BigNumLength digits = (BigNumLength)BZ_MAX_BASE10_DIGITS;
 
 		if( base != (BigNumDigit)10 ) {
 			/*

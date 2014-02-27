@@ -103,7 +103,7 @@ main(void)
    printf("sizeof(BigZ)         == %d\n", (int)sizeof(BigZ));
    printf("sizeof(BzInt)        == %d\n", (int)sizeof(BzInt));
    printf("sizeof(BzUInt)       == %d\n", (int)sizeof(BzUInt));
-   printf("BZ_MAX_BASE10_DIGITS == %d\n", (int)BZ_MAX_BASE10_DIGITS);
+   printf("BZ_MAX_BASE10_DIGITS == %d\n", BZ_MAX_BASE10_DIGITS);
 #if defined( _WIN64 )
    printf("BZ_MAX_BASE10        == %I64u\n", BZ_MAX_BASE10);
 #else
