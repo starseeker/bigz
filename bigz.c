@@ -270,7 +270,7 @@ BzVersion( void )
  */
 
 static const double BzLog[] = {
-	0.0000000000000000,
+        0.0000000000000000,
         0.0000000000000000, /* log( 1) */
         0.6931471805599453, /* log( 2) */
         1.0986122886681098, /* log( 3) */
@@ -1033,6 +1033,95 @@ BzIsOdd( const BigZ y )
 }
 
 #if	defined( BZ_OPTIMIZE_PRINT )
+typedef struct {
+        unsigned int MaxDigits;
+        BigNumDigit  MaxValue;
+} BzPrintTable;
+
+#if (BZ_MAX_BASE_BUCKET_SIZE == 32)
+static const BzPrintTable BzPrintBase[] = {
+  {  0, (BigNumDigit)0                      }, /*  0 */
+  {  0, (BigNumDigit)0                      }, /*  1 */
+  { 31, (BigNumDigit)2147483648             }, /*  2 */
+  { 20, (BigNumDigit)3486784401             }, /*  3 */
+  { 15, (BigNumDigit)1073741824             }, /*  4 */
+  { 13, (BigNumDigit)1220703125             }, /*  5 */
+  { 12, (BigNumDigit)2176782336             }, /*  6 */
+  { 11, (BigNumDigit)1977326743             }, /*  7 */
+  { 10, (BigNumDigit)1073741824             }, /*  8 */
+  { 10, (BigNumDigit)3486784401             }, /*  9 */
+  {  9, (BigNumDigit)1000000000             }, /* 10 */
+  {  9, (BigNumDigit)2357947691             }, /* 11 */
+  {  8, (BigNumDigit)429981696              }, /* 12 */
+  {  8, (BigNumDigit)815730721              }, /* 13 */
+  {  8, (BigNumDigit)1475789056             }, /* 14 */
+  {  8, (BigNumDigit)2562890625             }, /* 15 */
+  {  7, (BigNumDigit)268435456              }, /* 16 */
+  {  7, (BigNumDigit)410338673              }, /* 17 */
+  {  7, (BigNumDigit)612220032              }, /* 18 */
+  {  7, (BigNumDigit)893871739              }, /* 19 */
+  {  7, (BigNumDigit)1280000000             }, /* 20 */
+  {  7, (BigNumDigit)1801088541             }, /* 21 */
+  {  7, (BigNumDigit)2494357888             }, /* 22 */
+  {  7, (BigNumDigit)3404825447             }, /* 23 */
+  {  6, (BigNumDigit)191102976              }, /* 24 */
+  {  6, (BigNumDigit)244140625              }, /* 25 */
+  {  6, (BigNumDigit)308915776              }, /* 26 */
+  {  6, (BigNumDigit)387420489              }, /* 27 */
+  {  6, (BigNumDigit)481890304              }, /* 28 */
+  {  6, (BigNumDigit)594823321              }, /* 29 */
+  {  6, (BigNumDigit)729000000              }, /* 30 */
+  {  6, (BigNumDigit)887503681              }, /* 31 */
+  {  6, (BigNumDigit)1073741824             }, /* 32 */
+  {  6, (BigNumDigit)1291467969             }, /* 33 */
+  {  6, (BigNumDigit)1544804416             }, /* 34 */
+  {  6, (BigNumDigit)1838265625             }, /* 35 */
+  {  6, (BigNumDigit)2176782336             }  /* 36 */
+};
+#endif /* BZ_MAX_BASE_BUCKET_SIZE == 32 */
+
+#if (BZ_MAX_BASE_BUCKET_SIZE == 64)
+static const BzPrintTable BzPrintBase[] = {
+  {  0, (BigNumDigit)0                      }, /*  0 */
+  {  0, (BigNumDigit)0                      }, /*  1 */
+  { 63, (BigNumDigit)9223372036854775808UL  }, /*  2 */
+  { 40, (BigNumDigit)12157665459056928801UL }, /*  3 */
+  { 31, (BigNumDigit)4611686018427387904UL  }, /*  4 */
+  { 27, (BigNumDigit)7450580596923828125UL  }, /*  5 */
+  { 24, (BigNumDigit)4738381338321616896UL  }, /*  6 */
+  { 22, (BigNumDigit)3909821048582988049UL  }, /*  7 */
+  { 21, (BigNumDigit)9223372036854775808UL  }, /*  8 */
+  { 20, (BigNumDigit)12157665459056928801UL }, /*  9 */
+  { 19, (BigNumDigit)10000000000000000000UL }, /* 10 */
+  { 18, (BigNumDigit)5559917313492231481UL  }, /* 11 */
+  { 17, (BigNumDigit)2218611106740436992UL  }, /* 12 */
+  { 17, (BigNumDigit)8650415919381337933UL  }, /* 13 */
+  { 16, (BigNumDigit)2177953337809371136UL  }, /* 14 */
+  { 16, (BigNumDigit)6568408355712890625UL  }, /* 15 */
+  { 15, (BigNumDigit)1152921504606846976UL  }, /* 16 */
+  { 15, (BigNumDigit)2862423051509815793UL  }, /* 17 */
+  { 15, (BigNumDigit)6746640616477458432UL  }, /* 18 */
+  { 15, (BigNumDigit)15181127029874798299UL }, /* 19 */
+  { 14, (BigNumDigit)1638400000000000000UL  }, /* 20 */
+  { 14, (BigNumDigit)3243919932521508681UL  }, /* 21 */
+  { 14, (BigNumDigit)6221821273427820544UL  }, /* 22 */
+  { 14, (BigNumDigit)11592836324538749809UL }, /* 23 */
+  { 13, (BigNumDigit)876488338465357824UL   }, /* 24 */
+  { 13, (BigNumDigit)1490116119384765625UL  }, /* 25 */
+  { 13, (BigNumDigit)2481152873203736576UL  }, /* 26 */
+  { 13, (BigNumDigit)4052555153018976267UL  }, /* 27 */
+  { 13, (BigNumDigit)6502111422497947648UL  }, /* 28 */
+  { 13, (BigNumDigit)10260628712958602189UL }, /* 29 */
+  { 13, (BigNumDigit)15943230000000000000UL }, /* 30 */
+  { 12, (BigNumDigit)787662783788549761UL   }, /* 31 */
+  { 12, (BigNumDigit)1152921504606846976UL  }, /* 32 */
+  { 12, (BigNumDigit)1667889514952984961UL  }, /* 33 */
+  { 12, (BigNumDigit)2386420683693101056UL  }, /* 34 */
+  { 12, (BigNumDigit)3379220508056640625UL  }, /* 35 */
+  { 12, (BigNumDigit)4738381338321616896UL  }  /* 36 */
+};
+#endif /* BZ_MAX_BASE_BUCKET_SIZE == 64 */
+
 /*
  * Returns two values:
  * - maxval: the maximal value in base 'base' that can fit in a BigNumDigit
@@ -1045,17 +1134,13 @@ BzMaxBase( BigNumDigit base, BigNumDigit* maxval, BigNumLength* digits );
 static	void
 BzMaxBase( BigNumDigit base, BigNumDigit* maxval, BigNumLength* digits )
 {
-	BigNumDigit  i;
-	BigNumDigit  v = (BigNumDigit)1;
-	BigNumLength b = 0;
+	if( (base < 2) || (base > BZ_MAX_BASE) ) {
+    /* should not happen, do not complain and fallback to base 10 */
+		base = (BigNumDigit)10;
+  }
 
-	for( i = BN_COMPLEMENT ; i >= base ; i /= (BigNumDigit)base ) {
-		++b;
-		v *= base;
-	}
-
-	*maxval = v;
-	*digits = b;
+	*maxval = BzPrintBase[base].MaxValue;
+	*digits = BzPrintBase[base].MaxDigits;
 }
 #endif	/* BZ_OPTIMIZE_PRINT */
 
