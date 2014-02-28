@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.c,v 1.104 2014/02/24 06:23:31 jullien Exp $
+ * $Id: bigz.c,v 1.105 2014/02/27 19:06:25 jullien Exp $
 */
 
 /*
@@ -1034,7 +1034,7 @@ BzIsOdd( const BigZ y )
 
 #if	defined( BZ_OPTIMIZE_PRINT )
 typedef struct {
-        unsigned int MaxDigits;
+        int MaxDigits;
         BigNumDigit  MaxValue;
 } BzPrintTable;
 
@@ -1134,13 +1134,13 @@ BzMaxBase( BigNumDigit base, BigNumDigit* maxval, BigNumLength* digits );
 static	void
 BzMaxBase( BigNumDigit base, BigNumDigit* maxval, BigNumLength* digits )
 {
-	if( (base < 2) || (base > BZ_MAX_BASE) ) {
-    /* should not happen, do not complain and fallback to base 10 */
-		base = (BigNumDigit)10;
-  }
+        if( (base < (BigNumDigit)2) || (base > (BigNumDigit)BZ_MAX_BASE) ) {
+                /* should not happen, do not complain and fallback to base 10 */
+                base = (BigNumDigit)10;
+        }
 
-	*maxval = BzPrintBase[base].MaxValue;
-	*digits = BzPrintBase[base].MaxDigits;
+	*maxval = (BigNumDigit)BzPrintBase[base].MaxValue;
+	*digits = (BigNumLength)BzPrintBase[base].MaxDigits;
 }
 #endif	/* BZ_OPTIMIZE_PRINT */
 

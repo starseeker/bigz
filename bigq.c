@@ -643,17 +643,17 @@ BqFromDouble( double num, BzInt maxd )
 double
 BqToDouble(const BigQ a)
 {
-  BzInt  in;
-  BzUInt id;
+	BzInt  in = (BzInt)0;
+	BzUInt id = (BzUInt)1;
 
-  if( BzToIntegerPointer(BqGetNumerator(a), &in)
-      && BzToUnsignedIntegerPointer(BqGetDenominator(a), &id) ) {
-    return (double)in / (double)id;
-  } else {
+	if( (BzToIntegerPointer(BqGetNumerator(a), &in) != 0)
+	    && (BzToUnsignedIntegerPointer(BqGetDenominator(a), &id) != 0) ) {
+		return (double)in / (double)id;
+	} else {
 #if defined(NAN)
-    return NAN;
+		return NAN;
 #else
-    return 0.0;
+		return 0.0;
 #endif
-  }
+	}
 }
