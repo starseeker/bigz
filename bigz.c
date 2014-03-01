@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.c,v 1.105 2014/02/27 19:06:25 jullien Exp $
+ * $Id: bigz.c,v 1.107 2014/03/01 07:18:16 jullien Exp $
 */
 
 /*
@@ -1040,50 +1040,50 @@ typedef struct {
 
 #if (BZ_MAX_BASE_BUCKET_SIZE == 32)
 static const BzPrintTable BzPrintBase[] = {
-  {  0, (BigNumDigit)0                      }, /*  0 */
-  {  0, (BigNumDigit)0                      }, /*  1 */
-  { 31, (BigNumDigit)2147483648             }, /*  2 */
-  { 20, (BigNumDigit)3486784401             }, /*  3 */
-  { 15, (BigNumDigit)1073741824             }, /*  4 */
-  { 13, (BigNumDigit)1220703125             }, /*  5 */
-  { 12, (BigNumDigit)2176782336             }, /*  6 */
-  { 11, (BigNumDigit)1977326743             }, /*  7 */
-  { 10, (BigNumDigit)1073741824             }, /*  8 */
-  { 10, (BigNumDigit)3486784401             }, /*  9 */
-  {  9, (BigNumDigit)1000000000             }, /* 10 */
-  {  9, (BigNumDigit)2357947691             }, /* 11 */
-  {  8, (BigNumDigit)429981696              }, /* 12 */
-  {  8, (BigNumDigit)815730721              }, /* 13 */
-  {  8, (BigNumDigit)1475789056             }, /* 14 */
-  {  8, (BigNumDigit)2562890625             }, /* 15 */
-  {  7, (BigNumDigit)268435456              }, /* 16 */
-  {  7, (BigNumDigit)410338673              }, /* 17 */
-  {  7, (BigNumDigit)612220032              }, /* 18 */
-  {  7, (BigNumDigit)893871739              }, /* 19 */
-  {  7, (BigNumDigit)1280000000             }, /* 20 */
-  {  7, (BigNumDigit)1801088541             }, /* 21 */
-  {  7, (BigNumDigit)2494357888             }, /* 22 */
-  {  7, (BigNumDigit)3404825447             }, /* 23 */
-  {  6, (BigNumDigit)191102976              }, /* 24 */
-  {  6, (BigNumDigit)244140625              }, /* 25 */
-  {  6, (BigNumDigit)308915776              }, /* 26 */
-  {  6, (BigNumDigit)387420489              }, /* 27 */
-  {  6, (BigNumDigit)481890304              }, /* 28 */
-  {  6, (BigNumDigit)594823321              }, /* 29 */
-  {  6, (BigNumDigit)729000000              }, /* 30 */
-  {  6, (BigNumDigit)887503681              }, /* 31 */
-  {  6, (BigNumDigit)1073741824             }, /* 32 */
-  {  6, (BigNumDigit)1291467969             }, /* 33 */
-  {  6, (BigNumDigit)1544804416             }, /* 34 */
-  {  6, (BigNumDigit)1838265625             }, /* 35 */
-  {  6, (BigNumDigit)2176782336             }  /* 36 */
+  {  0, (BigNumDigit)0U                     }, /*  0 */
+  {  0, (BigNumDigit)0U                     }, /*  1 */
+  { 31, (BigNumDigit)2147483648U            }, /*  2 */
+  { 20, (BigNumDigit)3486784401U            }, /*  3 */
+  { 15, (BigNumDigit)1073741824U            }, /*  4 */
+  { 13, (BigNumDigit)1220703125U            }, /*  5 */
+  { 12, (BigNumDigit)2176782336U            }, /*  6 */
+  { 11, (BigNumDigit)1977326743U            }, /*  7 */
+  { 10, (BigNumDigit)1073741824U            }, /*  8 */
+  { 10, (BigNumDigit)3486784401U            }, /*  9 */
+  {  9, (BigNumDigit)1000000000U            }, /* 10 */
+  {  9, (BigNumDigit)2357947691U            }, /* 11 */
+  {  8, (BigNumDigit)429981696U             }, /* 12 */
+  {  8, (BigNumDigit)815730721U             }, /* 13 */
+  {  8, (BigNumDigit)1475789056U            }, /* 14 */
+  {  8, (BigNumDigit)2562890625U            }, /* 15 */
+  {  7, (BigNumDigit)268435456U             }, /* 16 */
+  {  7, (BigNumDigit)410338673U             }, /* 17 */
+  {  7, (BigNumDigit)612220032U             }, /* 18 */
+  {  7, (BigNumDigit)893871739U             }, /* 19 */
+  {  7, (BigNumDigit)1280000000U            }, /* 20 */
+  {  7, (BigNumDigit)1801088541U            }, /* 21 */
+  {  7, (BigNumDigit)2494357888U            }, /* 22 */
+  {  7, (BigNumDigit)3404825447U            }, /* 23 */
+  {  6, (BigNumDigit)191102976U             }, /* 24 */
+  {  6, (BigNumDigit)244140625U             }, /* 25 */
+  {  6, (BigNumDigit)308915776U             }, /* 26 */
+  {  6, (BigNumDigit)387420489U             }, /* 27 */
+  {  6, (BigNumDigit)481890304U             }, /* 28 */
+  {  6, (BigNumDigit)594823321U             }, /* 29 */
+  {  6, (BigNumDigit)729000000U             }, /* 30 */
+  {  6, (BigNumDigit)887503681U             }, /* 31 */
+  {  6, (BigNumDigit)1073741824U            }, /* 32 */
+  {  6, (BigNumDigit)1291467969U            }, /* 33 */
+  {  6, (BigNumDigit)1544804416U            }, /* 34 */
+  {  6, (BigNumDigit)1838265625U            }, /* 35 */
+  {  6, (BigNumDigit)2176782336U            }  /* 36 */
 };
 #endif /* BZ_MAX_BASE_BUCKET_SIZE == 32 */
 
 #if (BZ_MAX_BASE_BUCKET_SIZE == 64)
 static const BzPrintTable BzPrintBase[] = {
-  {  0, (BigNumDigit)0                      }, /*  0 */
-  {  0, (BigNumDigit)0                      }, /*  1 */
+  {  0, (BigNumDigit)0UL                    }, /*  0 */
+  {  0, (BigNumDigit)0UL                    }, /*  1 */
   { 63, (BigNumDigit)9223372036854775808UL  }, /*  2 */
   { 40, (BigNumDigit)12157665459056928801UL }, /*  3 */
   { 31, (BigNumDigit)4611686018427387904UL  }, /*  4 */
@@ -1121,27 +1121,6 @@ static const BzPrintTable BzPrintBase[] = {
   { 12, (BigNumDigit)4738381338321616896UL  }  /* 36 */
 };
 #endif /* BZ_MAX_BASE_BUCKET_SIZE == 64 */
-
-/*
- * Returns two values:
- * - maxval: the maximal value in base 'base' that can fit in a BigNumDigit
- * - digits: the number of digits in base 'base' that can be printed.
- */
-
-static	void
-BzMaxBase( BigNumDigit base, BigNumDigit* maxval, BigNumLength* digits );
-
-static	void
-BzMaxBase( BigNumDigit base, BigNumDigit* maxval, BigNumLength* digits )
-{
-        if( (base < (BigNumDigit)2) || (base > (BigNumDigit)BZ_MAX_BASE) ) {
-                /* should not happen, do not complain and fallback to base 10 */
-                base = (BigNumDigit)10;
-        }
-
-	*maxval = (BigNumDigit)BzPrintBase[base].MaxValue;
-	*digits = (BigNumLength)BzPrintBase[base].MaxDigits;
-}
 #endif	/* BZ_OPTIMIZE_PRINT */
 
 BzChar *
@@ -1258,17 +1237,25 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 		*--s = (BzChar)'0';
 #if	defined( BZ_OPTIMIZE_PRINT )
 	} else	{
-		BigNumDigit  maxval = (BigNumDigit)BZ_MAX_BASE10;
-		BigNumLength digits = (BigNumLength)BZ_MAX_BASE10_DIGITS;
+		BigNumDigit  maxval;
+		BigNumLength digits;
 
-		if( base != (BigNumDigit)10 ) {
+		/*
+		 * Compute maxval and digits that can be used with
+		 * this base.
+		 */
+
+	        if( (base < (BigNumDigit)2)
+		    || (base > (BigNumDigit)BZ_MAX_BASE) ) {
 			/*
-			 * Compute maxval and digits that can be used with
-			 * this base. NOTE: this not optimal! We should compute
-			 * a table for this.
+			 * should not happen, do not complain and fallback
+			 * to base 10.
 			 */
-			BzMaxBase( base, &maxval, &digits );
+			base = (BigNumDigit)10;
 		}
+
+		maxval = (BigNumDigit)BzPrintBase[base].MaxValue;
+		digits = (BigNumLength)BzPrintBase[base].MaxDigits;
 
 		/*
 		 * This optimization makes BigZ output 10 to 20x faster.

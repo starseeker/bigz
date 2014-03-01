@@ -1,7 +1,7 @@
 ;;;; -*-Mode: LISP; Package:LISP; Base:10; Syntax:ISLISP -*-
 ;;;; Title:     server.lsp
 ;;;; Author:    C. Jullien
-;;;; CVS:       $Id: maxbase10.lsp,v 1.6 2014/02/27 19:06:25 jullien Exp $
+;;;; CVS:       $Id: maxbase10.lsp,v 1.8 2014/03/01 07:18:16 jullien Exp $
 
 (defun maxbase10 (bits)
    (do ((i 1 (1+ i))
@@ -24,11 +24,13 @@
    (format t "        BigNumDigit MaxValue;~%")
    (format t "} BzPrintTable;~%")
    (dolist (bits '(32 64))
-      (format t "~%#if (BZ_MAX_BASE_BUCKET_SIZE == ~a)~%" bits)
-      (format t "static const BzPrintTable BzPrintBase[] = {~%")
-      (format t "  {  0, (BigNumDigit)0~44t}, /*  0 */~%")
-      (format t "  {  0, (BigNumDigit)0~44t}, /*  1 */~%")
-      (let ((suffix (if (= bits 32) "" "UL")))
+      (let ((suffix (if (= bits 32)
+                        "U"
+                        "UL")))
+           (format t "~%#if (BZ_MAX_BASE_BUCKET_SIZE == ~a)~%" bits)
+           (format t "static const BzPrintTable BzPrintBase[] = {~%")
+           (format t "  {  0, (BigNumDigit)0~a~44t}, /*  0 */~%" suffix)
+           (format t "  {  0, (BigNumDigit)0~a~44t}, /*  1 */~%" suffix)
            (do ((base 2 (1+ base)))
                ((> base 36))
                (do ((i 1 (1+ i))
