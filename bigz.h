@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.h,v 1.69 2014/02/27 19:06:25 jullien Exp $
+ * $Id: bigz.h,v 1.70 2014/03/01 16:08:06 jullien Exp $
  */
 
 /*
@@ -280,6 +280,7 @@ extern BigZ	    BzAsh(const BigZ y, int n);
 extern BigZ	    BzSqrt(const BigZ z);
 extern BigZ	    BzLcm(const BigZ y, const BigZ z);
 extern BigZ	    BzGcd(const BigZ y, const BigZ z);
+extern BigZ	    BzRandomR(const BigZ n, BigNumDigit *seed);
 extern BigZ	    BzRandom(const BigZ n);
 extern void	    BzSetRandom(const BigZ n);
 

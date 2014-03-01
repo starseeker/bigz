@@ -1,5 +1,5 @@
 #if     !defined( lint )
-static  const char rcsid[] = "$Id: tCBignum.cpp,v 1.22 2014/02/24 06:23:31 jullien Exp $";
+static  const char rcsid[] = "$Id: tCBignum.cpp,v 1.23 2014/03/01 16:08:06 jullien Exp $";
 #endif
 
 //
@@ -175,11 +175,17 @@ main()
 #if 1
     CBignum y(1);
     y <<= 80;
-    std::cout << std::setw(32) << std::setfill('.')
+    std::cout << std::setw(32) << std::setfill('.') << std::showpos
+              << std::dec << -y << std::endl;
+    std::cout << std::setw(32) << std::setfill('.') << std::showpos
               << std::dec << y << std::endl;
     std::cout << std::setw(32) << std::setfill('.')
               << std::hex << y << std::endl;
     std::cout << std::setw(32) << std::setfill('.')
+              << std::hex << std::showbase << y << std::endl;
+    std::cout << std::setw(32) << std::setfill('.')
+              << std::hex << std::showbase << -y << std::endl;
+    std::cout << std::setw(32) << std::setfill('.') << std::showpos
               << std::oct << y << std::endl;
     std::cout << std::setw(32) << std::setfill('.')
               << std::dec << r1 << std::endl;

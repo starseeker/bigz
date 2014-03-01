@@ -1,6 +1,6 @@
 /*
- * $Id: bign.h,v 1.32 2014/02/16 18:49:23 jullien Exp $
-*/
+ * $Id: bign.h,v 1.33 2014/03/01 16:08:06 jullien Exp $
+ */
 
 /*
  * Simplified BSD License

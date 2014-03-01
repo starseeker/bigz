@@ -1,5 +1,5 @@
 #if	!defined( lint )
-static	const char rcsid[] = "$Id: CBignum.cpp,v 1.12 2014/02/24 06:23:31 jullien Exp $";
+static	const char rcsid[] = "$Id: CBignum.cpp,v 1.13 2014/03/01 16:08:06 jullien Exp $";
 #endif
 
 /*
@@ -60,30 +60,49 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
 
   std::ios_base::fmtflags ioflags = os.flags();
   if (ioflags & std::ios::hex) {
+    bool showBase = ((ioflags & std::ios::showbase) != 0);
     res = BzToString(bn.m_bz, 16, 0);
-    size_t len = strlen(res) + 2;
+    size_t len = strlen(res) + (showBase ? 2 : 0);
     if (len < (size_t)os.width()) {
      const std::string pad((size_t)os.width() - len, os.fill());
      os << std::setw(0) << pad;
     }
-    os << "0x";
+    if (res[0] == '-') {
+      os << "-";
+    }
+    if (showBase) {
+      os << "0x";
+    }
   } else if (ioflags & std::ios::oct) {
+    bool showBase = ((ioflags & std::ios::showbase) != 0);
     res = BzToString(bn.m_bz, 8, 0);
-    size_t len = strlen(res) + 1;
+    size_t len = strlen(res) + (showBase ? 1 : 0);
     if (len < (size_t)os.width()) {
      const std::string pad((size_t)os.width() - len, os.fill());
      os << std::setw(0) << pad;
     }
-    os << "0";
+    if (res[0] == '-') {
+      os << "-";
+    }
+    if (showBase) {
+      os << "0";
+    }
   } else {
-    res = BzToString(bn.m_bz, 10, 0);
+    res = BzToString(bn.m_bz, 10, (ioflags && std::ios::showpos));
     size_t len = strlen(res);
     if (len < (size_t)os.width()) {
      const std::string pad((size_t)os.width() - len, os.fill());
      os << std::setw(0) << pad;
     }
+    if (res[0] == '-') {
+      os << "-";
+    }
   }
-  os << res;
+  if (res[0] == '-') {
+     os << &res[1];
+  } else {
+    os << res;
+  }
   BzFreeString((void *)res);
   return os;
 }

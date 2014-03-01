@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.c,v 1.107 2014/03/01 07:18:16 jullien Exp $
+ * $Id: bigz.c,v 1.108 2014/03/01 16:08:06 jullien Exp $
 */
 
 /*
@@ -2320,8 +2320,38 @@ BzGcd( const BigZ y, const BigZ z )
 	}
 }
 
+/*
+ * Non-MT random internal state.
+ */
+static BigNumDigit BzNonMTSeed = (BigNumDigit)1;
+
+static BigNumDigit BzInternalRandom( BigNumDigit *seed );
+
+static BigNumDigit
+BzInternalRandom( BigNumDigit *seed )
+{
+	if( seed == (BigNumDigit*)0 ) {
+		/*
+		 * Should not happen. Fallback to non-MT seed state.
+		 */
+		seed = &BzNonMTSeed;
+	}
+
+	/*
+	 * http://en.wikipedia.org/wiki/Linear_congruential_generator
+	 * a - 1 is divisible by all prime factors of m.
+	 * (In our case m = 2^32, size of the int, so m has only one prime
+	 * factor = 2) 
+	 * a - 1 is a multiple of 4 if m is a multiple of 4.
+	 * (32768 is multiple of 4, and 1103515244 too)
+	 */
+
+	*seed = *seed * 1103515245 + 12345;
+	return (*seed / 65536) % 32768;
+}
+
 BigZ
-BzRandom( const BigZ n )
+BzRandomR( const BigZ n, BigNumDigit *seed )
 {
 	BigZ res;
 	BigZ r;
@@ -2329,12 +2359,9 @@ BzRandom( const BigZ n )
 	BigNumLength i;
 
 	/*
-	 * Algo: make a copy of n and call rand() to replace all its bits.
+	 * Algo: make a copy of n and call BzInternalRandom() to replace all
+	 * its bits (all its BigNumDigit).
 	 * Assume any bit has an equiprobable [0-1] value.
-	 *
-	 * NOTE: since rand() returns integer value between 0 and RAND_MAX
-	 * which may be much smaller that BigNumDigit (like 16bit value),
-	 * we loop until BigNumDigit is filled.
 	 */
 
 	if( (r = BzCopy( n )) == BZNULL) {
@@ -2348,7 +2375,7 @@ BzRandom( const BigZ n )
 		BigNumDigit  *d = BzToBn( r ) + i;
 
 		for( j = 0 ; j < (BigNumLength)sizeof( d ) ; ++j ) {
-			BigNumDigit chunk = ((BigNumDigit)rand() & 0xff);
+			BigNumDigit chunk = (BzInternalRandom( seed ) & 0xff);
 			*d += (chunk << (j * BN_BYTE_SIZE));
 		}
 	}
@@ -2361,6 +2388,16 @@ BzRandom( const BigZ n )
 	BzFree( r );
 
 	return( res );
+}
+
+BigZ
+BzRandom( const BigZ n )
+{
+	/*
+	 * Non-MT safe version, use global internal state.
+	 */
+
+	return BzRandomR( n, &BzNonMTSeed );
 }
 
 void
@@ -2413,5 +2450,5 @@ BzSetRandom( const BigZ n )
 	 * Set random.
 	 */
 
-	srand( seed );
+	BzNonMTSeed = (BigNumDigit)seed;
 }

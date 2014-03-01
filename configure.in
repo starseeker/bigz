@@ -1,7 +1,7 @@
 #
 # Autoconf script for OpenLisp.
 # By Christian Jullien (jullien@eligis.com)
-# $Id: configure.in,v 1.14 2014/02/17 18:52:34 jullien Exp $
+# $Id: configure.in,v 1.15 2014/03/01 16:08:06 jullien Exp $
 #
 # use autoconf-2.68 (works also with autoconf-2.13)
 
@@ -87,8 +87,6 @@ AC_CHECK_FUNC([clock_gettime],,   [AC_CHECK_LIB(rt,     clock_gettime)])
 # Checks for header files.
 
 AC_HEADER_STDC
-
-AC_CHECK_HEADERS(stdlib.h)
 
 # Checks for typedefs, structures, and compiler characteristics.
 
