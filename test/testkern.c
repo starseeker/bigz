@@ -97,10 +97,10 @@ static struct timespec _stop_time;
  */
 
 struct testenv {
-	char	*name;		/* function name	*/
+	const char	*name;		/* function name	*/
 	int	flag;		/* continue flag	*/
 	char	hist[2048];	/* current expression	*/
-	char	*depend;	/* dependant list	*/
+	const char	*depend;	/* dependant list	*/
 };
 
 typedef struct testenv TestEnv;
@@ -111,14 +111,14 @@ extern void	ErrorPrint(TestEnv *e);
 extern void	ResetTest(int n);
 extern int	CheckSubRange(int x, int nd, int nl);
 extern int	Check(int n);
-extern void	RangeNumberPrint(char *s, BigNum n, int nd, int nl);
-extern void	ShowSubNumber(int x, char *n, int nd, int nl);
-extern void	ShowOutRange(int x, char *n, int nd, int nl);
+extern void	RangeNumberPrint(const char *s, BigNum n, int nd, int nl);
+extern void	ShowSubNumber(int x, const char *n, int nd, int nl);
+extern void	ShowOutRange(int x, const char *n, int nd, int nl);
 extern int	ShowDiff0(TestEnv *e, int r1, int r2);
-extern int	ShowDiff1(TestEnv *e, int r1, int r2, char *n, int nd, int nl);
-extern int	ShowDiff2(TestEnv *e, int r1, int r2, char *n, int nd, int nl, char *m, int md, int ml);
-extern int	ShowDiff3(TestEnv *e, int r1, int r2, char *n, int nd, int nl, char *m, int md, int ml, char *o, int od, int ol);
-extern int	ShowDiff4(TestEnv *e, int r1, int r2, char *n, int nd, int nl, char *m, int md, int ml, char *o, int od, int ol, char *p, int pd, int pl);
+extern int	ShowDiff1(TestEnv *e, int r1, int r2, const char *n, int nd, int nl);
+extern int	ShowDiff2(TestEnv *e, int r1, int r2, const char *n, int nd, int nl, const char *m, int md, int ml);
+extern int	ShowDiff3(TestEnv *e, int r1, int r2, const char *n, int nd, int nl, const char *m, int md, int ml, const char *o, int od, int ol);
+extern int	ShowDiff4(TestEnv *e, int r1, int r2, const char *n, int nd, int nl, const char *m, int md, int ml, const char *o, int od, int ol, const char *p, int pd, int pl);
 extern int	Generique(TestEnv *e);
 extern void	___BnSetToZero___(BigNum n, int nd, int nl);
 extern int	TestBnSetToZero(TestEnv *e);
@@ -183,7 +183,7 @@ int TestCount;
 
 typedef struct {
 	int	(*TestFnt)(TestEnv *);
-	char	*NameFnt;
+	const char	*NameFnt;
 } TESTONE;
 
 extern	TESTONE AllTest[];
@@ -263,7 +263,7 @@ Check(int n)
 }
 
 void
-RangeNumberPrint(char *s, BigNum n, int nd, int nl)
+RangeNumberPrint(const char *s, BigNum n, int nd, int nl)
 {
 	int	first = 1;
 	int	bnsize = sizeof(BigNumDigit);
@@ -297,7 +297,7 @@ RangeNumberPrint(char *s, BigNum n, int nd, int nl)
 }
 
 void
-ShowSubNumber(int x, char *n, int nd, int nl)
+ShowSubNumber(int x, const char *n, int nd, int nl)
 {
 	printf("[%s, %d, %d] =	", n, nd, nl);
 	RangeNumberPrint("", RN(x), nd, nl);
@@ -307,10 +307,10 @@ ShowSubNumber(int x, char *n, int nd, int nl)
 }	}
 
 
-char *msg = "---- Modification Out of Range of number ";
+const char *msg = "---- Modification Out of Range of number ";
 
 void
-ShowOutRange(int x, char *n, int nd, int nl)
+ShowOutRange(int x, const char *n, int nd, int nl)
 {
 	int	i   = 0;
 	int	bol = 0;
@@ -336,7 +336,7 @@ ShowDiff0(TestEnv *e, int r1, int r2)
 }
 
 int
-ShowDiff1(TestEnv *e, int r1, int r2, char *n, int nd, int nl)
+ShowDiff1(TestEnv *e, int r1, int r2, const char *n, int nd, int nl)
 {
 	ErrorPrint(e);
 	if(r1 != r2)
@@ -347,7 +347,7 @@ ShowDiff1(TestEnv *e, int r1, int r2, char *n, int nd, int nl)
 }
 
 int
-ShowDiff2(TestEnv *e, int r1, int r2, char *n, int nd, int nl, char *m, int md, int ml)
+ShowDiff2(TestEnv *e, int r1, int r2, const char *n, int nd, int nl, const char *m, int md, int ml)
 {
 	ErrorPrint(e);
 	if(r1 != r2)
@@ -360,7 +360,7 @@ ShowDiff2(TestEnv *e, int r1, int r2, char *n, int nd, int nl, char *m, int md, 
 }
 
 int
-ShowDiff3(TestEnv *e, int r1, int r2, char *n, int nd, int nl, char *m, int md, int ml, char *o, int od, int ol)
+ShowDiff3(TestEnv *e, int r1, int r2, const char *n, int nd, int nl, const char *m, int md, int ml, const char *o, int od, int ol)
 {
 	ErrorPrint(e);
 	if(r1 != r2)
@@ -375,7 +375,7 @@ ShowDiff3(TestEnv *e, int r1, int r2, char *n, int nd, int nl, char *m, int md, 
 }
 
 int
-ShowDiff4(TestEnv *e, int r1, int r2, char *n, int nd, int nl, char *m, int md, int ml, char *o, int od, int ol, char *p, int pd, int pl)
+ShowDiff4(TestEnv *e, int r1, int r2, const char *n, int nd, int nl, const char *m, int md, int ml, const char *o, int od, int ol, const char *p, int pd, int pl)
 {
 	ErrorPrint(e);
 	if(r1 != r2)
