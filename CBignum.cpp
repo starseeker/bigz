@@ -59,13 +59,18 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
   const char* res;
 
   std::ios_base::fmtflags ioflags = os.flags();
+  bool showBase = ((ioflags & std::ios::showbase) != 0);
+  size_t len;
+  size_t width = (size_t)os.width();
+  os << std::setw(0);
+
   if (ioflags & std::ios::hex) {
-    bool showBase = ((ioflags & std::ios::showbase) != 0);
+    // hexadecimal output
     res = BzToString(bn.m_bz, 16, 0);
-    size_t len = strlen(res) + (showBase ? 2 : 0);
-    if (len < (size_t)os.width()) {
-     const std::string pad((size_t)os.width() - len, os.fill());
-     os << std::setw(0) << pad;
+    len = strlen(res) + (showBase ? 2 : 0);
+    if ((len < width) && ((ioflags & std::ios::left) == 0)) {
+     const std::string pad(width - len, os.fill());
+     os << pad;
     }
     if (res[0] == '-') {
       os << "-";
@@ -73,13 +78,22 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
     if (showBase) {
       os << "0x";
     }
+    if (res[0] == '-') {
+      os << &res[1];
+    } else {
+      os << res;
+    }
+    if ((len < width) && ((ioflags & std::ios::left) != 0)) {
+      const std::string pad(width - len, os.fill());
+      os << pad;
+    }
   } else if (ioflags & std::ios::oct) {
-    bool showBase = ((ioflags & std::ios::showbase) != 0);
+    // octal output
     res = BzToString(bn.m_bz, 8, 0);
-    size_t len = strlen(res) + (showBase ? 1 : 0);
-    if (len < (size_t)os.width()) {
-     const std::string pad((size_t)os.width() - len, os.fill());
-     os << std::setw(0) << pad;
+    len = strlen(res) + (showBase ? 1 : 0);
+    if ((len < width) && ((ioflags & std::ios::left) == 0)) {
+      const std::string pad(width - len, os.fill());
+      os << pad;
     }
     if (res[0] == '-') {
       os << "-";
@@ -87,23 +101,32 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
     if (showBase) {
       os << "0";
     }
-  } else {
-    res = BzToString(bn.m_bz, 10, (ioflags && std::ios::showpos));
-    size_t len = strlen(res);
-    if (len < (size_t)os.width()) {
-     const std::string pad((size_t)os.width() - len, os.fill());
-     os << std::setw(0) << pad;
-    }
     if (res[0] == '-') {
-      os << "-";
+      os << &res[1];
+    } else {
+      os << res;
     }
-  }
-  if (res[0] == '-') {
-     os << &res[1];
+    if ((len < width) && ((ioflags & std::ios::left) != 0)) {
+      const std::string pad(width - len, os.fill());
+      os << pad;
+    }
   } else {
-    os << res;
+    // decimal output
+    res = BzToString(bn.m_bz, 10, (ioflags && std::ios::showpos));
+    len = strlen(res);
+    if (len < width) {
+      const std::string pad(width - len, os.fill());
+      if ((ioflags & std::ios::left) == 0) {
+        os << pad << res;
+      } else {
+        os << res << pad;
+      }
+    } else {
+      os << res;
+    }
   }
   BzFreeString((void *)res);
+  os.flags(ioflags);
   return os;
 }
 

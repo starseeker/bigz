@@ -175,18 +175,27 @@ main()
 #if 1
     CBignum y(1);
     y <<= 80;
+    // dec
     std::cout << std::setw(32) << std::setfill('.') << std::showpos
               << std::dec << -y << std::endl;
-    std::cout << std::setw(32) << std::setfill('.') << std::showpos
+    std::cout << std::setw(32) << std::setfill('.')
+              << std::showpos
               << std::dec << y << std::endl;
+    // hex
     std::cout << std::setw(32) << std::setfill('.')
               << std::hex << y << std::endl;
     std::cout << std::setw(32) << std::setfill('.')
+              << std::showpos << std::right
               << std::hex << std::showbase << y << std::endl;
     std::cout << std::setw(32) << std::setfill('.')
               << std::hex << std::showbase << -y << std::endl;
+    std::cout << std::setw(32) << std::setfill('.')
+              << std::showpos << std::left
+              << std::hex << std::showbase << y << std::right << std::endl;
+    // oct
     std::cout << std::setw(32) << std::setfill('.') << std::showpos
               << std::oct << y << std::endl;
+    // rational
     std::cout << std::setw(32) << std::setfill('.')
               << std::dec << r1 << std::endl;
 #endif

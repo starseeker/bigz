@@ -45,24 +45,37 @@ static	const char rcsid[] = "$Id: CRational.cpp,v 1.9 2014/02/16 17:14:10 jullie
 namespace rational {
 
 CRational::operator std::string () const throw() {
- const char* s = BqToString(m_q, 0);
- std::string res(s);
- BzFreeString((void *)s);
- return res;
+  const char* s = BqToString(m_q, 0);
+  std::string res(s);
+  BzFreeString((void *)s);
+  return res;
 }
 
 /**
  * Print CRational only in base 10, honnor setw and setfill options.
  */
 std::ostream& operator<<(std::ostream& os, const CRational& q) {
-  BzChar *s = BqToString(q.m_q, 0);
-  size_t len = strlen((char *)s);
-  if (len < (size_t)os.width()) {
-   const std::string pad((size_t)os.width() - len, os.fill());
-   os << std::setw(0) << pad;
+  BzChar* res = BqToString(q.m_q, 0);
+
+  std::ios_base::fmtflags ioflags = os.flags();
+  size_t len = strlen(res);
+
+  size_t width = (size_t)os.width();
+  os << std::setw(0);
+
+  if (len < width) {
+    const std::string pad(width - len, os.fill());
+    if ((ioflags & std::ios::left) == 0) {
+      os << pad << res;
+    } else {
+      os << res << pad;
+    }
+  } else {
+    os << res;
   }
-  os << s;
-  BzFreeString((void *)s);
+
+  BzFreeString((void *)res);
+  os.flags(ioflags);
   return os;
 }
 

@@ -155,52 +155,6 @@ typedef	unsigned int			BzUInt;
 
 #define	BZ_OPTIMIZE_PRINT
 
-#if	defined( BZ_OPTIMIZE_PRINT )
-/*
- *	Values should be portable for BigNumDigit size >= 32bit
- *	64bit ports may increase the two values to optimize even more.
- */
-#if	defined( _WIN64 ) || (defined( SIZEOF_LONG ) && (SIZEOF_LONG == 8))
-#if	!defined( BZ_MAX_BASE10 )
-/*
- *	Max power of 10 to fit in a BigNumDigit (generally machine word).
- */
-#define	BZ_MAX_BASE10		((BigNumDigit)10000000000000000000UL)
-#endif	/* BZ_MAX_BASE10 */
-#if	!defined( BZ_MAX_BASE_BUCKET_SIZE )
-/*
- *	size of bucket
- */
-#define	BZ_MAX_BASE_BUCKET_SIZE 64
-#endif	/* BZ_MAX_BASE_BUCKET_SIZE */
-#if	!defined( BZ_MAX_BASE10_DIGITS )
-/*
- *	Max number of digits in base 10 that fit in a BigNumDigit.
- */
-#define	BZ_MAX_BASE10_DIGITS	19
-#endif	/* BZ_MAX_BASE10_DIGITS */
-#else	/* _WIN64 */
-#if	!defined( BZ_MAX_BASE10 )
-/*
- *	Max power of 10 to fix in a BigNumDigit (generally machine word).
- */
-#define	BZ_MAX_BASE10		((BigNumDigit)1000000000)
-#endif	/* BZ_MAX_BASE10 */
-#if	!defined( BZ_MAX_BASE_BUCKET_SIZE )
-/*
- *	size of bucket
- */
-#define	BZ_MAX_BASE_BUCKET_SIZE 32
-#endif	/* BZ_MAX_BASE_BUCKET_SIZE */
-#if	!defined( BZ_MAX_BASE10_DIGITS )
-/*
- *	Max number of digits in base 10 that fit in a BigNumDigit.
- */
-#define	BZ_MAX_BASE10_DIGITS	9
-#endif	/* BZ_MAX_BASE10_DIGITS */
-#endif	/* _WIN64 */
-#endif	/* BZ_OPTIMIZE_PRINT */
-
 #if	!defined( BZ_BUCKET_SIZE )
 #if	defined( _WIN64 ) || (defined( SIZEOF_LONG ) && (SIZEOF_LONG == 8))
 #define	BZ_BUCKET_SIZE 64

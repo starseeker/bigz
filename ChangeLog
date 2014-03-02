@@ -1,5 +1,8 @@
 Change log
 
+2014/03/01: Better C++ iomanip support (compatible with plain C++ int).
+2014/03/01: Bignum uses is own rand() implementation. New BzRandomR().
+2014/02/28: Print optimization reads contants for base [2-36] in a table.
 2014/02/23: Change version to 1.5.3.
 2014/02/22: tCRational.cpp is removed, now part of tCBignum.cpp.
 2014/02/16: Add support for hex/dec/oct and setw/setfill C++ ios.

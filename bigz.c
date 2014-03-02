@@ -1038,7 +1038,7 @@ typedef struct {
         BigNumDigit  MaxValue;
 } BzPrintTable;
 
-#if (BZ_MAX_BASE_BUCKET_SIZE == 32)
+#if (BZ_BUCKET_SIZE == 32)
 static const BzPrintTable BzPrintBase[] = {
   {  0, (BigNumDigit)0U                     }, /*  0 */
   {  0, (BigNumDigit)0U                     }, /*  1 */
@@ -1078,9 +1078,9 @@ static const BzPrintTable BzPrintBase[] = {
   {  6, (BigNumDigit)1838265625U            }, /* 35 */
   {  6, (BigNumDigit)2176782336U            }  /* 36 */
 };
-#endif /* BZ_MAX_BASE_BUCKET_SIZE == 32 */
+#endif /* BZ_BUCKET_SIZE == 32 */
 
-#if (BZ_MAX_BASE_BUCKET_SIZE == 64)
+#if (BZ_BUCKET_SIZE == 64)
 static const BzPrintTable BzPrintBase[] = {
   {  0, (BigNumDigit)0UL                    }, /*  0 */
   {  0, (BigNumDigit)0UL                    }, /*  1 */
@@ -1120,7 +1120,7 @@ static const BzPrintTable BzPrintBase[] = {
   { 12, (BigNumDigit)3379220508056640625UL  }, /* 35 */
   { 12, (BigNumDigit)4738381338321616896UL  }  /* 36 */
 };
-#endif /* BZ_MAX_BASE_BUCKET_SIZE == 64 */
+#endif /* BZ_BUCKET_SIZE == 64 */
 #endif	/* BZ_OPTIMIZE_PRINT */
 
 BzChar *
