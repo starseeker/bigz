@@ -67,8 +67,12 @@
    nil)
 
 #-openlisp
-(defun bignump (x)
+(defun big-number-p (x)
    (or (> x #x7fffffff) (< x #x-7fffffff)))
+
+#+openlisp
+(defun big-number-p (x)
+   (bignump x))
 
 #-openlisp
 (defun reciprocal (x)
@@ -93,12 +97,8 @@
    (floor x y))
 
 #-openlisp
-(defun string-append (&rest l)
-   (apply #'string-concat l))
-
-#-openlisp
-(defmacro defglobal (x val)
-   `(defconstant ,x ,val))
+(defmacro string-append (&rest l)
+   `(concatenate 'string ,@l))
 
 #-openlisp
 (defmacro dynamic-let (&rest l)
@@ -109,7 +109,7 @@
        x
        (string-downcase x)))
 
-(defglobal *header* (list
+(defconstant *header* (list
    ";;;; -*-Mode:LISP; Package:LISP; Base:10; Syntax:ISLISP -*-~%"
    ";;;; Title:     testbign.lsp~%"
    ";;;; Author:    C. Jullien~%"
@@ -158,8 +158,18 @@
    (format t "~%(test-serie \"Bign - ~a\")~40t()~%~%"
            (string-downcase fn)))
 
+(defun get-internal-function (f)
+   ;; avoid name conflic with some CLtL implementations (e.g. CCL)
+   (case f
+         ((bignump)
+          'big-number-p)
+         (t
+          f)))
+         
+
 (defun call1 (f x)
-   (let ((res (funcall (symbol-function f) (getvalue x))))
+   (let ((res (funcall (symbol-function (get-internal-function f))
+                       (getvalue x))))
         (when (and (integerp res)
                    (/= res 99999999)) ;; make isqrt result looks better
               (setf res (lowercase (format () "#x~x" res))))
@@ -292,7 +302,7 @@
             (setf l (cons (logbitp i x) l)))
         (dolist (c l)
            (format t (if c "1" "0")))
-        (format t "\"~%" x)))
+        (format t "\"~%")))
 
 (defun test-random (x res)
    (setq x (getvalue x))
