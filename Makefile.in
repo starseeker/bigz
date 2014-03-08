@@ -119,15 +119,11 @@ lint:
 		-exportlocal		\
 		-infloopsuncon		\
 		-namechecks		\
-		-nullderef 		\
-		-nullpass 		\
 		-nullret 		\
-		-observertrans		\
-		-realcompare 		\
 		-retalias 		\
 		-statictrans 		\
+		-observertrans		\
 		-temptrans 		\
-		-usedef 		\
 	        bigz.c bign.c
 	@splint +quiet			\
 		-checks 		\

@@ -207,7 +207,7 @@ extern BigNumBool   BzIsEven(const BigZ y) BZ_PURE_FUNCTION;
 extern BigNumBool   BzIsOdd(const BigZ y) BZ_PURE_FUNCTION;
 extern BzChar *	    BzToString(const BigZ z, BigNumDigit base, int sign);
 extern size_t       BzStrLen( const BzChar *s ) BN_PURE_FUNCTION;
-extern BzChar *	    BzToStringBuffer(const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t *len);
+extern BzChar *	    BzToStringBuffer(const BigZ z, BigNumDigit base, int sign, /*@null@*/ BzChar *buf, /*@null@*/ size_t *len);
 extern BigZ	    BzFromString(const BzChar *s, BigNumDigit base, BzStrFlag flag);
 extern BigZ	    BzFromInteger(BzInt i);
 extern BigZ	    BzFromUnsignedInteger(BzUInt i);

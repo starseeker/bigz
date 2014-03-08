@@ -741,6 +741,15 @@ BzTruncate( const BigZ y, const BigZ z )
 	BigNumLength	ql;
 
 	q  = BzDivide( y, z, &r );
+
+	if( r == BZNULL ) {
+		/*
+		 * This should never happend.
+		 */
+		BzFree( q );
+		return( BZNULL );
+	}
+
 	ql = BzNumDigits( q );
 
 	if( BzGetSign( q ) == BZ_MINUS && BzGetSign( r ) != BZ_ZERO ) {
@@ -800,6 +809,14 @@ BzCeiling( const BigZ y, const BigZ z )
 		return( BZNULL );
 	}
 
+	if( r == BZNULL ) {
+		/*
+		 * This should never happend.
+		 */
+		BzFree( q );
+		return( BZNULL );
+	}
+
 	ql = BzNumDigits( q );
 
 	if( BzGetSign( q ) == BZ_PLUS && BzGetSign( r ) != BZ_ZERO ) {
@@ -842,6 +859,14 @@ BzRound( const BigZ y, const BigZ z )
 	BigNumLength	ql;
 
 	if( (q = BzDivide( y, z, &r )) == BZNULL ) {
+		return( BZNULL );
+	}
+
+	if( r == BZNULL ) {
+		/*
+		 * This should never happend.
+		 */
+		BzFree( q );
 		return( BZNULL );
 	}
 
@@ -989,6 +1014,13 @@ BzRem( const BigZ y, const BigZ z )
 
 	if( (q = BzDivide( y, z, &r )) != BZNULL ) {
 		BzFree( q );
+
+		if( r == BZNULL ) {
+			/*
+			 * This should never happend.
+			 */
+			return( BZNULL );
+		}
 
 		if( BzGetSign( r ) == BZ_ZERO ) {
 			return( r );
@@ -1162,8 +1194,6 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 
 	BigZ		y;
 	BigZ		q;
-	BigZ		v;
-	BigNumDigit	r;
 	BigNumLength	zl;
 	BigNumLength	sl;
 	BzChar *	s;
@@ -1231,36 +1261,26 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 	 * Divide Z by base repeatedly; successive digits given by remainders
 	 */
 
-	*--s = (BzChar)'\0';
+	*s = (BzChar)'\0';
 
 	if( BzGetSign( z ) == BZ_ZERO ) {
 		*--s = (BzChar)'0';
 #if	defined( BZ_OPTIMIZE_PRINT )
 	} else	{
-		BigNumDigit  maxval;
-		BigNumLength digits;
-
 		/*
 		 * Compute maxval and digits that can be used with
 		 * this base.
 		 */
 
-	        if( (base < (BigNumDigit)2)
-		    || (base > (BigNumDigit)BZ_MAX_BASE) ) {
-			/*
-			 * should not happen, do not complain and fallback
-			 * to base 10.
-			 */
-			base = (BigNumDigit)10;
-		}
-
-		maxval = (BigNumDigit)BzPrintBase[base].MaxValue;
-		digits = (BigNumLength)BzPrintBase[base].MaxDigits;
+		BigNumDigit  maxval = (BigNumDigit)BzPrintBase[base].MaxValue;
+		BigNumLength digits = (BigNumLength)BzPrintBase[base].MaxDigits;
 
 		/*
 		 * This optimization makes BigZ output 10 to 20x faster.
 		 */
 		do {
+			BigZ		v;
+			BigNumDigit	r;
 			/*
 			 * compute: y div maxval => q,
 			 * returns r = y mod maxval
@@ -1307,6 +1327,8 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 	}
 #else	/* BZ_OPTIMIZE_PRINT */
 	} else	do {
+		BigZ		v;
+		BigNumDigit	r;
 		/* compute: y div base => q, returns r = y mod base */
 
 		r = BnnDivideDigit( BzToBn( q ), BzToBn( y ), zl, base );
@@ -1396,7 +1418,6 @@ BzFromString( const BzChar *s, BigNumDigit base, BzStrFlag flag )
 
 	BigZ		z;
 	BigZ		p;
-	BigZ		v;
 	BzSign		sign;
 	BigNumLength 	zl;
 
@@ -1448,6 +1469,7 @@ BzFromString( const BzChar *s, BigNumDigit base, BzStrFlag flag )
 	 */
 
 	for( ; *s != (BzChar)'\000' ;  s++ ) {
+		BigZ	    v;
 		int	    val  = CTOI( *s );
 		BigNumDigit next = (BigNumDigit)val;
 
@@ -2288,7 +2310,6 @@ BzGcd( const BigZ y, const BigZ z )
 	} else	{
 		BigZ yc;
 		BigZ zc;
-		BigZ tmp;
 
 		if( (yc = BzAbs( y )) == BZNULL ) {
 			/* a fresh copy failed */
@@ -2302,7 +2323,7 @@ BzGcd( const BigZ y, const BigZ z )
 		}
 
 		while( BzGetSign( zc ) != BZ_ZERO ) {
-			tmp = BzMod( yc, zc );
+			BigZ tmp = BzMod( yc, zc );
 			BzFree( yc );
 
 			if( tmp == BZNULL ) {
