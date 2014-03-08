@@ -1,7 +1,7 @@
 ;;;; -*-Mode: LISP; Package:LISP; Base:10; Syntax:ISLISP -*-
 ;;;; Title:     server.lsp
 ;;;; Author:    C. Jullien
-;;;; CVS:       $Id: maxbase10.lsp,v 1.8 2014/03/01 07:18:16 jullien Exp $
+;;;; CVS:       $Id: maxbase10.lsp,v 1.9 2014/03/02 12:04:21 jullien Exp $
 
 (defun all-max-base ()
    (format t "typedef struct {~%")

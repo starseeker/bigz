@@ -1,5 +1,5 @@
 //
-// $Id: CBignum.h,v 1.28 2014/02/24 06:23:31 jullien Exp $
+// $Id: CBignum.h,v 1.29 2014/03/08 06:22:37 jullien Exp $
 //
 
 /*
@@ -342,12 +342,8 @@ class CBignum {
     return CBignum(BzAbs(bz.m_bz), ASSIGN);
   }
 
-  friend CBignum random(const CBignum& bz) {
-    return CBignum(BzRandom(bz.m_bz));
-  }
-
-  friend void srandom(const CBignum& bz) {
-    BzSetRandom(bz.m_bz);
+  friend CBignum random(const CBignum& bz, unsigned int* seed) {
+    return CBignum(BzRandom(bz.m_bz, (BigNumDigit*)&seed));
   }
 
   // assignments

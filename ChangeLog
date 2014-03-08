@@ -1,7 +1,9 @@
 Change log
 
+2014/03/08: Change version to 1.5.4.
+2014/03/08: Remove non-MT safe BzSetRandom add a seed argument to BzRandom.
 2014/03/01: Better C++ iomanip support (compatible with plain C++ int).
-2014/03/01: Bignum uses is own rand() implementation. New BzRandomR().
+2014/03/01: Bignum uses is own rand() implementation.
 2014/02/28: Print optimization reads contants for base [2-36] in a table.
 2014/02/23: Change version to 1.5.3.
 2014/02/22: tCRational.cpp is removed, now part of tCBignum.cpp.

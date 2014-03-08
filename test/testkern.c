@@ -1,5 +1,5 @@
 /*
-static const char sccsid[] = "$Id: testkern.c,v 1.20 2014/02/08 14:42:01 jullien Exp $;
+static const char sccsid[] = "$Id: testkern.c,v 1.21 2014/03/02 12:04:21 jullien Exp $;
 */
 
 /*

@@ -2,7 +2,7 @@
 ;;;; Title:     lisptests.lsp
 ;;;; Author:    C. Jullien
 ;;;; License:   Simplified BSD license
-;;;; CVS:       $Id: lisptests.lsp,v 1.8 2012-05-17 06:24:26 jullien Exp $
+;;;; CVS:       $Id: lisptests.lsp,v 1.10 2014/03/08 06:22:37 jullien Exp $
 
 ;;;
 ;;; Simplified BSD License
@@ -289,8 +289,8 @@
    (format t "(defun test-random (x)~%")
    (format t "   (and (integerp (random x))~%")
    (format t "        (/= (random x) (random x))~%")
-   (format t "        (= (progn (set-random big1+) (random x))~%")
-   (format t "           (progn (set-random big1+) (random x)))))~40t:ignore~%")
+   (format t "        (= (progn (set-random 12345) (random x))~%")
+   (format t "           (progn (set-random 12345) (random x)))))~40t:ignore~%")
    (format t "~%"))
 
 (defun test-logbitp (x)

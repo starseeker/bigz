@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.c,v 1.108 2014/03/01 16:08:06 jullien Exp $
+ * $Id: bigz.c,v 1.111 2014/03/08 06:22:37 jullien Exp $
 */
 
 /*
@@ -1278,7 +1278,7 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 				/*
 				 * More digits to come on left, add exactly
 				 * the number of digits with possible
-				 * leading 0.
+				 * leading 0 (when r becomes 0).
 				 */
 				int	i;
 				for( i = 0 ; i < (int)digits ; ++i ) {
@@ -1288,7 +1288,7 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 			} else	{
 				/*
 				 * Last serie (top left). Print only available
-				 * digits.
+				 * digits (stop when r becomes 0).
 				 */
 				while( r != 0 ) {
 					*--s = Digit[r % base];
@@ -2320,11 +2320,6 @@ BzGcd( const BigZ y, const BigZ z )
 	}
 }
 
-/*
- * Non-MT random internal state.
- */
-static BigNumDigit BzNonMTSeed = (BigNumDigit)1;
-
 static BigNumDigit BzInternalRandom( BigNumDigit *seed );
 
 static BigNumDigit
@@ -2332,9 +2327,9 @@ BzInternalRandom( BigNumDigit *seed )
 {
 	if( seed == (BigNumDigit*)0 ) {
 		/*
-		 * Should not happen. Fallback to non-MT seed state.
+		 * Should not happen. Returns 0 instead of hanging.
 		 */
-		seed = &BzNonMTSeed;
+		return 0;
 	}
 
 	/*
@@ -2351,7 +2346,7 @@ BzInternalRandom( BigNumDigit *seed )
 }
 
 BigZ
-BzRandomR( const BigZ n, BigNumDigit *seed )
+BzRandom( const BigZ n, BigNumDigit *seed )
 {
 	BigZ res;
 	BigZ r;
@@ -2388,67 +2383,4 @@ BzRandomR( const BigZ n, BigNumDigit *seed )
 	BzFree( r );
 
 	return( res );
-}
-
-BigZ
-BzRandom( const BigZ n )
-{
-	/*
-	 * Non-MT safe version, use global internal state.
-	 */
-
-	return BzRandomR( n, &BzNonMTSeed );
-}
-
-void
-BzSetRandom( const BigZ n )
-{
-	BigNumLength len;
-	BigNumLength ilen;
-	BigNumLength i;
-	unsigned int seed;
-
-	if( BzGetSign( n ) == BZ_MINUS ) {
-		/*
-		 * silently ignore negative numbers.
-		 */
-		return;
-	}
-
-	len  = BzGetSize( n );
-	ilen = (BigNumLength)(len * sizeof( BigNumDigit ) / sizeof( int ));
-	seed = 0;
-
-	/*
-	 * Algo: sum all unsigned int of n to get a different seed values
-	 * even for 2 very close big numbers.
-	 */
-
-	if( ilen > len ) {
-		/*
-		 * It means a BigNumDigit is greater than an int.
-		 * seed is the sum of all int.
-		 */
-		int *nn = (int *)BzToBn( n );
-
-		for( i = 0 ; i < ilen ; ++i ) {
-			seed += *nn++;
-		}
-	} else	{
-		/*
-		 * seed is the sum of all BigNumDigit (after possible
-		 * truncation to unsigned int).
-		 */
-		BigNumDigit *nn = BzToBn( n );
-
-		for( i = 0 ; i < len ; ++i ) {
-			seed = (unsigned int)*nn++;
-		}
-	}
-
-	/*
-	 * Set random.
-	 */
-
-	BzNonMTSeed = (BigNumDigit)seed;
 }
