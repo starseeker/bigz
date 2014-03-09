@@ -309,6 +309,12 @@
 	   (list #'gcd)
 	   (list "gcd"))
 
+   (binary-functions
+	   ;; mix 0 / 1 and large number
+	   3 10 89 10
+	   (list #'expt)
+	   (list "pow"))
+
    (unary-functions
 	   45967 -45967 12345895678124 -12345895678124
 	   (list #'integer-length)

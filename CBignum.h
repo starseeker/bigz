@@ -78,12 +78,21 @@ class CBignum {
 
   // convertions
 
-  operator int         () const { return (int)BzToInteger(m_bz);    }
-  operator bool        () const { return BzGetSign(m_bz) != BZ_ZERO; }
-  operator std::string () const throw();
+  operator int() const {
+    return (int)BzToInteger(m_bz);
+  }
+  operator unsigned int() const {
+    return (unsigned int)BzToUnsignedInteger(m_bz);
+  }
+  operator bool() const {
+    return BzGetSign(m_bz) != BZ_ZERO;
+  }
+  operator std::string() const throw();
 
  private:
-  operator BigZ        () const { return m_bz; }
+  operator BigZ() const {
+    return m_bz;
+  }
 
  public:
   // unary +, -, ++, --
@@ -305,6 +314,22 @@ class CBignum {
   }
   friend CBignum lcm(const CBignum& bz1, int i) {
     return lcm(bz1, CBignum(i));
+  }
+
+  friend CBignum pow(const CBignum& bz, const CBignum& exp) {
+    int i = BzToInteger(exp.m_bz);
+    if (i < 0) {
+      // consider 0 as an error.
+      return BzFromInteger( 0 );
+    } else {
+      return CBignum(BzPow(bz.m_bz, BzToInteger(exp.m_bz)), ASSIGN);
+    }
+  }
+  friend CBignum pow(const CBignum& bz, unsigned int exp) {
+    return CBignum(BzPow(bz.m_bz, exp), ASSIGN);
+  }
+  friend CBignum pow(int base, unsigned int exp) {
+    return CBignum(BzPow(CBignum(base), exp));
   }
 
   friend CBignum isqrt(const CBignum& bz) {

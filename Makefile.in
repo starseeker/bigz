@@ -93,14 +93,21 @@ clean:
 	@-rm -f bztest$(EXE) testkern$(EXE) tCBignum$(EXE) *.$(O) *.$(AEXT)
 	@-rm -f \#* *.BAK *~
 
-valgrind: tCBignum$(EXE)
+valgrind:  testkern$(EXE) tCBignum$(EXE)
 	@valgrind \
 		--leak-check=summary \
 		--track-fds=yes \
-		--log-file=valgrind.log \
+		--log-file=testkern.log \
+		./testkern$(EXE) a
+	@tail -10 testkern.log
+	@echo Consult testkern.log for full log...
+	@valgrind \
+		--leak-check=summary \
+		--track-fds=yes \
+		--log-file=tCBignum.log \
 		./tCBignum$(EXE)
-	@tail -10 valgrind.log
-	@echo Consult valgrind.log for full log...
+	@tail -10 tCBignum.log
+	@echo Consult tCBignum.log for full log...
 
 lint:
 #	set LARCH_PATH=/usr/share/splint/lib

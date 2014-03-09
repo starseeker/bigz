@@ -1,5 +1,6 @@
 Change log
 
+2014/03/09: Add BzPow(base, exp).
 2014/03/08: Change version to 1.5.4.
 2014/03/08: Remove non-MT safe BzSetRandom add a seed argument to BzRandom.
 2014/03/01: Better C++ iomanip support (compatible with plain C++ int).

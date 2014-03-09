@@ -203,6 +203,7 @@ extern BigZ	    BzCeiling(const BigZ y, const BigZ z);
 extern BigZ	    BzRound(const BigZ y, const BigZ z);
 extern BigZ	    BzMod(const BigZ y, const BigZ z);
 extern BigZ	    BzRem(const BigZ y, const BigZ z);
+extern BigZ	    BzPow(const BigZ base, BzUInt exp);
 extern BigNumBool   BzIsEven(const BigZ y) BZ_PURE_FUNCTION;
 extern BigNumBool   BzIsOdd(const BigZ y) BZ_PURE_FUNCTION;
 extern BzChar *	    BzToString(const BigZ z, BigNumDigit base, int sign);

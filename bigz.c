@@ -2405,3 +2405,35 @@ BzRandom( const BigZ n, BigNumDigit *seed )
 
 	return( res );
 }
+
+BigZ
+BzPow( const BigZ base, BzUInt exp )
+{
+	if( exp == 0 ) {
+		/*
+		 * Any nonzero number raised by the exponent 0 is 1
+		 */
+		return( BzFromInteger( 1 ));
+	} else	{
+		BigZ x;
+		BigZ y;
+
+		if( (x = BzMultiply( base, base )) == BZNULL ) {
+			return BZNULL;
+		}
+
+		y = BzPow( x, exp / 2 );
+
+		BzFree( x );
+
+		if( y == BZNULL ) {
+			return( BZNULL );
+		} else	if( (exp % (BzUInt)2) != 0 ) {
+			x = BzMultiply( y, base );
+			BzFree( y );
+			return( x );
+		} else {
+			return( y );
+		}
+	}
+}
