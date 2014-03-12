@@ -1,6 +1,6 @@
 /*
- * $Id: bigz.c,v 1.111 2014/03/08 06:22:37 jullien Exp $
-*/
+ * $Id: bigz.c,v 1.112 2014/03/09 06:13:21 jullien Exp $
+ */
 
 /*
  * Simplified BSD License
@@ -1261,7 +1261,7 @@ BzToStringBuffer( const BigZ z, BigNumDigit base, int sign, BzChar *buf, size_t 
 	 * Divide Z by base repeatedly; successive digits given by remainders
 	 */
 
-	*s = (BzChar)'\0';
+	*--s = (BzChar)'\0';
 
 	if( BzGetSign( z ) == BZ_ZERO ) {
 		*--s = (BzChar)'0';

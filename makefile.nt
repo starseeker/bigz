@@ -1,6 +1,6 @@
 #
 #	Makefile for 'Bignums'	(c) C. Jullien
-#	$Id: makefile.nt,v 1.49 2014/03/08 06:22:37 jullien Exp $
+#	$Id: makefile.nt,v 1.50 2014/03/09 06:13:21 jullien Exp $
 #
 
 .SUFFIXES: .lsp .dat .$(SUFFIXES)
@@ -117,6 +117,7 @@ lint:
 		-statictrans 		\
 		-observertrans		\
 		-temptrans 		\
+		-usedef			\
 	        bigz.c bign.c
 	@splint +quiet			\
 		-checks 		\

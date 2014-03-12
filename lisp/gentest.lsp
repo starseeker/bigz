@@ -1,5 +1,5 @@
 ;;;; -*-Mode:LISP; Package:LISP; Base:10; Syntax:ISLISP -*-
-;;;; Date:	$Id: gentest.lsp,v 1.8 2014/02/23 06:42:31 jullien Exp $
+;;;; Date:	$Id: gentest.lsp,v 1.9 2014/03/09 06:13:21 jullien Exp $
 ;;;; Title:	gentest.lsp
 ;;;; License:   Simplified BSD license
 ;;;; Author:	C. Jullien
