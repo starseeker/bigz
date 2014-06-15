@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.h,v 1.74 2014/03/09 06:13:21 jullien Exp $
+ * $Id: bigz.h,v 1.75 2014/03/13 05:40:27 jullien Exp $
  */
 
 /*
@@ -203,7 +203,7 @@ extern BigZ	    BzCeiling(const BigZ y, const BigZ z);
 extern BigZ	    BzRound(const BigZ y, const BigZ z);
 extern BigZ	    BzMod(const BigZ y, const BigZ z);
 extern BigZ	    BzRem(const BigZ y, const BigZ z);
-extern BigZ	    BzPow(const BigZ base, BzUInt exp);
+extern BigZ	    BzPow(const BigZ base, BzUInt exponent);
 extern BigNumBool   BzIsEven(const BigZ y) BZ_PURE_FUNCTION;
 extern BigNumBool   BzIsOdd(const BigZ y) BZ_PURE_FUNCTION;
 extern BzChar *	    BzToString(const BigZ z, BigNumDigit base, int sign);

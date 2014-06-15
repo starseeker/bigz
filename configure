@@ -4980,12 +4980,12 @@ case "${CC}" in
 	WARNINGS="-Dlint -Wall -Wshadow -Wunused"
 	CXX=g++
 	OPTIMS="-finline-functions -fomit-frame-pointer -funroll-loops"
-	CCVERSION=`gcc -v 2>&1 | grep " version " | sed -e "s/^[a-z ]*\([.0-9]*\).*/\1/g"`
-	if `gcc -v --help 2>&1 | grep finline-limit= > /dev/null`
+	CCVERION=`${CC} -v 2>&1 | grep " version " | sed -e "s/^[a-z ]*\([.0-9]*\).*/\1/g"`
+	if `${CC} -v --help 2>&1 | grep finline-limit= > /dev/null`
 	then
 	  OPTIMS="$OPTIMS -finline-limit=4096"
 	fi
-	if `gcc -v --help 2>&1 | grep Wunused-function > /dev/null`
+	if `${CC} -v --help 2>&1 | grep Wunused-function > /dev/null`
 	then
 	  WARNINGS="$WARNINGS $UNUSED"
 	fi

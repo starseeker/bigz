@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.c,v 1.112 2014/03/09 06:13:21 jullien Exp $
+ * $Id: bigz.c,v 1.113 2014/03/13 05:40:27 jullien Exp $
  */
 
 /*
@@ -2407,9 +2407,9 @@ BzRandom( const BigZ n, BigNumDigit *seed )
 }
 
 BigZ
-BzPow( const BigZ base, BzUInt exp )
+BzPow( const BigZ base, BzUInt exponent )
 {
-	if( exp == 0 ) {
+	if( exponent == 0 ) {
 		/*
 		 * Any nonzero number raised by the exponent 0 is 1
 		 */
@@ -2422,13 +2422,13 @@ BzPow( const BigZ base, BzUInt exp )
 			return BZNULL;
 		}
 
-		y = BzPow( x, exp / 2 );
+		y = BzPow( x, exponent / 2 );
 
 		BzFree( x );
 
 		if( y == BZNULL ) {
 			return( BZNULL );
-		} else	if( (exp % (BzUInt)2) != 0 ) {
+		} else	if( (exponent % (BzUInt)2) != 0 ) {
 			x = BzMultiply( y, base );
 			BzFree( y );
 			return( x );
