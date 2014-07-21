@@ -2341,12 +2341,12 @@ BzGcd( const BigZ y, const BigZ z )
 	}
 }
 
-static BigNumDigit BzInternalRandom( BigNumDigit *seed );
+static BigNumDigit BzInternalRandom( BzUInt *seed );
 
 static BigNumDigit
-BzInternalRandom( BigNumDigit *seed )
+BzInternalRandom( BzUInt *seed )
 {
-	if( seed == (BigNumDigit*)0 ) {
+	if( seed == (BzUInt*)0 ) {
 		/*
 		 * Should not happen. Returns 0 instead of hanging.
 		 */
@@ -2363,11 +2363,11 @@ BzInternalRandom( BigNumDigit *seed )
 	 */
 
 	*seed = *seed * 1103515245 + 12345;
-	return (*seed / 65536) % 32768;
+	return (((BigNumDigit)*seed) / 65536) % 32768;
 }
 
 BigZ
-BzRandom( const BigZ n, BigNumDigit *seed )
+BzRandom( const BigZ n, BzUInt *seed )
 {
 	BigZ res;
 	BigZ r;

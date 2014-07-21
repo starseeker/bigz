@@ -235,7 +235,7 @@ extern BigZ	    BzAsh(const BigZ y, int n);
 extern BigZ	    BzSqrt(const BigZ z);
 extern BigZ	    BzLcm(const BigZ y, const BigZ z);
 extern BigZ	    BzGcd(const BigZ y, const BigZ z);
-extern BigZ	    BzRandom(const BigZ n, BigNumDigit *seed);
+extern BigZ	    BzRandom(const BigZ n, BzUInt *seed);
 
 /*
 #define	BZ_DEBUG

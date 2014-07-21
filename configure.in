@@ -1,7 +1,7 @@
 #
 # Autoconf script for OpenLisp.
 # By Christian Jullien (jullien@eligis.com)
-# $Id: configure.in,v 1.16 2014/03/02 12:04:21 jullien Exp $
+# $Id: configure.in,v 1.18 2014/06/28 15:47:22 jullien Exp $
 #
 # use autoconf-2.68 (works also with autoconf-2.13)
 
@@ -144,7 +144,7 @@ UNUSUED="-Wunused-value -Wunused-variable -Wunused-parameter -Wunused-label -Wun
 # Local options
 
 AEXT="a"
-AROPTS="-q"
+AROPTS="-c -r"
 PIC=""
 SHARED=""
 SOEXT="so"
