@@ -175,7 +175,7 @@ MASTER		= \
 		conf/install-sh		      \
 		config.h.in		      \
 		configure		      \
-		configure.in		      \
+		configure.ac		      \
 		doc/bn.html		      \
 		doc/bn.tex		      \
 		doc/bnbody.html		      \
