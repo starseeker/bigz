@@ -368,7 +368,7 @@ class CBignum {
   }
 
   friend CBignum random(const CBignum& bz, unsigned int* seed) {
-    return CBignum(BzRandom(bz.m_bz, (BzUInt*)&seed));
+    return CBignum(BzRandom(bz.m_bz, (BzSeed*)&seed));
   }
 
   // assignments

@@ -153,6 +153,12 @@ typedef	unsigned int			BzUInt;
 #endif
 #endif
 
+/*
+ * Random seed type, by contract it must be an unsigned int.
+ */
+typedef	unsigned int			BzSeed;
+
+
 #define	BZ_OPTIMIZE_PRINT
 
 #if	!defined( BZ_BUCKET_SIZE )
@@ -235,7 +241,7 @@ extern BigZ	    BzAsh(const BigZ y, int n);
 extern BigZ	    BzSqrt(const BigZ z);
 extern BigZ	    BzLcm(const BigZ y, const BigZ z);
 extern BigZ	    BzGcd(const BigZ y, const BigZ z);
-extern BigZ	    BzRandom(const BigZ n, BzUInt *seed);
+extern BigZ	    BzRandom(const BigZ n, BzSeed *seed);
 
 /*
 #define	BZ_DEBUG
