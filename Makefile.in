@@ -23,28 +23,52 @@ KERN		= kern
 KRNLIB		= libkern.$(AEXT)
 KRNSHARED	= libkern.$(SOEXT).$(VERSION)
 LISP		= clisp
+PGO		=
+NOPRINTDIR	= --no-print-directory
 OBJECT		= bigq.$(O) bigz.$(O) bign.$(O)
 
-BINARIES	= $(KRNLIB) \
-		  bztest$(EXE) \
+BINARIES	= bztest$(EXE) \
 		  testkern$(EXE) \
 		  @NOCXX@tCBignum$(EXE)
 
-all: $(BINARIES) tests
+all: libs $(BINARIES) tests
+
+libs: static-@STATIC_BUILD@
 
 .c.$(O):
 	@echo $*.c
-	@$(CC) -c $(CFLAGS) $*.c
+	@$(CC) -c $(CFLAGS) $(PGO) $*.c
 
 .cpp.$(O):
 	@echo $*.cpp
-	@$(CPP) -c $(CFLAGS) $(CXXFLAGS) $*.cpp
+	@$(CPP) -c $(CFLAGS) $(PGO) $(CXXFLAGS) $*.cpp
 
 # KerN lib
 
 bign.$(O): bign.c bign.h
 bigz.$(O): bigz.c bigz.h bign.h
 bign.$(O): bigq.c bigq.h bigz.h bign.h
+
+static-std: $(OBJECT)
+	@rm -f $(KRNLIB)
+	@$(AR) $(ARFLAGS) $(KRNLIB) $(OBJECT)
+	-@$(RANLIB) $(KRNLIB)
+	@$(CC) $(CFLAGS) -o bztest$(EXE) bztest.$O  -L. -l$(KERN)
+
+static-pgo: $(OBJECT)
+	@rm -f *.o *.gcda *.a bztest$(EXE) testkern$(EXE)
+	@echo Making $(KRNLIB) for Profile Guided Optimizations...
+	@$(MAKE) $(NOPRINTDIR) WITHPIC= PGO=-fprofile-generate $(KRNLIB)
+	@echo Making tests with $(KRNLIB) for Profile Guided Optimizations...
+	@$(MAKE) $(NOPRINTDIR) WITHPIC= PGO=-fprofile-generate bztest$(EXE)
+	@$(MAKE) $(NOPRINTDIR) WITHPIC= PGO=-fprofile-generate testkern$(EXE)
+	@echo Collecting Profile Guided Optimizations from bztest/testkern...
+	./@bztest> /dev/null 2>&1
+	./@testkern A> /dev/null 2>&1
+	@echo Making final $(KRNLIB) using Profile Guided Optimizations...
+	@rm -f *.o
+	@$(MAKE) $(NOPRINTDIR) WITHPIC= PGO=-fprofile-use $(KRNLIB)
+	@rm -f *.gcda
 
 $(KRNLIB): $(OBJECT)
 	@rm -f $(KRNLIB)
@@ -54,23 +78,23 @@ $(KRNLIB): $(OBJECT)
 # KerN test
 
 testkern.$(O): bign.h test/testkern.c
-	@$(CC) -c $(CFLAGS) -Itest test/testkern.c
+	@$(CC) -c $(CFLAGS) $(PGO) -Itest test/testkern.c
 
 testkern$(EXE): $(KRNLIB) testkern.$(O)
-	@$(CC) $(CFLAGS) -o testkern$(EXE) testkern.$(O) -L. -l$(KERN) $(LIBS)
+	@$(CC) $(CFLAGS) $(PGO) -o testkern$(EXE) testkern.$(O) -L. -l$(KERN) $(LIBS)
 
 # BZ test
 
 bztest$(EXE): $(KRNLIB) bztest.$(O)
-	@$(CC) $(CFLAGS) -o bztest$(EXE) bztest.$O  -L. -l$(KERN)
+	@$(CC) $(CFLAGS) $(PGO) -o bztest$(EXE) bztest.$O  -L. -l$(KERN)
 
 bztest.$(O): test/bztest.c bigz.h bign.h
-	@$(CC) -c $(CFLAGS) -Itest test/bztest.c
+	@$(CC) -c $(CFLAGS) $(PGO) -Itest test/bztest.c
 
 # C++ test
 
 tCBignum$(EXE): $(KRNLIB) CBignum.$(O) CRational.$(O) tCBignum.$(O)
-	@$(CPP) $(CFLAGS) -o tCBignum$(EXE) \
+	@$(CPP) $(CFLAGS) $(PGO) -o tCBignum$(EXE) \
 		tCBignum.$(O) CBignum.$(O) CRational.$(O) \
 		-L. -l$(KERN)
 

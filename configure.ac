@@ -56,6 +56,20 @@ else
    AC_MSG_RESULT(no)
 fi
 
+AC_MSG_CHECKING(for PGO - Profile Guided Optimization)
+AC_ARG_ENABLE(pgo,
+[  --enable-pgo            enable PGO optimization [default=no]],,enable_pgo=nol)
+if test "$enable_pgo" = "y" || test "$enable_pgo" = "yes"
+then
+   enable_pgo=yes
+   STATIC_BUILD=pgo
+   AC_MSG_RESULT(yes)
+else
+   STATIC_BUILD=std
+   AC_MSG_RESULT(no)
+fi
+AC_SUBST(STATIC_BUILD)
+
 AC_CHECK_PROGS(MAKE, gmake, make)
 if test $MAKE = no
 then

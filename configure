@@ -638,6 +638,7 @@ LDCONFIG
 RANLIB
 AR
 MAKE
+STATIC_BUILD
 ac_ct_CXX
 CXXFLAGS
 CXX
@@ -705,6 +706,7 @@ ac_subst_files=''
 ac_user_opts='
 enable_option_checking
 enable_cxx
+enable_pgo
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1331,6 +1333,7 @@ Optional Features:
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --enable-cxx            enable C++ lib default=yes
+  --enable-pgo            enable PGO optimization default=no
 
 Some influential environment variables:
   CC          C compiler command
@@ -4141,6 +4144,28 @@ else
 $as_echo "no" >&6; }
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for PGO - Profile Guided Optimization" >&5
+$as_echo_n "checking for PGO - Profile Guided Optimization... " >&6; }
+# Check whether --enable-pgo was given.
+if test "${enable_pgo+set}" = set; then :
+  enableval=$enable_pgo;
+else
+  enable_pgo=nol
+fi
+
+if test "$enable_pgo" = "y" || test "$enable_pgo" = "yes"
+then
+   enable_pgo=yes
+   STATIC_BUILD=pgo
+   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+else
+   STATIC_BUILD=std
+   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
 for ac_prog in gmake
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
@@ -4969,7 +4994,7 @@ UNUSUED="-Wunused-value -Wunused-variable -Wunused-parameter -Wunused-label -Wun
 # Local options
 
 AEXT="a"
-AROPTS="-q"
+AROPTS="-c -r"
 PIC=""
 SHARED=""
 SOEXT="so"

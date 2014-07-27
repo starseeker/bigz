@@ -1258,7 +1258,7 @@ main(int argc, char **argv)
 	}
 
 	if(argc == 1) {
-		printf("%s [v] [a] [NOTEST]\n", argv[0]);
+		printf("%s [v] [a] [A] [NOTEST]\n", argv[0]);
 	}
 
 	/*
