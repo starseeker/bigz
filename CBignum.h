@@ -1,5 +1,5 @@
 //
-// $Id: CBignum.h,v 1.30 2014/03/09 06:13:21 jullien Exp $
+// $Id: CBignum.h,v 1.31 2014/07/22 18:49:28 jullien Exp $
 //
 
 /*
