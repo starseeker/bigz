@@ -53,9 +53,8 @@ static-std: $(OBJECT)
 	@rm -f $(KRNLIB)
 	@$(AR) $(ARFLAGS) $(KRNLIB) $(OBJECT)
 	-@$(RANLIB) $(KRNLIB)
-	@$(CC) $(CFLAGS) -o bztest$(EXE) bztest.$O  -L. -l$(KERN)
 
-static-pgo: $(OBJECT)
+static-pgo:
 	@rm -f *.o *.gcda *.a bztest$(EXE) testkern$(EXE)
 	@echo Making $(KRNLIB) for Profile Guided Optimizations...
 	@$(MAKE) $(NOPRINTDIR) WITHPIC= PGO=-fprofile-generate $(KRNLIB)
