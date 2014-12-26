@@ -21,7 +21,7 @@ AC_CONFIG_HEADER(./config.h)
 
 AC_PREREQ(2.63)
 
-NAME=bigz
+NAME=bignum
 VERSION=`grep VERSION bigz.h | sed -e "s/.*\"\(.*\)\"/\1/g"`
 
 # User options

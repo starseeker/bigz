@@ -5,6 +5,19 @@
 
 .SUFFIXES: .cpp .lsp .dat $(.SUFFIXES)
 
+# Automake special variables
+
+prefix		= @prefix@
+exec_prefix	= @exec_prefix@
+datarootdir	= @datarootdir@
+bindir		= @bindir@
+libdir		= @libdir@
+mandir		= @mandir@
+includedir	= @includedir@
+datadir		= @datadir@
+localedir	= @localedir@
+infodir		= @infodir@
+
 CC		= @CC@
 CPP		= @CXX@
 AR		= @AR@
@@ -18,6 +31,7 @@ ARFLAGS		= @AROPTS@
 DEBUG		=
 CFLAGS		= @CFLAGS@ @OPTIMS@ @WARNINGS@ -I. -DHAVE_CONFIG_H
 CXXFLAGS	= @CXXFLAGS@
+INSTALL		= ./conf/install-sh
 LIBS		= @LIBS@
 KERN		= kern
 KRNLIB		= libkern.$(AEXT)
@@ -26,6 +40,7 @@ LISP		= clisp
 PGO		=
 NOPRINTDIR	= --no-print-directory
 OBJECT		= bigq.$(O) bigz.$(O) bign.$(O)
+STRIP		=
 
 BINARIES	= bztest$(EXE) \
 		  testkern$(EXE) \
@@ -188,6 +203,8 @@ MASTER		= \
 		bigz.c			      \
 		bigz.h			      \
 		bzf.c			      \
+		bignum.pc.in		      \
+		bignum.spec.in		      \
 		CBignum.cpp		      \
 		CBignum.h		      \
 		CRational.cpp		      \
@@ -240,3 +257,36 @@ save:
 		&& tar czf bignum-$(VERSION).tar.gz bignum-$(VERSION) \
 		&& rm -r -f bignum-$(VERSION)
 	@tar tvzf bignum-$(VERSION).tar.gz
+
+install-strip:
+	@$(MAKE) $(NOPRINTDIR) STRIP=-s install
+
+install:
+	@echo Installing includes and libs
+	$(INSTALL) -d $(bindir)
+	$(INSTALL) -d $(mandir)
+	$(INSTALL) -d $(mandir)/man1
+	$(INSTALL) -d $(includedir)/@NAME@
+	$(INSTALL) -d $(libdir)/pkgconfig
+	for i in big*h ; \
+	do \
+	  $(INSTALL) -C -m 644 $$i $(includedir)/@NAME@/$$i; \
+	done
+	for i in libkern.a ; \
+	do \
+	  if [ -f $$i ]; \
+	  then \
+	    $(INSTALL) -C -m 644 -T $$i $(libdir)/$$i ; \
+	  fi \
+	done
+	$(INSTALL) -C -m 644 -T @NAME@.pc $(libdir)/pkgconfig/@NAME@.pc
+
+uninstall:
+	@echo Uninstalling includes and libs
+	rm -r -f $(includedir)/@NAME@
+	for i in libkern.a ; \
+	do \
+	  rm -f $(libdir)/$$i; \
+	done
+	rm -f $(libdir)/pkgconfig/@NAME@.pc
+	@echo Done.
