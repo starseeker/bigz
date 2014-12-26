@@ -21,7 +21,7 @@ AC_CONFIG_HEADER(./config.h)
 
 AC_PREREQ(2.63)
 
-NAME=bignum
+NAME=bigz
 VERSION=`grep VERSION bigz.h | sed -e "s/.*\"\(.*\)\"/\1/g"`
 
 # User options
@@ -190,6 +190,7 @@ esac
 
 # Option "-mcpu=`uname -m`"
 
+AC_SUBST(NAME)
 AC_SUBST(AEXT)
 AC_SUBST(AROPTS)
 AC_SUBST(CFLAGS)
@@ -206,7 +207,7 @@ AC_SUBST(WARNINGS)
 
 # Save result in Makefile (using Makefile.in template).
 
-AC_OUTPUT(Makefile)
+AC_OUTPUT(Makefile ${NAME}.spec ${NAME}.pc)
 
 echo \
 "------------------------------------------------------------------------

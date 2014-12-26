@@ -1,0 +1,40 @@
+# OpenLisp RPM spec file for openlisp @VERSION@
+# @(#)bigz.spec.in
+
+Summary: BigZ v@VERSION@ infinite arithmetic precision C library.
+Name: @NAME@
+Version: @VERSION@
+Release: 0
+License: Simplified BSD License
+Vendor: Digital Equipment Corporation, INRIA, Eligis
+Packager: Christian Jullien <jullien@eligis.com>
+Group: Development/Languages
+Source: @NAME@-@VERSION@.tar.gz
+URL: http://http://sourceforge.net/projects/bigz/
+#BuildRoot: /home/jullien
+
+%description
+The Bignum  package was originally written by DEC & INRIA to provide
+an efficient infinite arithmetic precision C library.
+
+%changelog
+* Mon Jun 18 2001 <jullien@eligis.com>
+  * see ChangeLog file
+%prep
+%setup
+%build
+./configure
+make
+%install
+rm -rf @prefix@/lib/libkern.*
+make install
+%clean
+make clean
+%files
+@prefix@/lib/libkern.a
+%post
+#	/sbin/ldconfig
+	echo bigz has been installed in @prefix@
+%postun
+#	/sbin/ldconfig
+	echo OpenLisp has been removed from @libdir@

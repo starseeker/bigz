@@ -3,7 +3,7 @@ Copyright (c) 1992-2014, Eligis
 All rights reserved.
 
 The  Bignum  package was originally written by DEC & INRIA to provide
-an  efficient infinite arithmetic precision module on top of Le-Lisp.
+an  efficient infinite arithmetic precision C library.
 
 Chistian  Jullien  from  Eligis  was using this package for his Intel
 Le-Lisp ports since 1988. In 1999 he decided to use and maintain this
