@@ -4,7 +4,7 @@ static	const char rcsid[] = "$Id: bzf.c,v 1.6 2014/02/16 18:49:24 jullien Exp $"
 
 /*
  * Copyright (c) 1988-1989, Digital Equipment Corporation & INRIA.
- * Copyright (c) 1992-2014, Eligis
+ * Copyright (c) 1992-2015, Eligis
  * All rights reserved.
  *
  * Redistribution and  use in  source and binary  forms, with  or without

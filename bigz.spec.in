@@ -34,7 +34,7 @@ make clean
 @prefix@/lib/libkern.a
 %post
 #	/sbin/ldconfig
-	echo bigz has been installed in @prefix@
+	echo @NAME@ has been installed in @prefix@
 %postun
 #	/sbin/ldconfig
-	echo OpenLisp has been removed from @libdir@
+	echo @NAME@ has been removed from @prefix@

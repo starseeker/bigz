@@ -6,7 +6,7 @@ static	const char rcsid[] = "$Id: CBignum.cpp,v 1.14 2014/03/02 12:04:21 jullien
  * Simplified BSD License
  *
  * Copyright (c) 1988-1989, Digital Equipment Corporation & INRIA.
- * Copyright (c) 1992-2014, Eligis
+ * Copyright (c) 1992-2015, Eligis
  * All rights reserved.
  *
  * Redistribution and  use in  source and binary  forms, with  or without
