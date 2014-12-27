@@ -29,7 +29,8 @@ AEXT		= @AEXT@
 EXE		= @EXEEXT@
 ARFLAGS		= @AROPTS@
 DEBUG		=
-CFLAGS		= @CFLAGS@ @OPTIMS@ @WARNINGS@ -I. -DHAVE_CONFIG_H
+WITHPIC         =
+CFLAGS		= @CFLAGS@ @OPTIMS@ @WARNINGS@ $(WITHPIC) -I. -DHAVE_CONFIG_H
 CXXFLAGS	= @CXXFLAGS@
 INSTALL		= ./conf/install-sh
 LIBS		= @LIBS@
@@ -48,7 +49,7 @@ BINARIES	= bztest$(EXE) \
 
 all: libs $(BINARIES) tests
 
-libs: static-@STATIC_BUILD@
+libs: dynamic-std static-@STATIC_BUILD@
 
 .c.$(O):
 	@echo $*.c
@@ -64,10 +65,15 @@ bign.$(O): bign.c bign.h
 bigz.$(O): bigz.c bigz.h bign.h
 bign.$(O): bigq.c bigq.h bigz.h bign.h
 
-static-std: $(OBJECT)
-	@rm -f $(KRNLIB)
-	@$(AR) $(ARFLAGS) $(KRNLIB) $(OBJECT)
-	-@$(RANLIB) $(KRNLIB)
+dynamic-std:
+	@echo Making shared lib $(KRNSHARED)
+	@rm -r -f $(OBJECT)
+	@$(MAKE) $(NOPRINTDIR) WITHPIC=-fPIC $(KRNSHARED)
+
+static-std:
+	@echo Making static lib $(KRNLIB)
+	@rm -r -f $(OBJECT)
+	@$(MAKE) $(NOPRINTDIR) WITHPIC= $(KRNLIB)
 
 static-pgo:
 	@rm -f *.o *.gcda *.a bztest$(EXE) testkern$(EXE)
@@ -77,8 +83,8 @@ static-pgo:
 	@$(MAKE) $(NOPRINTDIR) WITHPIC= PGO=-fprofile-generate bztest$(EXE)
 	@$(MAKE) $(NOPRINTDIR) WITHPIC= PGO=-fprofile-generate testkern$(EXE)
 	@echo Collecting Profile Guided Optimizations from bztest/testkern...
-	./@bztest> /dev/null 2>&1
-	./@testkern A> /dev/null 2>&1
+	@./bztest> /dev/null 2>&1
+	@./testkern A> /dev/null 2>&1
 	@echo Making final $(KRNLIB) using Profile Guided Optimizations...
 	@rm -f *.o
 	@$(MAKE) $(NOPRINTDIR) WITHPIC= PGO=-fprofile-use $(KRNLIB)
@@ -88,6 +94,10 @@ $(KRNLIB): $(OBJECT)
 	@rm -f $(KRNLIB)
 	@$(AR) $(ARFLAGS) $(KRNLIB) $(OBJECT)
 	-@$(RANLIB) $(KRNLIB)
+
+$(KRNSHARED): $(OBJECT)
+	@$(CC) $(CFLAGS) -shared -Wl,-soname,$(KRNSHARED) -o $(KRNSHARED) \
+	       $(OBJECT)
 
 # KerN test
 
@@ -130,7 +140,8 @@ tests:
 	@NOCXX@./tCBignum
 
 clean:
-	@-rm -f bztest$(EXE) testkern$(EXE) tCBignum$(EXE) *.$(O) *.$(AEXT)
+	@-rm -f bztest$(EXE) testkern$(EXE) tCBignum$(EXE)
+	@-rm -f *.$(O) *.$(AEXT) $(KRNSHARED)
 	@-rm -f \#* *.BAK *~
 
 valgrind:  testkern$(EXE) tCBignum$(EXE)
@@ -272,21 +283,24 @@ install:
 	do \
 	  $(INSTALL) -C -m 644 $$i $(includedir)/@NAME@/$$i; \
 	done
-	for i in libkern.a ; \
+	for i in $(KRNLIB) $(KRNSHARED) ; \
 	do \
 	  if [ -f $$i ]; \
 	  then \
-	    $(INSTALL) -C -m 644 -T $$i $(libdir)/$$i ; \
+	    echo $$i; \
+	    $(INSTALL) -C -m 644 -T $$i $(libdir)/$$i; \
 	  fi \
 	done
+	(cd $(libdir) && ln -sf $(KRNSHARED) lib$(KERN).$(SOEXT).1)
+	(cd $(libdir) && ln -sf lib$(KERN).$(SOEXT).1 lib$(KERN).$(SOEXT))
 	$(INSTALL) -C -m 644 -T @NAME@.pc $(libdir)/pkgconfig/@NAME@.pc
 
 uninstall:
 	@echo Uninstalling includes and libs
 	rm -r -f $(includedir)/@NAME@
-	for i in libkern.a ; \
+	for i in lib$(KERN) ; \
 	do \
-	  rm -f $(libdir)/$$i; \
+	  rm -f $(libdir)/$$i\.*; \
 	done
 	rm -f $(libdir)/pkgconfig/@NAME@.pc
 	@echo Done.
