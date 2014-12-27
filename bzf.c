@@ -1,5 +1,5 @@
 /*
-static	const char rcsid[] = "$Id: bzf.c,v 1.6 2014/02/16 18:49:24 jullien Exp $";
+static	const char rcsid[] = "$Id: bzf.c,v 1.7 2014/12/26 19:01:31 jullien Exp $";
 */
 
 /*

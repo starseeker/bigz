@@ -1,4 +1,4 @@
-# OpenLisp RPM spec file for openlisp @VERSION@
+# BigZ RPM spec file for BigZ v@VERSION@
 # @(#)bigz.spec.in
 
 Summary: BigZ v@VERSION@ infinite arithmetic precision C library.
@@ -27,11 +27,13 @@ an efficient infinite arithmetic precision C library.
 make
 %install
 rm -rf @prefix@/lib/libkern.*
+rm -rf @prefix@/include/bignum
 make install
 %clean
 make clean
 %files
-@prefix@/lib/libkern.a
+@prefix@/lib/libkern.*
+@prefix@/include/bignum/*
 %post
 #	/sbin/ldconfig
 	echo @NAME@ has been installed in @prefix@

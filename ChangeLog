@@ -1,5 +1,8 @@
 Change log
 
+2014/12/27: Build shared lib with gcc.
+2014/12/26: Add install/uninstall Makefile entries.
+2014/12/26: Add bignum.pc.in and bignum.spec.in.
 2014/03/09: Add BzPow(base, exp).
 2014/03/08: Change version to 1.5.4.
 2014/03/08: Remove non-MT safe BzSetRandom add a seed argument to BzRandom.
