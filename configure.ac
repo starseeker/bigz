@@ -160,7 +160,7 @@ UNUSUED="-Wunused-value -Wunused-variable -Wunused-parameter -Wunused-label -Wun
 AEXT="a"
 AROPTS="-c -r"
 PIC=""
-SHARED=""
+SHARED="shared-std"
 SOEXT="so"
 
 case "${CC}" in
@@ -182,6 +182,7 @@ case "${CC}" in
   *tcc*)
         # No C++ with tcc
         NOCXX="# "
+	SHARED=""
         ;;
   icc)
 	OPTIMS="-g -O3 -mcpu=pentiumpro -axi -ip -unroll -I."
