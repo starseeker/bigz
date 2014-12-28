@@ -1,5 +1,5 @@
 #if	!defined( lint )
-static	const char rcsid[] = "$Id: CRational.cpp,v 1.9 2014/02/16 17:14:10 jullien Exp $";
+static	const char rcsid[] = "$Id: CRational.cpp,v 1.1 2014/12/27 08:52:54 jullien Exp $";
 #endif
 
 /*

@@ -1,5 +1,5 @@
 /*
- * $Id: bign.h,v 1.34 2014/12/26 19:01:31 jullien Exp $
+ * $Id: bign.h,v 1.35 2014/12/28 06:54:38 jullien Exp $
  */
 
 /*
@@ -33,13 +33,13 @@
  */
 
 /*
- *	bign.h - Types and structures for clients of BigNum.
+ *      bign.h - Types and structures for clients of BigNum.
  */
 
-#if	!defined( __BIGN_H )
-#define	__BIGN_H
+#if     !defined(__BIGN_H)
+#define __BIGN_H
 
-#if	defined( HAVE_CONFIG_H )
+#if     defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
@@ -56,106 +56,106 @@
  *       nn
  */
 
-#if	defined( __cplusplus )
-extern	"C"	{
+#if     defined(__cplusplus)
+extern  "C"     {
 #endif
 
 /*
- *	Internal digit type.
+ *      Internal digit type.
  */
 
-#if	!defined( BN_NUM_DIGIT_TYPE )
-#define	BN_NUM_DIGIT_TYPE
-#if	defined( _WIN64 )
-typedef unsigned __int64	BigNumDigit;
+#if     !defined(BN_NUM_DIGIT_TYPE)
+#define BN_NUM_DIGIT_TYPE
+#if     defined(_WIN64)
+typedef unsigned __int64        BigNumDigit;
 #else
-typedef unsigned long		BigNumDigit;
+typedef unsigned long           BigNumDigit;
 #endif
 #endif
 
-#if	defined( __GNUC__ ) && (__GNUC__ >= 3)
-#if	!defined( BN_CONST_FUNCTION )
-#define	BN_CONST_FUNCTION	__attribute__((const))
+#if     defined(__GNUC__) && (__GNUC__ >= 3)
+#if     !defined(BN_CONST_FUNCTION)
+#define BN_CONST_FUNCTION       __attribute__((const))
 #endif
-#if	!defined( BN_PURE_FUNCTION )
-#define	BN_PURE_FUNCTION	__attribute__((pure))
+#if     !defined(BN_PURE_FUNCTION)
+#define BN_PURE_FUNCTION        __attribute__((pure))
 #endif
-#endif	/* __GNUC__ >= 3 */
+#endif  /* __GNUC__ >= 3 */
 
-#if	!defined( BN_PURE_FUNCTION )
-#define	BN_PURE_FUNCTION
+#if     !defined(BN_PURE_FUNCTION)
+#define BN_PURE_FUNCTION
 #endif
 
-#if	!defined( BN_CONST_FUNCTION )
-#define	BN_CONST_FUNCTION
+#if     !defined(BN_CONST_FUNCTION)
+#define BN_CONST_FUNCTION
 #endif
 
 /*
- *	bignum types: digits, big numbers, carries ...
+ *      bignum types: digits, big numbers, carries ...
  */
 
-typedef BigNumDigit *	BigNum;		/* A big number is a digit pointer */
-typedef BigNumDigit	BigNumProduct;	/* The product of two digits	   */
-typedef unsigned int	BigNumLength;	/* The length of a bignum	   */
+typedef BigNumDigit *   BigNum;         /* A big number is a digit pointer */
+typedef BigNumDigit     BigNumProduct;  /* The product of two digits       */
+typedef unsigned int    BigNumLength;   /* The length of a bignum          */
 
-typedef enum	{
-	BN_FALSE   = 0,
-	BN_TRUE    = 1
+typedef enum    {
+        BN_FALSE   = 0,
+        BN_TRUE    = 1
 } BigNumBool;
 
 /*
- *	Results of compare functions
+ *      Results of compare functions
  */
 
-typedef	enum	{
-	BN_LT      = -1,
-	BN_EQ      = 0,
-	BN_GT      = 1
+typedef enum    {
+        BN_LT      = -1,
+        BN_EQ      = 0,
+        BN_GT      = 1
 } BigNumCmp;
 
 /*
- *	Carry enum type.
+ *      Carry enum type.
  */
 
-typedef enum	{
-	BN_NOCARRY = 0,
-	BN_CARRY   = 1
+typedef enum    {
+        BN_NOCARRY = 0,
+        BN_CARRY   = 1
 } BigNumCarry;
 
 /*
- *	sizes
+ *      sizes
  *
- *	BN_BYTE_SIZE:	number of bits in a byte
- *	BN_DIGIT_SIZE:	number of bits in a digit of a BigNum
+ *      BN_BYTE_SIZE:   number of bits in a byte
+ *      BN_DIGIT_SIZE:  number of bits in a digit of a BigNum
  */
 
-#if	!defined( BN_BYTE_SIZE )
-#define BN_BYTE_SIZE	((BigNumLength)8) /* may be 9! on 36bit computers. */
+#if     !defined(BN_BYTE_SIZE)
+#define BN_BYTE_SIZE    ((BigNumLength)8) /* may be 9! on 36bit computers. */
 #endif
 
-#define BN_DIGIT_SIZE	(sizeof(BigNumDigit) * BN_BYTE_SIZE)
+#define BN_DIGIT_SIZE   (sizeof(BigNumDigit) * BN_BYTE_SIZE)
 
 /*
- *	some constants
+ *      some constants
  */
 
-#define	BN_ZERO		((BigNumDigit)0)
-#define	BN_ONE		((BigNumDigit)1)
-#define	BN_COMPLEMENT	(~(BigNumDigit)0)
+#define BN_ZERO         ((BigNumDigit)0)
+#define BN_ONE          ((BigNumDigit)1)
+#define BN_COMPLEMENT   (~(BigNumDigit)0)
 
 /*
- *	functions of bign.c
+ *      functions of bign.c
  */
 
 extern BigNumCarry  BnnAdd(BigNum mm, BigNumLength ml, const BigNum nn, BigNumLength nl, BigNumCarry carryin);
 extern BigNumCarry  BnnAddCarry(BigNum nn, BigNumLength nl, BigNumCarry carryin);
-extern void	    BnnAndDigits(BigNum n, BigNumDigit d);
-extern void	    BnnAssign(BigNum mm, const BigNum nn, BigNumLength nl);
+extern void         BnnAndDigits(BigNum n, BigNumDigit d);
+extern void         BnnAssign(BigNum mm, const BigNum nn, BigNumLength nl);
 extern BigNumCmp    BnnCompare(const BigNum mm, BigNumLength ml, const BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
 extern BigNumCmp    BnnCompareDigits(BigNumDigit d1, BigNumDigit d2) BN_CONST_FUNCTION;
-extern void	    BnnComplement(BigNum nn, BigNumLength nl);
-extern void	    BnnComplement2(BigNum nn, BigNumLength nl);
-extern void	    BnnDivide(BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl);
+extern void         BnnComplement(BigNum nn, BigNumLength nl);
+extern void         BnnComplement2(BigNum nn, BigNumLength nl);
+extern void         BnnDivide(BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl);
 extern BigNumDigit  BnnDivideDigit(BigNum qq, BigNum nn, BigNumLength nl, BigNumDigit d);
 extern BigNumDigit  BnnGetDigit(const BigNum nn) BN_PURE_FUNCTION;
 extern BigNumBool   BnnIsPower2(const BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
@@ -170,17 +170,17 @@ extern BigNumLength BnnNumDigits(const BigNum nn, BigNumLength nl) BN_PURE_FUNCT
 extern BigNumLength BnnNumLength(const BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
 extern BigNumLength BnnNumCount(const BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
 extern BigNumLength BnnNumLeadingZeroBitsInDigit(BigNumDigit d) BN_CONST_FUNCTION;
-extern void	    BnnOrDigits(BigNum n, BigNumDigit d);
-extern void	    BnnSetDigit(BigNum nn, BigNumDigit d);
-extern void	    BnnSetToZero(BigNum nn, BigNumLength nl);
+extern void         BnnOrDigits(BigNum n, BigNumDigit d);
+extern void         BnnSetDigit(BigNum nn, BigNumDigit d);
+extern void         BnnSetToZero(BigNum nn, BigNumLength nl);
 extern BigNumDigit  BnnShiftLeft(BigNum mm, BigNumLength ml, BigNumLength nbits);
 extern BigNumDigit  BnnShiftRight(BigNum mm, BigNumLength ml, BigNumLength nbits);
 extern BigNumCarry  BnnSubtract(BigNum mm, BigNumLength ml, const BigNum nn, BigNumLength nl, BigNumCarry carryin);
 extern BigNumCarry  BnnSubtractBorrow(BigNum nn, BigNumLength nl, BigNumCarry carryin);
-extern void	    BnnXorDigits(BigNum n, BigNumDigit d);
+extern void         BnnXorDigits(BigNum n, BigNumDigit d);
 
-#if	defined( __cplusplus )
+#if     defined(__cplusplus)
 }
 #endif
 
-#endif	/* __BIGN_H */
+#endif  /* __BIGN_H */

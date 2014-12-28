@@ -1,6 +1,6 @@
 /*
- static	const char rcsid[] = "$Id: bign.c,v 1.46 2014/12/26 19:01:30 jullien Exp $";
-*/
+ * $Id: bign.c,v 1.47 2014/12/28 06:54:38 jullien Exp $
+ */
 
 /*
  * Simplified BSD License
@@ -33,18 +33,18 @@
  */
 
 /*
- *	bign.c : the kernel written in pure C (it uses no C library)
+ *      bign.c : the kernel written in pure C (it uses no C library)
  */
 
 /*
- *	Description of types and constants.
+ *      Description of types and constants.
  *
  * Several conventions are used in the commentary:
  *    A "BigNum" is the name for an infinite-precision number.
  *    Capital letters (e.g., "N") are used to refer to the value of BigNums.
  *    The word "digit" refers to a single BigNum digit.
  *    The notation "Size(N)" refers to the number of digits in N,
- *	 which is typically passed to the subroutine as "nl".
+ *       which is typically passed to the subroutine as "nl".
  *    The notation "Length(N)" refers to the number of digits in N,
  *       not including any leading zeros.
  *    The word "Base" is used for the number 2 ** BN_DIGIT_SIZE, where
@@ -61,592 +61,580 @@
  *
  */
 
-#if	!defined( __BIGN_H )
+#if     !defined(__BIGN_H)
 #include "bign.h"
 #endif
 
-static void BnnDivideHelper(BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl);
+static void
+BnnDivideHelper(BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl);
 
 #include <stdio.h>
 
 void
-BnnSetToZero( BigNum nn, BigNumLength nl )
-{
-	/*
-	 * Sets all the specified digits of the BigNum to BN_ZERO (0).
-	 */
+BnnSetToZero(BigNum nn, BigNumLength nl) {
+        /*
+         * Sets all the specified digits of the BigNum to BN_ZERO (0).
+         */
 
-	BigNumLength d;
+        BigNumLength d;
 
-	for( d = 0 ; d < nl ; ++d ) {
-		nn[d] = BN_ZERO;
-	}
+        for (d = 0; d < nl; ++d) {
+                nn[d] = BN_ZERO;
+        }
 }
 
 void
-BnnAssign( BigNum mm, const BigNum nn, BigNumLength nl )
-{
-	/*
-	 * Copies N => M
-	 */
+BnnAssign(BigNum mm, const BigNum nn, BigNumLength nl) {
+        /*
+         * Copies N => M
+         */
 
-	int	d;
+        int     d;
 
-	if( (mm < nn) || (mm > (nn + nl)) ) {
-		/*
-		 * no memory overlap using classic loop 
-		 */
-		for( d = 0 ; d < (int)nl ; ++d ) {
-			mm[d] = nn[d];
-		}
-	} else	if( mm > nn ) {
-		/*
-		 * memory overlap, loop starting from most significant digit
-		 */
-		for( d = (int)(nl - 1) ; d >= 0 ; --d ) {
-			mm[d] = nn[d];
-		}
-	}
+        if ((mm < nn) || (mm > (nn + nl))) {
+                /*
+                 * no memory overlap using classic loop 
+                 */
+                for (d = 0; d < (int)nl; ++d) {
+                        mm[d] = nn[d];
+                }
+        } else  if (mm > nn) {
+                /*
+                 * memory overlap, loop starting from most significant digit
+                 */
+                for (d = (int)(nl - 1); d >= 0; --d) {
+                        mm[d] = nn[d];
+                }
+        }
 }
 
 void
-BnnSetDigit( BigNum nn, BigNumDigit d )
-{
-	/*
-	 * Sets a single digit of N to the passed value
-	 */
+BnnSetDigit(BigNum nn, BigNumDigit d) {
+        /*
+         * Sets a single digit of N to the passed value
+         */
 
-	*nn = d;
+        *nn = d;
 }
 
 BigNumDigit
-BnnGetDigit( const BigNum nn )
-{
-	/*
-	 * Returns the single digit pointed by N
-	 */
+BnnGetDigit(const BigNum nn) {
+        /*
+         * Returns the single digit pointed by N
+         */
 
-	return( *nn );
+        return (*nn);
 }
 
 BigNumLength
-BnnNumDigits( const BigNum nn, BigNumLength nl )
-{
-	/*
-	 * Returns the number of digits of N, not counting leading zeros
-	 */
+BnnNumDigits(const BigNum nn, BigNumLength nl) {
+        /*
+         * Returns the number of digits of N, not counting leading zeros
+         */
 
-	int	d;
+        int     d;
 
-	/*
-	 * loop starting from most significant digit
-	 */
+        /*
+         * loop starting from most significant digit
+         */
 
-	for( d = (int)(nl - 1) ; d >= 0 ; --d ) {
-		if( nn[d] != BN_ZERO ) {
-			/*
-			 * length = d+1
-			 */
-			return( (BigNumLength)(d + 1) );
-		}
-	}
+        for (d = (int)(nl - 1); d >= 0; --d) {
+                if (nn[d] != BN_ZERO) {
+                        /*
+                         * length = d+1
+                         */
+                        return ((BigNumLength)(d + 1));
+                }
+        }
 
-	return( (BigNumLength)1 );
+        return ((BigNumLength)1);
 }
 
 BigNumLength
-BnnNumLength( const BigNum nn, BigNumLength nl )
-{
-	/*
-	 * Returns the number of bits of N, not counting leading zeros
-	 */
+BnnNumLength(const BigNum nn, BigNumLength nl) {
+        /*
+         * Returns the number of bits of N, not counting leading zeros
+         */
 
-	const BigNumDigit d = nn[nl - 1];
-	int	i;
+        const BigNumDigit d = nn[nl - 1];
+        int     i;
 
-	for( i = (int)(BN_DIGIT_SIZE - 1) ; i >= 0 ; --i ) {
-		if( (d & (BN_ONE << (BigNumLength)i)) != 0 ) {
-			return((BigNumLength)(((nl-1) * BN_DIGIT_SIZE) + i+1));
-		}
-	}
+        for (i = (int)(BN_DIGIT_SIZE - 1); i >= 0; --i) {
+                if ((d & (BN_ONE << (BigNumLength)i)) != 0) {
+                        return ((BigNumLength)(((nl-1) * BN_DIGIT_SIZE) + i+1));
+                }
+        }
 
-	return( 0 );
+        return (0);
 }
 
 BigNumLength
-BnnNumCount( const BigNum nn, BigNumLength nl )
-{
-	/*
-	 * Returns the count of bits set of N.
-	 */
+BnnNumCount(const BigNum nn, BigNumLength nl) {
+        /*
+         * Returns the count of bits set of N.
+         */
 
-	BigNumLength	count = 0;
-	int	j;
+        BigNumLength    count = 0;
+        int     j;
 
-	for( j = 0 ; j < (int)nl ; ++j ) {
-		const BigNumDigit d = nn[ j ];
-		int	i;
+        for (j = 0; j < (int)nl; ++j) {
+                const BigNumDigit d = nn[ j ];
+                int     i;
 
-		for( i = (int)(BN_DIGIT_SIZE - 1) ; i >= 0 ; --i ) {
-			if( (d & (BN_ONE << (BigNumLength)i)) != 0 ) {
-				++count;
-			}
-		}
-	}
+                for (i = (int)(BN_DIGIT_SIZE - 1); i >= 0; --i) {
+                        if ((d & (BN_ONE << (BigNumLength)i)) != 0) {
+                                ++count;
+                        }
+                }
+        }
 
-	return( count );
+        return (count);
 }
 
 BigNumLength
-BnnNumLeadingZeroBitsInDigit( BigNumDigit d )
-{
-	/*
-	 * Returns the number of leading zero bits in a digit
-	 */
+BnnNumLeadingZeroBitsInDigit(BigNumDigit d) {
+        /*
+         * Returns the number of leading zero bits in a digit
+         */
 
-	BigNumDigit	mask = (BigNumDigit)(BN_ONE << (BN_DIGIT_SIZE - 1));
-	BigNumLength	p;
+        BigNumDigit     mask = (BigNumDigit)(BN_ONE << (BN_DIGIT_SIZE - 1));
+        BigNumLength    p;
 
-    	if( d == BN_ZERO ) {
-		return( (BigNumLength)BN_DIGIT_SIZE );
-	}
+        if (d == BN_ZERO) {
+                return ((BigNumLength)BN_DIGIT_SIZE);
+        }
 
-	for( p = 0 ; (d & mask) == 0 ; ++p ) {
-		mask >>= 1;
-	}
+        for (p = 0; (d & mask) == 0; ++p) {
+                mask >>= 1;
+        }
 
-	return( p );
+        return (p);
 }
 
 BigNumBool
-BnnIsPower2( const BigNum nn, BigNumLength nl )
-{
-	/*
-	 * Returns BN_TRUE iff nn is a power of 2.
-	 */
+BnnIsPower2(const BigNum nn, BigNumLength nl) {
+        /*
+         * Returns BN_TRUE iff nn is a power of 2.
+         */
 
-	BigNumLength i;
-	BigNumLength nbits;
-	BigNumDigit  d;
+        BigNumLength i;
+        BigNumLength nbits;
+        BigNumDigit  d;
 
-	/*
-	 *	The n-1 digits must be 0
-	 */
+        /*
+         *      The n-1 digits must be 0
+         */
 
-	for( i = 0 ; i < (nl - 1) ; ++i ) {
-		if( nn[ i ] != BN_ZERO ) {
-			return( BN_FALSE );
-		}
-	}
+        for (i = 0; i < (nl - 1); ++i) {
+                if (nn[ i ] != BN_ZERO) {
+                        return (BN_FALSE);
+                }
+        }
 
-	/*
-	 *	There must be only 1 bit set on the last Digit.
-	 */
+        /*
+         *      There must be only 1 bit set on the last Digit.
+         */
 
-	d     = nn[ i ];
-	nbits = 0;
+        d     = nn[ i ];
+        nbits = 0;
 
-	for( i = 0 ; i < (BigNumLength)BN_DIGIT_SIZE ; ++i ) {
-		if( (d & (BN_ONE << i)) != 0 ) {
-			if( nbits++ > 0 ) {
-				/*
-				 * More than two digits.
-				 */
-				return( BN_FALSE );
-			}
-		}
-	}
+        for (i = 0; i < (BigNumLength)BN_DIGIT_SIZE; ++i) {
+                if ((d & (BN_ONE << i)) != 0) {
+                        if (nbits++ > 0) {
+                                /*
+                                 * More than two digits.
+                                 */
+                                return (BN_FALSE);
+                        }
+                }
+        }
 
-	return( BN_TRUE );
+        return (BN_TRUE);
 }
 
 BigNumBool
-BnnIsDigitZero( BigNumDigit d )
-{
-	/*
-	 * Returns BN_TRUE iff digit = 0
-	 */
+BnnIsDigitZero(BigNumDigit d) {
+        /*
+         * Returns BN_TRUE iff digit = 0
+         */
 
-	return( (BigNumBool)(d == 0) );
+        return ((BigNumBool)(d == 0));
 }
 
 BigNumBool
-BnnIsDigitNormalized( BigNumDigit d )
-{
-	/*
-	 * Returns BN_TRUE iff Base/2 <= digit < Base
-	 * i.e. if digit's leading bit is 1
-	 */
+BnnIsDigitNormalized(BigNumDigit d) {
+        /*
+         * Returns BN_TRUE iff Base/2 <= digit < Base
+         * i.e. if digit's leading bit is 1
+         */
 
-	if( (d & (BN_ONE << (BN_DIGIT_SIZE - 1))) != 0 ) {
-		return( BN_TRUE );
-	} else	{
-		return( BN_FALSE );
-	}
+        if ((d & (BN_ONE << (BN_DIGIT_SIZE - 1))) != 0) {
+                return (BN_TRUE);
+        } else  {
+                return (BN_FALSE);
+        }
 }
 
 BigNumBool
-BnnIsDigitOdd( BigNumDigit d )
-{
-	/*
-	 * Returns BN_TRUE iff digit is odd
-	 */
+BnnIsDigitOdd(BigNumDigit d) {
+        /*
+         * Returns BN_TRUE iff digit is odd
+         */
 
-	if( (d & 1) != 0 ) {
-		return( BN_TRUE );
-	} else	{
-		return( BN_FALSE );
-	}
+        if ((d & 1) != 0) {
+                return (BN_TRUE);
+        } else  {
+                return (BN_FALSE);
+        }
 }
 
 BigNumBool
-BnnIsDigitEven( BigNumDigit d )
-{
-	/*
-	 * Returns BN_TRUE iff digit is even
-	 */
+BnnIsDigitEven(BigNumDigit d) {
+        /*
+         * Returns BN_TRUE iff digit is even
+         */
 
-	if( (d & 1) == 0 ) {
-		return( BN_TRUE );
-	} else	{
-		return( BN_FALSE );
-	}
+        if ((d & 1) == 0) {
+                return (BN_TRUE);
+        } else  {
+                return (BN_FALSE);
+        }
 }
 
 BigNumCmp
-BnnCompareDigits( BigNumDigit d1, BigNumDigit d2 )
-{
-	/*
-	 * Returns 	BN_GREATER 	if digit1 > digit2
-	 *		BN_EQUAL	if digit1 = digit2
-	 *		BN_LESS		if digit1 < digit2
-	 */
+BnnCompareDigits(BigNumDigit d1, BigNumDigit d2) {
+        /*
+         * Returns      BN_GREATER      if digit1 > digit2
+         *              BN_EQUAL        if digit1 = digit2
+         *              BN_LESS         if digit1 < digit2
+         */
 
-	return( (BigNumCmp)(d1 > d2 ? BN_GT : (d1 == d2 ? BN_EQ : BN_LT)) );
+        return ((BigNumCmp)(d1 > d2 ? BN_GT : (d1 == d2 ? BN_EQ : BN_LT)));
 }
 
 void
-BnnComplement( BigNum nn, BigNumLength nl )
-{
-	/*
-	 * Performs the computation BBase(N) - N - 1 => N
-	 */
+BnnComplement(BigNum nn, BigNumLength nl) {
+        /*
+         * Performs the computation BBase(N) - N - 1 => N
+         */
 
-	BigNumLength d;
+        BigNumLength d;
 
-	for( d = 0 ; d < nl ; ++d ) {
-		nn[d] ^= BN_COMPLEMENT;
-	}
+        for (d = 0; d < nl; ++d) {
+                nn[d] ^= BN_COMPLEMENT;
+        }
 }
 
 void
-BnnComplement2( BigNum nn, BigNumLength nl )
-{
-	/*
-	 * Performs the computation neg( N ) => N
-	 */
+BnnComplement2(BigNum nn, BigNumLength nl) {
+        /*
+         * Performs the computation neg(N) => N
+         */
 
-	BigNumDigit one = BN_ONE;
+        BigNumDigit one = BN_ONE;
 
-	/*
-	 * Initialize constants
-	 */
+        /*
+         * Initialize constants
+         */
 
-	BnnComplement( nn, nl );
-	(void)BnnAdd( nn, nl, &one, (BigNumLength)1, BN_NOCARRY );
+        BnnComplement(nn, nl);
+        (void)BnnAdd(nn, nl, &one, (BigNumLength)1, BN_NOCARRY);
 }
 
 void
-BnnAndDigits( BigNum n, BigNumDigit d )
-{
-	/*
-	 * Returns the logical computation n[0] AND d in n[0]
-	 */
+BnnAndDigits(BigNum n, BigNumDigit d) {
+        /*
+         * Returns the logical computation n[0] AND d in n[0]
+         */
 
-	*n &= d;
+        *n &= d;
 }
 
 void
-BnnOrDigits( BigNum n, BigNumDigit d )
-{
-	/*
-	 * Returns the logical computation n[0] OR d2 in n[0].
-	 */
-	*n |= d;
+BnnOrDigits(BigNum n, BigNumDigit d) {
+        /*
+         * Returns the logical computation n[0] OR d2 in n[0].
+         */
+        *n |= d;
 }
 
 void
-BnnXorDigits( BigNum n, BigNumDigit d )
-{
-	/*
-	 * Returns the logical computation n[0] XOR d in n[0].
-	 */
+BnnXorDigits(BigNum n, BigNumDigit d) {
+        /*
+         * Returns the logical computation n[0] XOR d in n[0].
+         */
 
-	*n ^= d;
+        *n ^= d;
 }
 
 /*
- *	Shift operations
+ *      Shift operations
  */
 
 BigNumDigit
-BnnShiftLeft( BigNum mm, BigNumLength ml, BigNumLength nbits )
-{
-	/*
-	 * Shifts  M  left by "nbits",  filling with 0s.  Returns the
-	 * leftmost  "nbits"  of  M in a digit.  Assumes 0 <= nbits <
-	 * BN_DIGIT_SIZE.
-	 */
+BnnShiftLeft(BigNum mm, BigNumLength ml, BigNumLength nbits) {
+        /*
+         * Shifts  M  left by "nbits",  filling with 0s.  Returns the
+         * leftmost  "nbits"  of  M in a digit.  Assumes 0 <= nbits <
+         * BN_DIGIT_SIZE.
+         */
 
-	BigNumDigit res = BN_ZERO;
+        BigNumDigit res = BN_ZERO;
 
-	if( nbits != 0 ) {
-		BigNumLength rnbits = (BigNumLength)(BN_DIGIT_SIZE - nbits);
-		BigNumLength d;
+        if (nbits != 0) {
+                BigNumLength rnbits = (BigNumLength)(BN_DIGIT_SIZE - nbits);
+                BigNumLength d;
 
-		for( d = 0 ; d < ml ; ++d ) {
-			BigNumDigit save = mm[d];
-			mm[d] = (save << nbits) | res;
-			res   = save >> rnbits;
-		}
-	}
+                for (d = 0; d < ml; ++d) {
+                        BigNumDigit save = mm[d];
+                        mm[d] = (save << nbits) | res;
+                        res   = save >> rnbits;
+                }
+        }
 
-	return( res );
+        return (res);
 }
 
 BigNumDigit
-BnnShiftRight( BigNum mm, BigNumLength ml, BigNumLength nbits )
-{
-	/*
-	 * Shifts  M right by "nbits",  filling with 0s.  Returns the
-	 * rightmost  "nbits"  of M in a digit.  Assumes 0 <= nbits <
-	 * BN_DIGIT_SIZE.
-	 */
+BnnShiftRight(BigNum mm, BigNumLength ml, BigNumLength nbits) {
+        /*
+         * Shifts  M right by "nbits",  filling with 0s.  Returns the
+         * rightmost  "nbits"  of M in a digit.  Assumes 0 <= nbits <
+         * BN_DIGIT_SIZE.
+         */
 
-	BigNumDigit res = BN_ZERO;
+        BigNumDigit res = BN_ZERO;
 
-	if( nbits != 0 ) {
-		BigNumLength lnbits = (BigNumLength)BN_DIGIT_SIZE - nbits;
-		int d;
+        if (nbits != 0) {
+                BigNumLength lnbits = (BigNumLength)BN_DIGIT_SIZE - nbits;
+                int d;
 
-		/*
-		 * loop starting from most significant digit
-		 */
+                /*
+                 * loop starting from most significant digit
+                 */
 
-		for( d = (int)(ml - 1) ; d >= 0 ; --d ) {
-			BigNumDigit save = mm[d];
-			mm[d] = (save >> nbits) | res;
-			res   = save << lnbits;
-		}
-	}
+                for (d = (int)(ml - 1); d >= 0; --d) {
+                        BigNumDigit save = mm[d];
+                        mm[d] = (save >> nbits) | res;
+                        res   = save << lnbits;
+                }
+        }
 
-	return( res );
+        return (res);
 }
 
 /*
- *	Additions
+ *      Additions
  */
 
 BigNumCarry
-BnnAddCarry( BigNum nn, BigNumLength nl, BigNumCarry carryin )
-{
-	/*
-	 * Performs the sum N + CarryIn => N. Returns the CarryOut.
-	 */
+BnnAddCarry(BigNum nn, BigNumLength nl, BigNumCarry carryin) {
+        /*
+         * Performs the sum N + CarryIn => N. Returns the CarryOut.
+         */
 
-	if( carryin == BN_NOCARRY ) {
-		return( BN_NOCARRY );
-	} else	if( nl == 0 ) {
-		return( BN_CARRY );
-	} else	{
-		BigNumLength d;
+        if (carryin == BN_NOCARRY) {
+                return (BN_NOCARRY);
+        } else  if (nl == 0) {
+                return (BN_CARRY);
+        } else  {
+                BigNumLength d;
 
-		for( d = 0 ; d < nl ; ++d ) {
-			if( ++nn[d] != 0 ) {
-				return( BN_NOCARRY );
-			}
-		}
+                for (d = 0; d < nl; ++d) {
+                        if (++nn[d] != 0) {
+                                return (BN_NOCARRY);
+                        }
+                }
 
-		return( BN_CARRY );
-	}
+                return (BN_CARRY);
+        }
 }
 
 BigNumCarry
-BnnAdd( BigNum mm, BigNumLength ml, const BigNum nn, BigNumLength nl, BigNumCarry carryin )
-{
-	/*
-	 * Performs the sum M + N + CarryIn => M. Returns the CarryOut.
-	 * Assumes Size(M) >= Size(N).
-	 */
+BnnAdd(BigNum mm,
+       BigNumLength ml,
+       const BigNum nn,
+       BigNumLength nl,
+       BigNumCarry carryin) {
+        /*
+         * Performs the sum M + N + CarryIn => M. Returns the CarryOut.
+         * Assumes Size(M) >= Size(N).
+         */
 
-	BigNumProduct c = (BigNumProduct)carryin;
-	BigNumLength i;
+        BigNumProduct c = (BigNumProduct)carryin;
+        BigNumLength i;
 
-	for( i = 0 ; i < nl ; ++i ) {
-		BigNumProduct save = (BigNumProduct)*mm;
+        for (i = 0; i < nl; ++i) {
+                BigNumProduct save = (BigNumProduct)*mm;
 
-		c   += save;
-		if( c < save ) {
-			*(mm++) = nn[ i ];
-			c	= (BigNumProduct)1;
-		} else	{
-			save	= (BigNumProduct)nn[ i ];
-			c      += save;
-			*(mm++) = (BigNumDigit)c;
-			c	= (BigNumProduct)((c < save) ? 1 : 0);
-		}
-	}
+                c   += save;
+                if (c < save) {
+                        *(mm++) = nn[ i ];
+                        c       = (BigNumProduct)1;
+                } else  {
+                        save    = (BigNumProduct)nn[ i ];
+                        c      += save;
+                        *(mm++) = (BigNumDigit)c;
+                        c       = (BigNumProduct)((c < save) ? 1 : 0);
+                }
+        }
 
-	return( BnnAddCarry( mm, ml-nl, ((c == 0) ? BN_NOCARRY : BN_CARRY) ) );
+        return (BnnAddCarry(mm, ml-nl, ((c == 0) ? BN_NOCARRY : BN_CARRY)));
 }
 
 /*
- *	Subtraction
+ *      Subtraction
  */
 
 BigNumCarry
-BnnSubtractBorrow( BigNum nn, BigNumLength nl, BigNumCarry carryin )
-{
-	/*
-	 * Performs the difference N + CarryIn - 1 => N.
-	 * Returns the CarryOut.
-	 */
+BnnSubtractBorrow(BigNum nn, BigNumLength nl, BigNumCarry carryin) {
+        /*
+         * Performs the difference N + CarryIn - 1 => N.
+         * Returns the CarryOut.
+         */
 
-	if( carryin == BN_CARRY ) {
-		return( BN_CARRY );
-	} else	if( nl == 0 ) {
-		return( BN_NOCARRY );
-	} else	{
-		BigNumLength d;
+        if (carryin == BN_CARRY) {
+                return (BN_CARRY);
+        } else  if (nl == 0) {
+                return (BN_NOCARRY);
+        } else  {
+                BigNumLength d;
 
-		for( d = 0 ; d < nl ; ++d ) {
-			if( nn[d]-- != 0 ) {
-				return( BN_CARRY );
-			}
-		}
+                for (d = 0; d < nl; ++d) {
+                        if (nn[d]-- != 0) {
+                                return (BN_CARRY);
+                        }
+                }
 
-		return( BN_NOCARRY );
-	}
+                return (BN_NOCARRY);
+        }
 }
 
 BigNumCarry
-BnnSubtract( BigNum mm, BigNumLength ml, const BigNum nn, BigNumLength nl, BigNumCarry carryin )
-{
-	/*
-	 * Performs the difference M - N + CarryIn - 1 => M.
-	 * Returns the CarryOut. Assumes Size(M) >= Size(N).
-	 */
+BnnSubtract(BigNum mm,
+            BigNumLength ml,
+            const BigNum nn,
+            BigNumLength nl,
+            BigNumCarry carryin) {
+        /*
+         * Performs the difference M - N + CarryIn - 1 => M.
+         * Returns the CarryOut. Assumes Size(M) >= Size(N).
+         */
 
-	BigNumProduct 	c = (BigNumProduct)((carryin == BN_CARRY) ? 1 : 0);
-	BigNumDigit 	invn;
-	BigNumProduct	save;
-	BigNumLength    i;
+        BigNumProduct   c = (BigNumProduct)((carryin == BN_CARRY) ? 1 : 0);
+        BigNumDigit     invn;
+        BigNumProduct   save;
+        BigNumLength    i;
 
-	for( i = 0 ; i < nl ; ++ i ) {
-		save = (BigNumProduct)*mm;
-		invn = nn[ i ] ^ BN_COMPLEMENT;
-		c += save;
+        for (i = 0; i < nl; ++i) {
+                save = (BigNumProduct)*mm;
+                invn = nn[ i ] ^ BN_COMPLEMENT;
+                c += save;
 
-		if( c < save ) {
-			*(mm++) = invn;
-			c	= (BigNumProduct)1;
-		} else	{
-			c      += invn;
-			*(mm++) = (BigNumDigit)c;
-			c	= (BigNumProduct)((c < invn) ? 1 : 0);
-		}
-	}
+                if (c < save) {
+                        *(mm++) = invn;
+                        c       = (BigNumProduct)1;
+                } else  {
+                        c      += invn;
+                        *(mm++) = (BigNumDigit)c;
+                        c       = (BigNumProduct)((c < invn) ? 1 : 0);
+                }
+        }
 
-	if( c == 0 ) {
-		return( BnnSubtractBorrow( mm, ml-nl, BN_NOCARRY ) );
-	} else	{
-		return( BnnSubtractBorrow( mm, ml-nl, BN_CARRY ) );
-	}
+        if (c == 0) {
+                return (BnnSubtractBorrow(mm, ml-nl, BN_NOCARRY));
+        } else  {
+                return (BnnSubtractBorrow(mm, ml-nl, BN_CARRY));
+        }
 }
 
 /*
- *	Multiplication
+ *      Multiplication
  */
 
-#define LOW(x) 		   (BigNumDigit)(x & ((BN_ONE<<(BN_DIGIT_SIZE / 2)) -1))
-#define HIGH(x) 	   (BigNumDigit)(x >> (BN_DIGIT_SIZE / 2))
-#define L2H(x) 		   (BigNumDigit)(x << (BN_DIGIT_SIZE / 2))
-#define UPDATE_S(c,V,X3)   c += V; if (c < V) { X3++; }
+#define LOW(x)   (BigNumDigit)(x & ((BN_ONE << (BN_DIGIT_SIZE / 2)) -1))
+#define HIGH(x)  (BigNumDigit)(x >> (BN_DIGIT_SIZE / 2))
+#define L2H(x)   (BigNumDigit)(x << (BN_DIGIT_SIZE / 2))
+
+#define UPDATE_S(c, V, X3) c += V; if (c < V) { X3++; }
 
 BigNumCarry
-BnnMultiplyDigit( BigNum pp, BigNumLength pl, const BigNum mm, BigNumLength ml, BigNumDigit d )
-{
-	/*
-	 * Performs the product:
-	 * Q = P + M * d
-	 * BB = BBase(P)
-	 * Q mod BB => P
-	 * Q div BB => CarryOut
-	 * Returns the CarryOut.
-	 * Assumes Size(P) >= Size(M) + 1.
-	 */
+BnnMultiplyDigit(BigNum pp,
+                 BigNumLength pl,
+                 const BigNum mm,
+                 BigNumLength ml,
+                 BigNumDigit d) {
+        /*
+         * Performs the product:
+         * Q = P + M * d
+         * BB = BBase(P)
+         * Q mod BB => P
+         * Q div BB => CarryOut
+         * Returns the CarryOut.
+         * Assumes Size(P) >= Size(M) + 1.
+         */
 
-	BigNumLength	i;
-	BigNumProduct	c = 0;
-	BigNumDigit	save;
+        BigNumLength    i;
+        BigNumProduct   c = 0;
+        BigNumDigit     save;
 
-    	if( d == BN_ZERO ) {
-		return( BN_NOCARRY );
-	}
+        if (d == BN_ZERO) {
+                return (BN_NOCARRY);
+        }
 
-	if( d == BN_ONE ) {
-		return( BnnAdd( pp, pl, mm, ml, BN_NOCARRY ) );
-	}
+        if (d == BN_ONE) {
+                return (BnnAdd(pp, pl, mm, ml, BN_NOCARRY));
+        }
 
-	for( i = 0 ; i < ml ; ++i ) {
-		BigNumDigit	Lm;
-		BigNumDigit	Hm;
-		BigNumDigit	Ld;
-		BigNumDigit	Hd;
-		BigNumDigit	X0;
-		BigNumDigit	X1;
-		BigNumDigit	X2;
-		BigNumDigit	X3;
+        for (i = 0; i < ml; ++i) {
+                BigNumDigit     Lm;
+                BigNumDigit     Hm;
+                BigNumDigit     Ld;
+                BigNumDigit     Hd;
+                BigNumDigit     X0;
+                BigNumDigit     X1;
+                BigNumDigit     X2;
+                BigNumDigit     X3;
 
-		Ld = LOW( d );
-		Hd = HIGH( d );
-		Lm = LOW( mm[ i ] );
-		Hm = HIGH( mm[ i ] );
-		X0 = Ld * Lm;
-		X1 = Ld * Hm;
-		X2 = Hd * Lm;
-		X3 = Hd * Hm;
+                Ld = LOW(d);
+                Hd = HIGH(d);
+                Lm = LOW(mm[ i ]);
+                Hm = HIGH(mm[ i ]);
+                X0 = Ld * Lm;
+                X1 = Ld * Hm;
+                X2 = Hd * Lm;
+                X3 = Hd * Hm;
 
-		UPDATE_S( c, X0,        X3 );
-		UPDATE_S( c, L2H( X1 ), X3 );
-		UPDATE_S( c, L2H( X2 ), X3 );
-		UPDATE_S( c, *pp,       X3 );
+                UPDATE_S(c, X0,        X3);
+                UPDATE_S(c, L2H(X1), X3);
+                UPDATE_S(c, L2H(X2), X3);
+                UPDATE_S(c, *pp,       X3);
 
-		--pl;
-		*(pp++) = (BigNumDigit)c;
-		c = X3 + HIGH(X1) + HIGH(X2);
-	}
+                --pl;
+                *(pp++) = (BigNumDigit)c;
+                c = X3 + HIGH(X1) + HIGH(X2);
+        }
 
-	if( pl == 0 ) {
-		return( BN_NOCARRY );
-	}
+        if (pl == 0) {
+                return (BN_NOCARRY);
+        }
 
-	save	= *pp;
-	c      += save;
-	*pp	= (BigNumDigit)c;
+        save    = *pp;
+        c      += save;
+        *pp     = (BigNumDigit)c;
 
-	if( c >= save ) {
-		return( BN_NOCARRY );
-	}
+        if (c >= save) {
+                return (BN_NOCARRY);
+        }
 
-	++pp;
-	--pl;
+        ++pp;
+        --pl;
 
-	while( pl != 0 && (++(*pp++)) == 0 ) {
-		pl--;
-	}
+        while (pl != 0 && (++(*pp++)) == 0) {
+                pl--;
+        }
 
-	return( (pl != 0) ? BN_NOCARRY : BN_CARRY );
+        return ((pl != 0) ? BN_NOCARRY : BN_CARRY);
 }
 
 /*
@@ -655,427 +643,429 @@ BnnMultiplyDigit( BigNum pp, BigNumLength pl, const BigNum mm, BigNumLength ml, 
 
 /* xh:xl -= yh:yl */
 
-#define SUB(xh, xl, yh, yl)					\
-	if( yl > xl ) {						\
-		xl -= yl;					\
-		xh -= yh + 1;					\
-	} else  {						\
-		xl -= yl;					\
-		xh -= yh;					\
-	}
+#define SUB(xh, xl, yh, yl)                                     \
+        if (yl > xl) {                                          \
+                xl -= yl;                                       \
+                xh -= yh + 1;                                   \
+        } else  {                                               \
+                xl -= yl;                                       \
+                xh -= yh;                                       \
+        }
 
 BigNumDigit
-BnnDivideDigit( BigNum qq, BigNum nn, BigNumLength nl, BigNumDigit d )
-{
-	/*
-	 * Performs the quotient: N div d => Q
-	 * Returns R = N mod d
-	 * Assumes leading digit of N < d, and d > 0.
-	 */
+BnnDivideDigit(BigNum qq, BigNum nn, BigNumLength nl, BigNumDigit d) {
+        /*
+         * Performs the quotient: N div d => Q
+         * Returns R = N mod d
+         * Assumes leading digit of N < d, and d > 0.
+         */
 
-	BigNumLength	k;
-	BigNumLength	orig_nl;
-	BigNumDigit	rh;	/* Two halves of current remainder */
-	BigNumDigit 	rl;	/* Correspond to quad above	   */
-	BigNumDigit	ph;
-	BigNumDigit	pl;	/* product of c and qa		   */
-	BigNumDigit 	ch;
-	BigNumDigit	cl;
-	BigNumDigit	prev_qq;
+        BigNumLength    k;
+        BigNumLength    orig_nl;
+        BigNumDigit     rh;     /* Two halves of current remainder */
+        BigNumDigit     rl;     /* Correspond to quad above        */
+        BigNumDigit     ph;
+        BigNumDigit     pl;     /* product of c and qa             */
+        BigNumDigit     ch;
+        BigNumDigit     cl;
+        BigNumDigit     prev_qq;
 
-	/*
-	 * Normalize divisor
-	 */
+        /*
+         * Normalize divisor
+         */
 
-	k = BnnNumLeadingZeroBitsInDigit( d );
+        k = BnnNumLeadingZeroBitsInDigit(d);
 
-	if( k != 0 ) {
-		prev_qq = qq[ -1 ];
-		orig_nl = nl;
-		d <<= k;
-		(void)BnnShiftLeft( nn, nl, k );
-	} else	{
-		prev_qq = 0;
-		orig_nl = 0;
-	}
+        if (k != 0) {
+                prev_qq = qq[ -1 ];
+                orig_nl = nl;
+                d <<= k;
+                (void)BnnShiftLeft(nn, nl, k);
+        } else  {
+                prev_qq = 0;
+                orig_nl = 0;
+        }
 
-	nn += nl;
-	nl--;
-	qq += nl;
+        nn += nl;
+        nl--;
+        qq += nl;
 
-	ch = HIGH( d );
-	cl = LOW( d );
+        ch = HIGH(d);
+        cl = LOW(d);
 
-	/*
-	 * At this point ch can't be == 0; d has been shifted by k
-	 * (the number of leading 0).
-	 */
+        /*
+         * At this point ch can't be == 0; d has been shifted by k
+         * (the number of leading 0).
+         */
 
-	rl = *(--nn);
+        rl = *(--nn);
 
-	while( nl-- != 0 ) {
-		BigNumDigit qa; /* Current appr. to quotient */
+        while (nl-- != 0) {
+                BigNumDigit qa; /* Current appr. to quotient */
 
-		rh = rl;
-		rl = *(--nn);
-		qa = rh / ch; 	/* appr. quotient */
+                rh = rl;
+                rl = *(--nn);
+                qa = rh / ch;   /* appr. quotient */
 
-		/*
-		 * Compute ph, pl
-		 */
+                /*
+                 * Compute ph, pl
+                 */
 
-		pl = cl * qa;
-		ph = ch * qa;
-		ph += HIGH( pl );
-		pl = L2H( pl );
+                pl = cl * qa;
+                ph = ch * qa;
+                ph += HIGH(pl);
+                pl = L2H(pl);
 
-		/*
-		 * While ph:pl > rh:rl, decrement qa, adjust qh:ql
-		 */
+                /*
+                 * While ph:pl > rh:rl, decrement qa, adjust qh:ql
+                 */
 
-		while( (ph > rh) || ((ph == rh) && (pl > rl)) ) {
-			qa--;
-			SUB( ph, pl, ch, L2H( cl ) );
-		}
+                while ((ph > rh) || ((ph == rh) && (pl > rl))) {
+                        qa--;
+                        SUB(ph, pl, ch, L2H(cl));
+                }
 
-		SUB( rh, rl, ph, pl );
+                SUB(rh, rl, ph, pl);
 
-		/*
-		 * Top half of quotient is correct; save it
-		 */
+                /*
+                 * Top half of quotient is correct; save it
+                 */
 
-		*(--qq) = L2H( qa );
-		qa = (L2H( rh ) | HIGH( rl )) / ch;
+                *(--qq) = L2H(qa);
+                qa = (L2H(rh) | HIGH(rl)) / ch;
 
-		/*
-		 * Approx low half of q. Compute ph, pl, again
-		 */
+                /*
+                 * Approx low half of q. Compute ph, pl, again
+                 */
 
-		pl = cl * qa;
-		ph = ch * qa;
-		ph += HIGH( pl );
-		pl = LOW( pl ) | L2H( LOW( ph ) );
-		ph = HIGH( ph );
+                pl = cl * qa;
+                ph = ch * qa;
+                ph += HIGH(pl);
+                pl = LOW(pl) | L2H(LOW(ph));
+                ph = HIGH(ph);
 
-		/*
-		 * While ph:pl > rh:rl, decrement qa, adjust qh:ql
-		 */
+                /*
+                 * While ph:pl > rh:rl, decrement qa, adjust qh:ql
+                 */
 
-		while( (ph > rh) || ((ph == rh) && (pl > rl)) ) {
-			qa--;
-			SUB( ph, pl, 0, d );
-		}
+                while ((ph > rh) || ((ph == rh) && (pl > rl))) {
+                        qa--;
+                        SUB(ph, pl, 0, d);
+                }
 
-		/*
-		 * Subtract ph:pl from rh:rl; we know rh will be 0
-		 */
+                /*
+                 * Subtract ph:pl from rh:rl; we know rh will be 0
+                 */
 
-		rl -= pl;
-		*qq |= qa;
-	}
+                rl -= pl;
+                *qq |= qa;
+        }
 
-	/*
-	 * Denormalize dividend
-	 */
+        /*
+         * Denormalize dividend
+         */
 
-	if( k != 0 ) {
-		if( (qq > nn) && (qq < &nn[orig_nl]) ) {
-			/*
-			 * Overlap between qq and nn. Care of *qq!
-			 */
-			orig_nl = (BigNumLength)(qq - nn);
-			(void)BnnShiftRight( nn, orig_nl, k );
-			nn[orig_nl - 1] = prev_qq;
-		} else	if( qq == nn ) {
-			(void)BnnShiftRight(&nn[orig_nl-1], (BigNumLength)1, k);
-		} else	{
-			(void)BnnShiftRight(nn, orig_nl, k);
-		}
-	}
-	return( rl >> k );
+        if (k != 0) {
+                if ((qq > nn) && (qq < &nn[orig_nl])) {
+                        /*
+                         * Overlap between qq and nn. Care of *qq!
+                         */
+                        orig_nl = (BigNumLength)(qq - nn);
+                        (void)BnnShiftRight(nn, orig_nl, k);
+                        nn[orig_nl - 1] = prev_qq;
+                } else  if (qq == nn) {
+                        (void)BnnShiftRight(&nn[orig_nl-1], (BigNumLength)1, k);
+                } else  {
+                        (void)BnnShiftRight(nn, orig_nl, k);
+                }
+        }
+        return (rl >> k);
 }
 
 BigNumBool
-BnnIsZero( const BigNum nn, BigNumLength nl )
-{
-	/*
-	 * Returns BN_TRUE iff N = 0
-	 */
+BnnIsZero(const BigNum nn, BigNumLength nl) {
+        /*
+         * Returns BN_TRUE iff N = 0
+         */
 
-	if( (BnnNumDigits(nn, nl) == (BigNumLength)1)
-	    && (nl == 0 || BnnIsDigitZero(*nn) != BN_FALSE) ) {
-		return( BN_TRUE );
-	} else	{
-		return( BN_FALSE );
-	}
+        if ((BnnNumDigits(nn, nl) == (BigNumLength)1)
+            && (nl == 0 || BnnIsDigitZero(*nn) != BN_FALSE)) {
+                return (BN_TRUE);
+        } else  {
+                return (BN_FALSE);
+        }
 }
 
 BigNumCarry
-BnnMultiply( BigNum pp, BigNumLength pl, const BigNum mm, BigNumLength ml, const BigNum nn, BigNumLength nl )
-{
-	/*
-	 * Performs the product:
-	 *    Q = P + M * N
-	 *    BB = BBase(P)
-	 *    Q mod BB => P
-	 *    Q div BB => CarryOut
-	 *
-	 * Returns the CarryOut.
-	 *
-	 * Assumes:
-	 *    Size(P) >= Size(M) + Size(N), 
-	 *    Size(M) >= Size(N).
-	 */
+BnnMultiply(BigNum pp,
+            BigNumLength pl,
+            const BigNum mm,
+            BigNumLength ml,
+            const BigNum nn,
+            BigNumLength nl) {
+        /*
+         * Performs the product:
+         *    Q = P + M * N
+         *    BB = BBase(P)
+         *    Q mod BB => P
+         *    Q div BB => CarryOut
+         *
+         * Returns the CarryOut.
+         *
+         * Assumes:
+         *    Size(P) >= Size(M) + Size(N), 
+         *    Size(M) >= Size(N).
+         */
 
-	BigNumLength i;
-	BigNumCarry  c = BN_NOCARRY;
+        BigNumLength i;
+        BigNumCarry  c = BN_NOCARRY;
 
-	/*
-	 * Multiply one digit at a time
-	 */
+        /*
+         * Multiply one digit at a time
+         */
 
-	for( i = 0 ; i < nl ; ++i ) {
-		if(BnnMultiplyDigit(&pp[i], pl--, mm, ml, nn[i]) == BN_CARRY) {
-			c = BN_CARRY;
-		}
-	}
+        for (i = 0; i < nl; ++i) {
+                if (BnnMultiplyDigit(&pp[i], pl--, mm, ml, nn[i]) == BN_CARRY) {
+                        c = BN_CARRY;
+                }
+        }
 
-	return( c );
+        return (c);
 }
 
 static void
-BnnDivideHelper( BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl )
-{
-	/*
-	 * In-place division.
-	 *
-	 * Input (N has been EXTENDED by 1 PLACE; D is normalized):
-	 *	+-----------------------------------------------+----+
-	 *	|  			N			  EXT|
-	 *	+-----------------------------------------------+----+
-	 *
-	 *	+-------------------------------+
-	 *	|		D	       1|
-	 *	+-------------------------------+
-	 *
-	 * Output (in place of N):
-	 *	+-------------------------------+---------------+----+
-	 *	|		R	 	|	   Q	     |
-	 *	+-------------------------------+---------------+----+
-	 *
-	 * Assumes:
-	 *    N > D
-	 *    Size(N) > Size(D)
-	 *    last digit of N < last digit of D
-	 *    D is normalized (Base/2 <= last digit of D < Base)
-	 */
+BnnDivideHelper(BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl) {
+        /*
+         * In-place division.
+         *
+         * Input (N has been EXTENDED by 1 PLACE; D is normalized):
+         *      +-----------------------------------------------+----+
+         *      |                       N                         EXT|
+         *      +-----------------------------------------------+----+
+         *
+         *      +-------------------------------+
+         *      |               D              1|
+         *      +-------------------------------+
+         *
+         * Output (in place of N):
+         *      +-------------------------------+---------------+----+
+         *      |               R               |          Q         |
+         *      +-------------------------------+---------------+----+
+         *
+         * Assumes:
+         *    N > D
+         *    Size(N) > Size(D)
+         *    last digit of N < last digit of D
+         *    D is normalized (Base/2 <= last digit of D < Base)
+         */
 
-   	BigNumDigit 	DDigit;
-	BigNumDigit	BaseMinus1;
-	BigNumDigit	QApp;
-	BigNumLength	ni;
+        BigNumDigit     DDigit;
+        BigNumDigit     BaseMinus1;
+        BigNumDigit     QApp;
+        BigNumLength    ni;
 
-	/*
-	 * Initialize constants
-	 */
+        /*
+         * Initialize constants
+         */
 
-	/*
-	 * BaseMinus1 = BN_COMPLEMENT;
-	 * ->
-	 *      BnnSetDigit( &BaseMinus1, BN_ZERO );
-	 *      BnnComplement( &BaseMinus1, (BigNumLength)1 );
-	 */
+        /*
+         * BaseMinus1 = BN_COMPLEMENT;
+         * ->
+         *      BnnSetDigit(&BaseMinus1, BN_ZERO);
+         *      BnnComplement(&BaseMinus1, (BigNumLength)1);
+         */
 
-	BaseMinus1 = BN_COMPLEMENT;
+        BaseMinus1 = BN_COMPLEMENT;
 
-	/*
-	 * Save the most significant digit of D
-	 */
+        /*
+         * Save the most significant digit of D
+         */
 
-	DDigit = BN_ZERO;
-	BnnAssign( &DDigit, dd+dl-1, (BigNumLength)1 );
+        DDigit = BN_ZERO;
+        BnnAssign(&DDigit, dd+dl-1, (BigNumLength)1);
 
-	/*
-	 * Replace D by Base - D
-	 */
+        /*
+         * Replace D by Base - D
+         */
 
-	BnnComplement( dd, dl );
-	(void)BnnAddCarry( dd, dl, BN_CARRY );
+        BnnComplement(dd, dl);
+        (void)BnnAddCarry(dd, dl, BN_CARRY);
 
-	/*
-	 * For each digit of the divisor, from most significant to least:
-	 */
+        /*
+         * For each digit of the divisor, from most significant to least:
+         */
 
-	QApp = BN_ZERO;
-	nl += 1;
-	ni = nl-dl;
+        QApp = BN_ZERO;
+        nl += 1;
+        ni = nl-dl;
 
-	while( ni != 0 ) {
-		/*
-		 * Compute the approximate quotient
-		 */
+        while (ni != 0) {
+                /*
+                 * Compute the approximate quotient
+                 */
 
-		ni--;
-		nl--;
+                ni--;
+                nl--;
 
-		/*
-		 * If first digits of numerator and denominator are the same,
-		 */
+                /*
+                 * If first digits of numerator and denominator are the same,
+                 */
 
-		if( BnnCompareDigits( *(nn+nl), DDigit ) == BN_EQ ) {
-			/*
-			 * Use "Base - 1" for the approximate quotient
-			 */
-			BnnAssign( &QApp, &BaseMinus1, (BigNumLength)1 );
-		} else	{
-			/*
-		 	 * Divide  the  first  2  digits  of N by the
-		 	 * first digit of D
-			 */
-			(void)BnnDivideDigit( &QApp,
-					      nn+nl-1,
-					      (BigNumLength)2,
-					      DDigit );
-		}
+                if (BnnCompareDigits(*(nn+nl), DDigit) == BN_EQ) {
+                        /*
+                         * Use "Base - 1" for the approximate quotient
+                         */
+                        BnnAssign(&QApp, &BaseMinus1, (BigNumLength)1);
+                } else  {
+                        /*
+                         * Divide  the  first  2  digits  of N by the
+                         * first digit of D
+                         */
+                        (void)BnnDivideDigit(&QApp,
+                                              nn+nl-1,
+                                              (BigNumLength)2,
+                                              DDigit);
+                }
 
-		/*
-		 * Compute the remainder
-		 */
+                /*
+                 * Compute the remainder
+                 */
 
-		(void)BnnMultiplyDigit( nn+ni, dl+1, dd, dl, QApp );
+                (void)BnnMultiplyDigit(nn+ni, dl+1, dd, dl, QApp);
 
-      		/*
-		 * Correct the approximate quotient, in case it was too large
-		 */
+                /*
+                 * Correct the approximate quotient, in case it was too large
+                 */
 
-		while( BnnCompareDigits( *(nn + nl), QApp ) != BN_EQ ) {
-			/*
-			 * Subtract D from N
-			 */
+                while (BnnCompareDigits(*(nn + nl), QApp) != BN_EQ) {
+                        /*
+                         * Subtract D from N
+                         */
 
-			(void)BnnSubtract(nn+ni, dl+1, dd, dl, BN_CARRY );
+                        (void)BnnSubtract(nn+ni, dl+1, dd, dl, BN_CARRY);
 
-			/*
-			 * Q -= 1
-			 */
+                        /*
+                         * Q -= 1
+                         */
 
-			(void)BnnSubtractBorrow( &QApp,
-						 (BigNumLength)1,
-						 BN_NOCARRY );
-		}
-	}
+                        (void)BnnSubtractBorrow(&QApp,
+                                                 (BigNumLength)1,
+                                                 BN_NOCARRY);
+                }
+        }
 
-	/*
-	 * Restore original D
-	 */
+        /*
+         * Restore original D
+         */
 
-	BnnComplement( dd, dl );
-	(void)BnnAddCarry( dd, dl, BN_CARRY );
+        BnnComplement(dd, dl);
+        (void)BnnAddCarry(dd, dl, BN_CARRY);
 }
 
 void
-BnnDivide( BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl )
-{
-	/*
-	 * Performs the quotient:
-	 *    N div D => high-order bits of N, starting at N[dl]
-	 *    N mod D => low-order dl bits of N
-	 *
-	 * Assumes 
-	 *    Size(N) > Size(D),
-	 *    last digit of N < last digit of D (if N > D).
-	 */
+BnnDivide(BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl) {
+        /*
+         * Performs the quotient:
+         *    N div D => high-order bits of N, starting at N[dl]
+         *    N mod D => low-order dl bits of N
+         *
+         * Assumes 
+         *    Size(N) > Size(D),
+         *    last digit of N < last digit of D (if N > D).
+         */
 
-	BigNumLength 	nshift;
+        BigNumLength    nshift;
 
-	/*
-	 * Take care of easy cases first
-	 */
+        /*
+         * Take care of easy cases first
+         */
 
-	switch( BnnCompare( nn, nl, dd, dl ) ) {
-	case BN_LT:	/* n < d */
-							 /* N => R */
-		BnnSetToZero( nn+dl, nl-dl );		 /* 0 => Q */
-		return;
-	case BN_EQ:	/* n == d */
-		BnnSetToZero( nn, nl );			 /* 0 => R */
-		BnnSetDigit( nn+nl-1, BN_ONE );          /* 1 => Q */
-		return;
-	case BN_GT:	/* n > d */
-		/*
-		 * If divisor is just 1 digit, use a special divide
-		 */
+        switch (BnnCompare(nn, nl, dd, dl)) {
+        case BN_LT:     /* n < d */
+                                                         /* N => R */
+                BnnSetToZero(nn+dl, nl-dl);            /* 0 => Q */
+                return;
+        case BN_EQ:     /* n == d */
+                BnnSetToZero(nn, nl);                  /* 0 => R */
+                BnnSetDigit(nn+nl-1, BN_ONE);          /* 1 => Q */
+                return;
+        case BN_GT:     /* n > d */
+                /*
+                 * If divisor is just 1 digit, use a special divide
+                 */
 
-		if( dl == (BigNumLength)1 ) {
-			/*
-			 * note: nn+1 = nn+dl
-			 */
+                if (dl == (BigNumLength)1) {
+                        /*
+                         * note: nn+1 = nn+dl
+                         */
 
-			*nn = BnnDivideDigit( nn+1, nn, nl, *dd );
+                        *nn = BnnDivideDigit(nn+1, nn, nl, *dd);
 
-			/*
-			 * Otherwise, divide one digit at a time
-			 */
-		} else	{
-			/*
-			 * Normalize
-			 */
+                        /*
+                         * Otherwise, divide one digit at a time
+                         */
+                } else  {
+                        /*
+                         * Normalize
+                         */
 
-			nshift = BnnNumLeadingZeroBitsInDigit( *(dd+dl-1) );
-			(void)BnnShiftLeft( dd, dl, nshift );
-			(void)BnnShiftLeft( nn, nl, nshift );
+                        nshift = BnnNumLeadingZeroBitsInDigit(*(dd+dl-1));
+                        (void)BnnShiftLeft(dd, dl, nshift);
+                        (void)BnnShiftLeft(nn, nl, nshift);
 
-			/*
-			 * Divide
-			 */
+                        /*
+                         * Divide
+                         */
 
-			BnnDivideHelper( nn, nl-1, dd, dl );
+                        BnnDivideHelper(nn, nl-1, dd, dl);
 
-			/*
-			 * Unnormalize
-			 */
+                        /*
+                         * Unnormalize
+                         */
 
-			(void)BnnShiftRight( dd, dl, nshift );
-			(void)BnnShiftRight( nn, dl, nshift ); 
+                        (void)BnnShiftRight(dd, dl, nshift);
+                        (void)BnnShiftRight(nn, dl, nshift);
 
-			/*
-			 * note: unnormalize N <=> unnormalize R (with R < D)
-			 */
-		}
-	}
+                        /*
+                         * note: unnormalize N <=> unnormalize R (with R < D)
+                         */
+                }
+        }
 }
 
 BigNumCmp
-BnnCompare( const BigNum mm, BigNumLength ml, const BigNum nn, BigNumLength nl )
-{
-	/*
-	 * return
-	 *	 	BN_GT 	iff M > N
-	 *		BN_EQ	iff N = N
-	 *		BN_LT	iff N < N
-	 */
+BnnCompare(const BigNum mm,
+           BigNumLength ml,
+           const BigNum nn,
+           BigNumLength nl) {
+        /*
+         * return
+         *              BN_GT   iff M > N
+         *              BN_EQ   iff N = N
+         *              BN_LT   iff N < N
+         */
 
-	ml = BnnNumDigits( mm, ml );
-	nl = BnnNumDigits( nn, nl );
+        ml = BnnNumDigits(mm, ml);
+        nl = BnnNumDigits(nn, nl);
 
-	if( ml != nl ) {
-		return( ml > nl ? BN_GT : BN_LT );
-	} else	{
-		int	d;
+        if (ml != nl) {
+                return (ml > nl ? BN_GT : BN_LT);
+        } else  {
+                int     d;
 
-		/*
-		 * loop starting from most significant digit
-		 */
+                /*
+                 * loop starting from most significant digit
+                 */
 
-		for( d = (int)(nl - 1) ; d >= 0 ; --d ) {
-			if( mm[d] > nn[d] ) {
-				return( BN_GT );
-			}
-			if( mm[d] < nn[d] ) {
-				return( BN_LT );
-			}
-		}
+                for (d = (int)(nl - 1); d >= 0; --d) {
+                        if (mm[d] > nn[d]) {
+                                return (BN_GT);
+                        }
+                        if (mm[d] < nn[d]) {
+                                return (BN_LT);
+                        }
+                }
 
-		return( BN_EQ );
-	}
+                return (BN_EQ);
+        }
 }

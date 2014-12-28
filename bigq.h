@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.h,v 1.15 2014/12/26 19:01:31 jullien Exp $
+ * $Id: bigq.h,v 1.16 2014/12/28 06:54:38 jullien Exp $
  */
 
 /*
@@ -31,14 +31,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#if     !defined( __BIGQ_H )
+#if     !defined(__BIGQ_H)
 #define __BIGQ_H
 
-#if     !defined( __BIGZ_H )
+#if     !defined(__BIGZ_H)
 #include "bigz.h"
 #endif
 
-#if     defined( __cplusplus )
+#if     defined(__cplusplus)
 extern  "C"     {
 #endif
 
@@ -71,16 +71,16 @@ struct BigQStruct {
 
 typedef struct BigQStruct * __BigQ;
 
-#if     !defined( BQ_RATIONAL_TYPE )
+#if     !defined(BQ_RATIONAL_TYPE)
 #define BQ_RATIONAL_TYPE
 typedef __BigQ                          BigQ;
 #endif
 
-#if     !defined( __EXTERNAL_BIGQ_MEMORY )
+#if     !defined(__EXTERNAL_BIGQ_MEMORY)
 #define __toBqObj(q)                    ((__BigQ)q)
 #define BQNULL                          ((BigQ)0)
-#define BqAlloc()                       malloc( sizeof( struct BigQStruct ) )
-#define BqFree( q )                     free( q ) /* free(__toBqObj(q)) */
+#define BqAlloc()                       malloc(sizeof(struct BigQStruct))
+#define BqFree(q)                     free(q) /* free(__toBqObj(q)) */
 #define BqGetNumerator(q)               (__toBqObj(q)->N)
 #define BqGetDenominator(q)             (__toBqObj(q)->D)
 #define BqSetNumerator(q,n)             (__toBqObj(q)->N = (n))
@@ -110,7 +110,7 @@ extern double       BqToDouble(const BigQ a);
 extern BzChar *     BqToStringBuffer(const BigQ q, int sign, BzChar *buf, size_t *len);
 #endif
 
-#if     defined( __cplusplus )
+#if     defined(__cplusplus)
 }
 #endif
 

@@ -1,6 +1,6 @@
 /*
-static	const char rcsid[] = "$Id: bzf.c,v 1.7 2014/12/26 19:01:31 jullien Exp $";
-*/
+ * $Id: bzf.c,v 1.8 2014/12/28 06:54:38 jullien Exp $
+ */
 
 /*
  * Copyright (c) 1988-1989, Digital Equipment Corporation & INRIA.
@@ -37,7 +37,7 @@ static	const char rcsid[] = "$Id: bzf.c,v 1.7 2014/12/26 19:01:31 jullien Exp $"
 extern	BigZ	BzFactorial(BigZ z);
 
 BigZ
-BzFactorial( BigZ z )
+BzFactorial(BigZ z)
 {
 	/*
 	 * Returns Z!
@@ -48,15 +48,15 @@ BzFactorial( BigZ z )
 	BigNumDigit	zval;
 	int		fl = 1;
 
-	zval = BnnGetDigit( BzToBn( z ) );
-	f = BzCreate( zval+1 );
-	BnnSetDigit( BzToBn( f ), 1);
-	BzSetSign( f, BzGetSign( z ) );
+	zval = BnnGetDigit(BzToBn(z));
+	f = BzCreate(zval+1);
+	BnnSetDigit(BzToBn(f), 1);
+	BzSetSign(f, BzGetSign(z));
 
-	while( zval-- > 1 ) {
-		BnnMultiplyDigit( BzToBn( f ), fl+1, BzToBn( f ), fl, zval );
-		fl = BnnNumDigits( BzToBn( f ), fl+1);
+	while (zval-- > 1) {
+		BnnMultiplyDigit(BzToBn(f), fl+1, BzToBn(f), fl, zval);
+		fl = BnnNumDigits(BzToBn(f), fl+1);
 	}
     
-	return( f );
+	return (f);
 }
