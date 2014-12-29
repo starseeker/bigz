@@ -1,7 +1,3 @@
-#if	!defined( lint )
-static	const char rcsid[] = "$Id: CBignum.cpp,v 1.15 2014/12/26 19:01:30 jullien Exp $";
-#endif
-
 /*
  * Simplified BSD License
  *
@@ -18,7 +14,7 @@ static	const char rcsid[] = "$Id: CBignum.cpp,v 1.15 2014/12/26 19:01:30 jullien
  * o Redistributions  in  binary form  must reproduce the above copyright
  *   notice, this list of conditions and  the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE  IS PROVIDED BY  THE COPYRIGHT HOLDERS  AND CONTRIBUTORS
  * "AS  IS" AND  ANY EXPRESS  OR IMPLIED  WARRANTIES, INCLUDING,  BUT NOT
  * LIMITED TO, THE IMPLIED  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -32,9 +28,9 @@ static	const char rcsid[] = "$Id: CBignum.cpp,v 1.15 2014/12/26 19:01:30 jullien
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-//
-//	CBignum.cpp :	
-//
+/*
+ * $Id: CBignum.cpp,v 1.15 2014/12/26 19:01:30 jullien Exp $
+ */
 
 #include <string.h>
 #include <stdio.h>
@@ -49,10 +45,10 @@ extern const CBignum one(1);
 extern const CBignum two(2);
 
 CBignum::operator std::string () const throw() {
- const char* s = BzToString(m_bz, 10, 0);
- std::string res(s);
- BzFreeString((void *)s);
- return res;
+  const char* s = BzToString(m_bz, 10, 0);
+  std::string res(s);
+  BzFreeString(s);
+  return res;
 }
 
 std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
@@ -125,22 +121,22 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
       os << res;
     }
   }
-  BzFreeString((void *)res);
+  BzFreeString(res);
   os.flags(ioflags);
   return os;
 }
 
 CBignum
 CBignum::operator++(int) {
-	CBignum	bn(*this);
-	*this += one;
-	return bn;
+  CBignum bn(*this);
+  *this += one;
+  return bn;
 }
 
 CBignum
 CBignum::operator--(int) {
-	CBignum	bn(*this);
-	*this -= one;
-	return bn;
+  CBignum bn(*this);
+  *this -= one;
+  return bn;
 }
-} // namespace bignum
+} /* namespace bignum */

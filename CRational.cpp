@@ -1,7 +1,3 @@
-#if	!defined( lint )
-static	const char rcsid[] = "$Id: CRational.cpp,v 1.1 2014/12/27 08:52:54 jullien Exp $";
-#endif
-
 /*
  * Simplified BSD License
  *
@@ -31,9 +27,9 @@ static	const char rcsid[] = "$Id: CRational.cpp,v 1.1 2014/12/27 08:52:54 jullie
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-//
-//	CRational.cpp :	
-//
+/*
+ * $Id: CRational.cpp,v 1.1 2014/12/27 08:52:54 jullien Exp $
+ */
 
 #include <string.h>
 #include <stdio.h>
@@ -47,7 +43,7 @@ namespace rational {
 CRational::operator std::string () const throw() {
   const char* s = BqToString(m_q, 0);
   std::string res(s);
-  BzFreeString((void *)s);
+  BzFreeString(s);
   return res;
 }
 
@@ -74,7 +70,7 @@ std::ostream& operator<<(std::ostream& os, const CRational& q) {
     os << res;
   }
 
-  BzFreeString((void *)res);
+  BzFreeString(res);
   os.flags(ioflags);
   return os;
 }
@@ -92,4 +88,4 @@ CRational::operator--(int) {
   *this = *this - CRational(one);
   return q;
 }
-} // namespace rational
+} /* namespace rational */
