@@ -741,8 +741,8 @@ BzTruncate(const BigZ y, const BigZ z) {
                 if (BnnIsZero(BzToBn(q), ql) == BN_TRUE) {
                         BzSetSign(q, BZ_ZERO);
                 }
-        } else  if (BnnIsZero(BzToBn(q), ql) == BN_TRUE &&
-                    BzGetSign(y) == BzGetSign(z)) {
+        } else  if ((BnnIsZero(BzToBn(q), ql) == BN_TRUE)
+		    && (BzGetSign(y) == BzGetSign(z))) {
                 /*
                  *      Q == 0, sign(Y) == sign(Z) : 0 => Q
                  */

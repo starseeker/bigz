@@ -32,21 +32,21 @@
  */
 
 //
-//      CRational.h :   
+//      CRational.h :
 //
 
 #if     !defined(__CRATIONAL_H)
 #define __CRATIONAL_H_H
 
 #if __cplusplus >= 201103L
-#define	BN_CPP11
+#define BN_CPP11
 #endif
 
-#include <ostream>
-#include <string>
 #include <stdlib.h>
 #include <bigq.h>
-#include <CBignum.h>
+#include <ostream>
+#include <string>
+#include "CBignum.h"
 
 namespace rational {
 
@@ -54,41 +54,42 @@ using namespace bignum;
 
 class CRational {
  private:
-   enum Flags { ASSIGN };
+  enum Flags { ASSIGN };
+
  public:
-   CRational(const CBignum& n = 0)
-     : m_q(BqCreate(n, one)) {
-   }
-   CRational(const CBignum& n, const CBignum& d)
-     : m_q(BqCreate(n, d)) {
-   }
+  explicit CRational(const CBignum& n = 0)
+    : m_q(BqCreate(n, one)) {
+  }
+  CRational(const CBignum& n, const CBignum& d)
+    : m_q(BqCreate(n, d)) {
+  }
 #if 0
-  CRational(int n)
+  explicit CRational(int n)
      : m_q(BqCreate(CBignum(n), one))) {
-   }
+  }
 #endif
   CRational(const CRational& q)
      : m_q(BqCreate(BqGetNumerator(q.m_q), BqGetDenominator(q.m_q))) {
-   }
+  }
 #if defined(BN_CPP11)
   CRational(CRational&& rhs)
     : m_q(rhs.m_q) {
     rhs.m_q = 0;
   }
 #endif
-  CRational(const char* s)
-    : m_q(BqFromString((BzChar *)s, 10)) {
-   }
+  explicit CRational(const char* s)
+    : m_q(BqFromString(static_cast<BzChar *>(s), 10)) {
+  }
 #if     defined(HAVE_BQ_FROM_DOUBLE)
-  CRational(double n)
+  explicit CRational(double n)
     : m_q(BqFromDouble(n)) {
-   }
+  }
 #endif
-   ~CRational() {
-     if (m_q) {
-       BqDelete(m_q);
-     }
-   }
+  ~CRational() {
+    if (m_q) {
+      BqDelete(m_q);
+    }
+  }
 
   const CBignum numerator() const {
     return BqGetNumerator(m_q);
@@ -139,10 +140,10 @@ class CRational {
 
   // unary ++, --
 
-  inline CRational&	operator++();
-         CRational	operator++(int);
-  inline CRational&	operator--();
-         CRational	operator--(int);
+  inline CRational&     operator++();
+         CRational      operator++(int);
+  inline CRational&     operator--();
+         CRational      operator--(int);
 
   // binary +
 
@@ -221,8 +222,8 @@ class CRational {
   friend std::ostream& operator<<(std::ostream& os, const CRational& q);
 
  private:
-   BigQ m_q;
-   CRational(const BigQ init, Flags) : m_q(init) {}
+  BigQ m_q;
+  CRational(const BigQ init, Flags) : m_q(init) {}
 };
 
 inline CRational&
@@ -236,5 +237,5 @@ CRational::operator--() {
   *this = *this - CRational(one);
   return *this;
 }
-} // namespace rational
+} /* namespace rational */
 #endif  /* __CRATIONAL_H */

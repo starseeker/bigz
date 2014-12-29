@@ -17,7 +17,7 @@
  * o Redistributions  in  binary form  must reproduce the above copyright
  *   notice, this list of conditions and  the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE  IS PROVIDED BY  THE COPYRIGHT HOLDERS  AND CONTRIBUTORS
  * "AS  IS" AND  ANY EXPRESS  OR IMPLIED  WARRANTIES, INCLUDING,  BUT NOT
  * LIMITED TO, THE IMPLIED  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -32,14 +32,14 @@
  */
 
 //
-//	CBignum.h :	
+//      CBignum.h :
 //
 
-#if	!defined(__CBIGNUM_H)
-#define	__CBIGNUM_H
+#if     !defined(__CBIGNUM_H)
+#define __CBIGNUM_H
 
 #if __cplusplus >= 201103L
-#define	BN_CPP11
+#define BN_CPP11
 #endif
 
 #include <stdlib.h>
@@ -54,22 +54,23 @@ class CRational;
 
 namespace bignum {
 class CBignum {
- friend class rational::CRational;
+  friend class rational::CRational;
  private:
-  enum	Flags { ASSIGN };
+  enum Flags { ASSIGN };
+
  public:
-  CBignum(int init = 0)	      : m_bz(BzFromInteger(init)) {}
-  CBignum(unsigned int init)  : m_bz(BzFromUnsignedInteger(init)) {}
+  explicit CBignum(int init = 0)       : m_bz(BzFromInteger(init)) {}
+  explicit CBignum(unsigned int init)  : m_bz(BzFromUnsignedInteger(init)) {}
   CBignum(const CBignum& rhs) : m_bz(BzCopy(rhs.m_bz)) {}
 #if defined(BN_CPP11)
   CBignum(CBignum&& rhs)      : m_bz(rhs.m_bz) { rhs.m_bz = 0; }
   // Thanks to C++11, allows nnnnnn_BN syntax
   friend CBignum operator"" _BN(const char* init) { return CBignum(init); }
 #endif
-  CBignum(const BigZ init)    : m_bz(BzCopy(init)) {}
-  CBignum(const char* init, int base = 10)
-	  : m_bz(BzFromString(init, base, BZ_UNTIL_END)) {}
-  CBignum(bool b)	      : m_bz(BzFromInteger(b ? 1 : 0)) {}
+  explicit CBignum(const BigZ init) : m_bz(BzCopy(init)) {}
+  explicit CBignum(const char* init, int base = 10)
+          : m_bz(BzFromString(init, base, BZ_UNTIL_END)) {}
+  explicit CBignum(bool b) : m_bz(BzFromInteger(b ? 1 : 0)) {}
   ~CBignum() {
     if (m_bz) {
       BzFree(m_bz);
@@ -79,10 +80,10 @@ class CBignum {
   // convertions
 
   operator int() const {
-    return (int)BzToInteger(m_bz);
+    return reinterpret_cast<int>(BzToInteger(m_bz));
   }
   operator unsigned int() const {
-    return (unsigned int)BzToUnsignedInteger(m_bz);
+    return reinterpret_cast<unsigned int>(BzToUnsignedInteger(m_bz));
   }
   operator bool() const {
     return BzGetSign(m_bz) != BZ_ZERO;
@@ -104,10 +105,10 @@ class CBignum {
     return CBignum(BzNegate(bz1.m_bz), ASSIGN);
   }
 
-  inline CBignum&	operator++();
-         CBignum	operator++(int);
-  inline CBignum&	operator--();
-         CBignum	operator--(int);
+  inline CBignum&       operator++();
+         CBignum        operator++(int);
+  inline CBignum&       operator--();
+         CBignum        operator--(int);
 
   // binary +, - *, /, %
 
@@ -245,7 +246,8 @@ class CBignum {
   // shifts
 
   friend CBignum operator<<(const CBignum& bz1, const CBignum& bz2) {
-    return CBignum(BzAsh(bz1.m_bz,(int)BzToInteger(bz2.m_bz)), ASSIGN);
+    return CBignum(BzAsh(bz1.m_bz,
+                         static_cast<int>(BzToInteger(bz2.m_bz))), ASSIGN);
   }
   friend CBignum operator<<(const CBignum& bz1, int i) {
     return (bz1 << CBignum(i));
@@ -255,7 +257,8 @@ class CBignum {
   }
 
   friend CBignum operator>>(const CBignum& bz1, const CBignum& bz2) {
-    return CBignum(BzAsh(bz1.m_bz,(int)BzToInteger(bz2.m_bz)), ASSIGN);
+    return CBignum(BzAsh(bz1.m_bz,
+                         static_cast<int>(BzToInteger(bz2.m_bz))), ASSIGN);
   }
   friend CBignum operator>>(const CBignum& bz1, int i) {
     return (bz1 >> CBignum(i));
@@ -267,7 +270,7 @@ class CBignum {
   // general functions
 
   friend CBignum floor(const CBignum& bz1, const CBignum& bz2) {
-    return CBignum(BzFloor(bz1.m_bz,bz2.m_bz), ASSIGN);
+    return CBignum(BzFloor(bz1.m_bz, bz2.m_bz), ASSIGN);
   }
   friend CBignum floor(int i, const CBignum& bz2) {
     return floor(CBignum(i), bz2);
@@ -277,7 +280,7 @@ class CBignum {
   }
 
   friend CBignum ceiling(const CBignum& bz1, const CBignum& bz2) {
-    return CBignum(BzCeiling(bz1.m_bz,bz2.m_bz), ASSIGN);
+    return CBignum(BzCeiling(bz1.m_bz, bz2.m_bz), ASSIGN);
   }
   friend CBignum ceiling(int i, const CBignum& bz2) {
     return ceiling(CBignum(i), bz2);
@@ -287,7 +290,7 @@ class CBignum {
   }
 
   friend CBignum round(const CBignum& bz1, const CBignum& bz2) {
-    return CBignum(BzRound(bz1.m_bz,bz2.m_bz), ASSIGN);
+    return CBignum(BzRound(bz1.m_bz, bz2.m_bz), ASSIGN);
   }
   friend CBignum round(int i, const CBignum& bz2) {
     return round(CBignum(i), bz2);
@@ -297,7 +300,7 @@ class CBignum {
   }
 
   friend CBignum gcd(const CBignum& bz1, const CBignum& bz2) {
-    return CBignum(BzGcd(bz1.m_bz,bz2.m_bz), ASSIGN);
+    return CBignum(BzGcd(bz1.m_bz, bz2.m_bz), ASSIGN);
   }
   friend CBignum gcd(int i, const CBignum& bz2) {
     return gcd(CBignum(i), bz2);
@@ -307,7 +310,7 @@ class CBignum {
   }
 
   friend CBignum lcm(const CBignum& bz1, const CBignum& bz2) {
-    return CBignum(BzLcm(bz1.m_bz,bz2.m_bz), ASSIGN);
+    return CBignum(BzLcm(bz1.m_bz, bz2.m_bz), ASSIGN);
   }
   friend CBignum lcm(int i, const CBignum& bz2) {
     return lcm(CBignum(i), bz2);
@@ -368,7 +371,7 @@ class CBignum {
   }
 
   friend CBignum random(const CBignum& bz, unsigned int* seed) {
-    return CBignum(BzRandom(bz.m_bz, (BzSeed*)&seed));
+    return CBignum(BzRandom(bz.m_bz, static_cast<BzSeed*>(&seed)));
   }
 
   // assignments
@@ -398,7 +401,7 @@ class CBignum {
     m_bz = BzFromInteger(i);
     return *this;
   }
-  
+
   CBignum& operator+=(const CBignum& rhs) {
     return replace(BzAdd(m_bz, rhs.m_bz));
   }
@@ -424,11 +427,11 @@ class CBignum {
   // output
 
   friend std::ostream& operator<<(std::ostream& os, const CBignum& bn);
-  
+
   // version
   static const char *version() { return BzVersion(); }
 
-private:
+ private:
   BigZ m_bz;
   CBignum& replace(BigZ bz) {
     BzFree(m_bz);
@@ -453,5 +456,5 @@ CBignum::operator--() {
   *this -= one;
   return *this;
 }
-} // namespace bignum
-#endif	/* __CBIGNUM_H */
+} /* namespace bignum */
+#endif  /* __CBIGNUM_H */
