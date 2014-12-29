@@ -1,5 +1,5 @@
 /*
- * $Id: bign.c,v 1.47 2014/12/28 06:54:38 jullien Exp $
+ * $Id: bign.c,v 1.49 2014/12/29 09:34:05 jullien Exp $
  */
 
 /*
@@ -982,7 +982,7 @@ BnnDivide(BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl) {
 
         switch (BnnCompare(nn, nl, dd, dl)) {
         case BN_LT:     /* n < d */
-                                                         /* N => R */
+                /* nop */                              /* N => R */
                 BnnSetToZero(nn+dl, nl-dl);            /* 0 => Q */
                 return;
         case BN_EQ:     /* n == d */

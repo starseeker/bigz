@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.c,v 1.116 2014/12/28 06:54:38 jullien Exp $
+ * $Id: bigz.c,v 1.117 2014/12/28 13:27:52 jullien Exp $
  */
 
 /*
@@ -741,8 +741,8 @@ BzTruncate(const BigZ y, const BigZ z) {
                 if (BnnIsZero(BzToBn(q), ql) == BN_TRUE) {
                         BzSetSign(q, BZ_ZERO);
                 }
-        } else  if ((BnnIsZero(BzToBn(q), ql) == BN_TRUE)
-		    && (BzGetSign(y) == BzGetSign(z))) {
+        } else  if (BnnIsZero(BzToBn(q), ql) == BN_TRUE &&
+                    BzGetSign(y) == BzGetSign(z)) {
                 /*
                  *      Q == 0, sign(Y) == sign(Z) : 0 => Q
                  */
