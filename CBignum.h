@@ -59,17 +59,17 @@ class CBignum {
   enum Flags { ASSIGN };
 
  public:
-  explicit CBignum(int init = 0)       : m_bz(BzFromInteger(init)) {}
-  explicit CBignum(unsigned int init)  : m_bz(BzFromUnsignedInteger(init)) {}
+  CBignum(int init = 0)       : m_bz(BzFromInteger(init)) {}
+  CBignum(unsigned int init)  : m_bz(BzFromUnsignedInteger(init)) {}
   CBignum(const CBignum& rhs) : m_bz(BzCopy(rhs.m_bz)) {}
 #if defined(BN_CPP11)
   CBignum(CBignum&& rhs)      : m_bz(rhs.m_bz) { rhs.m_bz = 0; }
   // Thanks to C++11, allows nnnnnn_BN syntax
   friend CBignum operator"" _BN(const char* init) { return CBignum(init); }
 #endif
-  explicit CBignum(const BigZ init) : m_bz(BzCopy(init)) {}
-  explicit CBignum(const char* init, int base = 10)
-          : m_bz(BzFromString(init, base, BZ_UNTIL_END)) {}
+  CBignum(const BigZ init) : m_bz(BzCopy(init)) {}
+  CBignum(const char* init, int base = 10)
+    : m_bz(BzFromString(init, base, BZ_UNTIL_END)) {}
   explicit CBignum(bool b) : m_bz(BzFromInteger(b ? 1 : 0)) {}
   ~CBignum() {
     if (m_bz) {
@@ -80,10 +80,10 @@ class CBignum {
   // convertions
 
   operator int() const {
-    return reinterpret_cast<int>(BzToInteger(m_bz));
+    return static_cast<int>(BzToInteger(m_bz));
   }
   operator unsigned int() const {
-    return reinterpret_cast<unsigned int>(BzToUnsignedInteger(m_bz));
+    return static_cast<unsigned int>(BzToUnsignedInteger(m_bz));
   }
   operator bool() const {
     return BzGetSign(m_bz) != BZ_ZERO;
@@ -323,7 +323,7 @@ class CBignum {
     int i = BzToInteger(exp.m_bz);
     if (i < 0) {
       // consider 0 as an error.
-      return BzFromInteger( 0 );
+	    return BzFromInteger(0);
     } else {
       return CBignum(BzPow(bz.m_bz, BzToInteger(exp.m_bz)), ASSIGN);
     }
@@ -371,7 +371,7 @@ class CBignum {
   }
 
   friend CBignum random(const CBignum& bz, unsigned int* seed) {
-    return CBignum(BzRandom(bz.m_bz, static_cast<BzSeed*>(&seed)));
+    return CBignum(BzRandom(bz.m_bz, reinterpret_cast<BzSeed*>(&seed)));
   }
 
   // assignments

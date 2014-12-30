@@ -29,7 +29,7 @@
  */
 
 /*
- * $Id: CBignum.cpp,v 1.15 2014/12/26 19:01:30 jullien Exp $
+ * $Id: CBignum.cpp,v 1.16 2014/12/29 09:56:40 jullien Exp $
  */
 
 #include <string.h>
@@ -45,14 +45,14 @@ extern const CBignum one(1);
 extern const CBignum two(2);
 
 CBignum::operator std::string () const throw() {
-  const char* s = BzToString(m_bz, 10, 0);
+  char* s = BzToString(m_bz, 10, 0);
   std::string res(s);
   BzFreeString(s);
   return res;
 }
 
 std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
-  const char* res;
+  char* res;
 
   std::ios_base::fmtflags ioflags = os.flags();
   bool showBase = ((ioflags & std::ios::showbase) != 0);

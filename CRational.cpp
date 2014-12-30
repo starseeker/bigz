@@ -28,7 +28,7 @@
  */
 
 /*
- * $Id: CRational.cpp,v 1.1 2014/12/27 08:52:54 jullien Exp $
+ * $Id: CRational.cpp,v 1.2 2014/12/29 09:56:40 jullien Exp $
  */
 
 #include <string.h>
@@ -41,7 +41,7 @@
 namespace rational {
 
 CRational::operator std::string () const throw() {
-  const char* s = BqToString(m_q, 0);
+  char* s = BqToString(m_q, 0);
   std::string res(s);
   BzFreeString(s);
   return res;

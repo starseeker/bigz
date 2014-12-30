@@ -78,7 +78,7 @@ class CRational {
   }
 #endif
   explicit CRational(const char* s)
-    : m_q(BqFromString(static_cast<BzChar *>(s), 10)) {
+    : m_q(BqFromString(static_cast<const BzChar *>(s), 10)) {
   }
 #if     defined(HAVE_BQ_FROM_DOUBLE)
   explicit CRational(double n)
