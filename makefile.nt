@@ -1,6 +1,6 @@
 #
 #	Makefile for 'Bignums'	(c) C. Jullien
-#	$Id: makefile.nt,v 1.54 2014/12/28 13:27:52 jullien Exp $
+#	$Id: makefile.nt,v 1.56 2015/01/01 08:59:10 jullien Exp $
 #
 
 .SUFFIXES: .lsp .dat .$(SUFFIXES)
@@ -133,6 +133,13 @@ lint:
 		-realrelatecompare	\
 		-temptrans 		\
 	        bigq.c
+
+CPPLINT		= /usr/local/bin/cpplint.py
+
+cpplint:
+	@bash -c "$(CPPLINT) --extensions=h,c --filter=-readability/casting big?.c"
+	@bash -c "@$(CPPLINT) --filter=-build/header_guard,build/c++11 C*.h"
+
 
 MASTER		= \
 		AUTHORS			      \

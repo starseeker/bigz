@@ -1,16 +1,43 @@
-#if     !defined( lint )
-static  const char rcsid[] = "$Id: tCBignum.cpp,v 1.25 2014/12/26 19:01:31 jullien Exp $";
-#endif
+/*
+ * Simplified BSD License
+ *
+ * Copyright (c) 1988-1989, Digital Equipment Corporation & INRIA.
+ * Copyright (c) 1992-2015, Eligis
+ * All rights reserved.
+ *
+ * Redistribution and  use in  source and binary  forms, with  or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * o Redistributions  of  source  code must  retain  the  above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ * o Redistributions  in  binary form  must reproduce the above copyright
+ *   notice, this list of conditions and  the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE  IS PROVIDED BY  THE COPYRIGHT HOLDERS  AND CONTRIBUTORS
+ * "AS  IS" AND  ANY EXPRESS  OR IMPLIED  WARRANTIES, INCLUDING,  BUT NOT
+ * LIMITED TO, THE IMPLIED  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE  ARE DISCLAIMED. IN NO EVENT  SHALL THE COPYRIGHT
+ * HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL,  EXEMPLARY,  OR  CONSEQUENTIAL  DAMAGES (INCLUDING,  BUT  NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE  GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS  INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF  LIABILITY, WHETHER IN  CONTRACT, STRICT LIABILITY,  OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING  IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
-//
-//      tCBignum.cpp :  
-//
+/*
+ * $Id: tCBignum.cpp,v 1.26 2014/12/31 14:21:46 jullien Exp $
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
 #include <iomanip>
+#include <string>
 #ifdef WIN32
 #include <crtdbg.h>
 #endif
@@ -74,7 +101,7 @@ checkResult(int count,
 
 void
 Tz(int count, const char* op, unsigned int n, const char* expected) {
- checkResult(count, op, CBignum(n), expected);
+  checkResult(count, op, CBignum(n), expected);
 }
 
 void
@@ -103,8 +130,8 @@ int
 main()
 {
 #if     defined( _WINDEBUG )
-   _CrtMemState state;
-   int          res;
+  _CrtMemState state;
+  int          res;
 
   res = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
   res |= _CRTDBG_ALLOC_MEM_DF;
@@ -117,15 +144,15 @@ main()
    * Send all reports to stdout.
    */
 
-  _CrtSetReportMode( _CRT_WARN,   _CRTDBG_MODE_FILE   );
-  _CrtSetReportFile( _CRT_WARN,   _CRTDBG_FILE_STDOUT );
-  _CrtSetReportMode( _CRT_ERROR,  _CRTDBG_MODE_FILE   );
-  _CrtSetReportFile( _CRT_ERROR,  _CRTDBG_FILE_STDOUT );
-  _CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_FILE   );
-  _CrtSetReportFile( _CRT_ASSERT, _CRTDBG_FILE_STDOUT );
+  _CrtSetReportMode(_CRT_WARN,   _CRTDBG_MODE_FILE);
+  _CrtSetReportFile(_CRT_WARN,   _CRTDBG_FILE_STDOUT);
+  _CrtSetReportMode(_CRT_ERROR,  _CRTDBG_MODE_FILE);
+  _CrtSetReportFile(_CRT_ERROR,  _CRTDBG_FILE_STDOUT);
+  _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
+  _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDOUT);
 
-  _CrtMemCheckpoint( &state );
-  { // Force a new block to let dtor do cleanups.
+  _CrtMemCheckpoint(&state);
+  {  // Force a new block to let dtor do cleanups.
 #endif
 
     (void)printf("Bignum non-regression tests. (c) 1998-2015 C. Jullien\n");

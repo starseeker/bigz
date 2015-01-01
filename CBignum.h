@@ -1,5 +1,5 @@
 //
-// $Id: CBignum.h,v 1.34 2014/12/30 12:55:00 jullien Exp $
+// $Id: CBignum.h,v 1.35 2015/01/01 08:59:10 jullien Exp $
 //
 
 /*
@@ -46,7 +46,7 @@
 #include <iostream>
 #include <string>
 #include <utility>
-#include <bigz.h>
+#include "bigz.h"
 
 namespace rational {
 class CRational;

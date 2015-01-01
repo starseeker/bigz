@@ -1,5 +1,5 @@
 //
-// $Id: CRational.h,v 1.28 2014/12/30 12:55:00 jullien Exp $
+// $Id: CRational.h,v 1.30 2015/01/01 08:59:10 jullien Exp $
 //
 
 /*
@@ -43,14 +43,14 @@
 #endif
 
 #include <stdlib.h>
-#include <bigq.h>
 #include <ostream>
+#include <bigq.h>
 #include <string>
 #include "CBignum.h"
 
 namespace rational {
 
-using namespace bignum;
+using bignum::CBignum;
 
 class CRational {
  private:
@@ -58,14 +58,14 @@ class CRational {
 
  public:
   explicit CRational(const CBignum& n = 0)
-    : m_q(BqCreate(n, one)) {
+    : m_q(BqCreate(n, bignum::one)) {
   }
   CRational(const CBignum& n, const CBignum& d)
     : m_q(BqCreate(n, d)) {
   }
 #if 0
   explicit CRational(int n)
-     : m_q(BqCreate(CBignum(n), one))) {
+     : m_q(BqCreate(CBignum(n), bignum::one))) {
   }
 #endif
   CRational(const CRational& q)
@@ -228,13 +228,13 @@ class CRational {
 
 inline CRational&
 CRational::operator++() {
-  *this = *this + CRational(one);
+  *this = *this + CRational(bignum::one);
   return *this;
 }
 
 inline CRational&
 CRational::operator--() {
-  *this = *this - CRational(one);
+  *this = *this - CRational(bignum::one);
   return *this;
 }
 } /* namespace rational */

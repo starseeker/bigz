@@ -28,7 +28,7 @@
  */
 
 /*
- * $Id: CRational.cpp,v 1.3 2014/12/30 12:55:00 jullien Exp $
+ * $Id: CRational.cpp,v 1.4 2015/01/01 08:59:10 jullien Exp $
  */
 
 #include <string.h>
@@ -78,14 +78,14 @@ std::ostream& operator<<(std::ostream& os, const CRational& q) {
 inline CRational
 CRational::operator++(int) {
   CRational q(*this);
-  *this = *this + CRational(one);
+  *this = *this + CRational(bignum::one);
   return q;
 }
 
 inline CRational
 CRational::operator--(int) {
   CRational q(*this);
-  *this = *this - CRational(one);
+  *this = *this - CRational(bignum::one);
   return q;
 }
 } /* namespace rational */
