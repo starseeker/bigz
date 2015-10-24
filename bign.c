@@ -1,8 +1,4 @@
 /*
- * $Id: bign.c,v 1.49 2014/12/29 09:34:05 jullien Exp $
- */
-
-/*
  * Simplified BSD License
  *
  * Copyright (c) 1988-1989, Digital Equipment Corporation & INRIA.
@@ -34,6 +30,8 @@
 
 /*
  *      bign.c : the kernel written in pure C (it uses no C library)
+ *
+ *      $Id: bign.c,v 1.50 2015/01/01 16:53:42 jullien Exp $
  */
 
 /*
@@ -67,8 +65,6 @@
 
 static void
 BnnDivideHelper(BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl);
-
-#include <stdio.h>
 
 void
 BnnSetToZero(BigNum nn, BigNumLength nl) {
@@ -178,7 +174,7 @@ BnnNumCount(const BigNum nn, BigNumLength nl) {
         int     j;
 
         for (j = 0; j < (int)nl; ++j) {
-                const BigNumDigit d = nn[ j ];
+                const BigNumDigit d = nn[j];
                 int     i;
 
                 for (i = (int)(BN_DIGIT_SIZE - 1); i >= 0; --i) {
@@ -226,7 +222,7 @@ BnnIsPower2(const BigNum nn, BigNumLength nl) {
          */
 
         for (i = 0; i < (nl - 1); ++i) {
-                if (nn[ i ] != BN_ZERO) {
+                if (nn[i] != BN_ZERO) {
                         return (BN_FALSE);
                 }
         }
@@ -235,7 +231,7 @@ BnnIsPower2(const BigNum nn, BigNumLength nl) {
          *      There must be only 1 bit set on the last Digit.
          */
 
-        d     = nn[ i ];
+        d     = nn[i];
         nbits = 0;
 
         for (i = 0; i < (BigNumLength)BN_DIGIT_SIZE; ++i) {
@@ -469,10 +465,10 @@ BnnAdd(BigNum mm,
 
                 c   += save;
                 if (c < save) {
-                        *(mm++) = nn[ i ];
+                        *(mm++) = nn[i];
                         c       = (BigNumProduct)1;
                 } else  {
-                        save    = (BigNumProduct)nn[ i ];
+                        save    = (BigNumProduct)nn[i];
                         c      += save;
                         *(mm++) = (BigNumDigit)c;
                         c       = (BigNumProduct)((c < save) ? 1 : 0);
@@ -528,7 +524,7 @@ BnnSubtract(BigNum mm,
 
         for (i = 0; i < nl; ++i) {
                 save = (BigNumProduct)*mm;
-                invn = nn[ i ] ^ BN_COMPLEMENT;
+                invn = nn[i] ^ BN_COMPLEMENT;
                 c += save;
 
                 if (c < save) {
@@ -552,7 +548,7 @@ BnnSubtract(BigNum mm,
  *      Multiplication
  */
 
-#define LOW(x)   (BigNumDigit)(x & ((BN_ONE << (BN_DIGIT_SIZE / 2)) -1))
+#define LOW(x)   (BigNumDigit)(x & ((BN_ONE << (BN_DIGIT_SIZE / 2)) - 1))
 #define HIGH(x)  (BigNumDigit)(x >> (BN_DIGIT_SIZE / 2))
 #define L2H(x)   (BigNumDigit)(x << (BN_DIGIT_SIZE / 2))
 
@@ -598,17 +594,17 @@ BnnMultiplyDigit(BigNum pp,
 
                 Ld = LOW(d);
                 Hd = HIGH(d);
-                Lm = LOW(mm[ i ]);
-                Hm = HIGH(mm[ i ]);
+                Lm = LOW(mm[i]);
+                Hm = HIGH(mm[i]);
                 X0 = Ld * Lm;
                 X1 = Ld * Hm;
                 X2 = Hd * Lm;
                 X3 = Hd * Hm;
 
-                UPDATE_S(c, X0,        X3);
+                UPDATE_S(c, X0,      X3);
                 UPDATE_S(c, L2H(X1), X3);
                 UPDATE_S(c, L2H(X2), X3);
-                UPDATE_S(c, *pp,       X3);
+                UPDATE_S(c, *pp,     X3);
 
                 --pl;
                 *(pp++) = (BigNumDigit)c;
@@ -677,7 +673,7 @@ BnnDivideDigit(BigNum qq, BigNum nn, BigNumLength nl, BigNumDigit d) {
         k = BnnNumLeadingZeroBitsInDigit(d);
 
         if (k != 0) {
-                prev_qq = qq[ -1 ];
+                prev_qq = qq[-1];
                 orig_nl = nl;
                 d <<= k;
                 (void)BnnShiftLeft(nn, nl, k);

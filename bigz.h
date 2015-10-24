@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.h,v 1.79 2014/12/31 14:21:46 jullien Exp $
+ * $Id: bigz.h,v 1.80 2015/01/01 16:53:42 jullien Exp $
  */
 
 /*
@@ -158,7 +158,6 @@ typedef unsigned int                    BzUInt;
  */
 typedef unsigned int                    BzSeed;
 
-
 #define BZ_OPTIMIZE_PRINT
 
 #if     !defined(BZ_BUCKET_SIZE)
@@ -172,10 +171,10 @@ typedef unsigned int                    BzSeed;
 #if     !defined(__EXTERNAL_BIGZ_MEMORY)
 #define __toBzObj(z)                    ((__BigZ)z)
 #define BZNULL                          ((BigZ)0)
-#define BzAlloc(size)                 malloc(size)
-#define BzFree(z)                     free(z) /* free(__toBzObj(z)) */
-#define BzStringAlloc(size)           malloc(size * sizeof(BzChar))
-#define BzFreeString(s)               free(s)
+#define BzAlloc(size)                   malloc(size)
+#define BzFree(z)                       free(z) /* free(__toBzObj(z)) */
+#define BzStringAlloc(size)             malloc(size * sizeof(BzChar))
+#define BzFreeString(s)                 free(s)
 #endif
 
 #define BzGetSize(z)                    (__toBzObj(z)->Header.Size)

@@ -1,5 +1,5 @@
 /*
- static char rcsid[] = "$Id: config.h.in,v 1.8 2014/03/02 12:04:21 jullien Exp $";
+ static char rcsid[] = "$Id: config.h.in,v 1.9 2015/01/01 16:53:42 jullien Exp $";
  */
 
 /*
@@ -26,9 +26,6 @@
 
 /* Define if the compile supports C99 restrict pointers. */
 #undef HAVE_RESTRICT
-
-/* Define if you have the snprintf function. */
-#undef HAVE_SNPRINTF
 
 /* Define if you have the <string.h> header file. */
 #undef HAVE_STRING_H

@@ -1,8 +1,4 @@
 /*
- * $Id: bigz.c,v 1.117 2014/12/28 13:27:52 jullien Exp $
- */
-
-/*
  * Simplified BSD License
  *
  * Copyright (c) 1988-1989, Digital Equipment Corporation & INRIA.
@@ -35,6 +31,8 @@
 /*
  *      bigz.c : provides an implementation of "unlimited-precision"
  *               arithmetic for signed integers.
+ *
+ *      $Id: bigz.c,v 1.118 2015/01/01 16:53:42 jullien Exp $
  */
 
 /*
@@ -61,7 +59,8 @@
 #define MaxInt(a, b)            (((a) < (b)) ? (b) : (a))
 #define AbsInt(x)               (((x) >= 0) ? (x) : -(x))
 
-#define BZMAXINT                ((BzInt)(((BzUInt)-1L) >> 1))
+#define BZMAXINT                ((BzInt)((~(BzUInt)0) >> 1))
+#define BZMAXUINT               (~(BzUInt)0)
 
 /*
  *      See ./etc/hextable.c if you need to change BigHexToDigit tables.
@@ -488,13 +487,13 @@ BzAdd(const BigZ y, const BigZ z) {
                 switch (BnnCompare(BzToBn(y), yl, BzToBn(z), zl)) {
                 case BN_EQ:
                 case BN_GT:     /* |Y| >= |Z| */
-                        if ((n = BzCreate(yl+1)) != BZNULL) {
+                        if ((n = BzCreate(yl + 1)) != BZNULL) {
                                 BnnAssign(BzToBn(n), BzToBn(y), yl);
                                 (void)BnnAdd(BzToBn(n),
-                                              yl+1,
-                                              BzToBn(z),
-                                              zl,
-                                              BN_NOCARRY);
+                                             yl + 1,
+                                             BzToBn(z),
+                                             zl,
+                                             BN_NOCARRY);
                                 BzSetSign(n, BzGetSign(y));
                         }
                         break;
@@ -502,10 +501,10 @@ BzAdd(const BigZ y, const BigZ z) {
                         if ((n = BzCreate(zl+1)) != BZNULL) {
                                 BnnAssign(BzToBn(n), BzToBn(z), zl);
                                 (void)BnnAdd(BzToBn(n),
-                                              zl+1,
-                                              BzToBn(y),
-                                              yl,
-                                              BN_NOCARRY);
+                                             zl + 1,
+                                             BzToBn(y),
+                                             yl,
+                                             BN_NOCARRY);
                                 BzSetSign(n, BzGetSign(z));
                         }
                         break;
@@ -1557,7 +1556,7 @@ BzToIntegerPointer(const BigZ z, BzInt *p) {
 BzUInt
 BzToUnsignedInteger(const BigZ z) {
         if (BzNumDigits(z) > (BigNumLength)1) {
-                return ((BzUInt)BZMAXINT);
+                return (BZMAXUINT);
         } else  {
                 return ((BzUInt)BzGetDigit(z, 0));
         }
@@ -1566,7 +1565,7 @@ BzToUnsignedInteger(const BigZ z) {
 int
 BzToUnsignedIntegerPointer(const BigZ z, BzUInt *p) {
         if (BzNumDigits(z) > (BigNumLength)1) {
-                *p = (BzUInt)BZMAXINT;
+                *p = BZMAXUINT;
                 return (0);
         } else  {
                 *p = (BzUInt)BzGetDigit(z, 0);
