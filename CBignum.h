@@ -1,5 +1,5 @@
 //
-// $Id: CBignum.h,v 1.35 2015/01/01 08:59:10 jullien Exp $
+// $Id: CBignum.h,v 1.36 2015/06/14 06:55:01 jullien Exp $
 //
 
 /*
@@ -320,10 +320,10 @@ class CBignum {
   }
 
   friend CBignum pow(const CBignum& bz, const CBignum& exp) {
-    int i = BzToInteger(exp.m_bz);
+    BzInt i = BzToInteger(exp.m_bz);
     if (i < 0) {
       // consider 0 as an error.
-	    return BzFromInteger(0);
+      return BzFromInteger(0);
     } else {
       return CBignum(BzPow(bz.m_bz, BzToInteger(exp.m_bz)), ASSIGN);
     }
