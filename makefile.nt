@@ -28,11 +28,11 @@ ANALYSE		= -analyze:WX-
 
 CC		= cl
 DEBUG		= -Zi
-CFLAGS		= $(DEBUG) $(ANALYSE) -nologo -W4 -EHsc -Gs -I.
+CFLAGS		= $(DEBUG) $(ANALYSE) -nologo -W4 -wd6386 -EHsc -Gs -I.
 CLISP		= ccl
 OLISP		= ..\ntalisp-$(CPU).exe
 OBJECT		= bztest.obj bigq.obj bigz.obj bign.obj
-VERSION		= 1.5.5
+VERSION		= 1.5.6
 
 all: bztest.exe testkern.exe tCBignum.exe testbign.lsp # testrtnl.lsp
 

@@ -1,5 +1,7 @@
 Change log
 
+2015/10/24: Change version to 1.5.6.
+2015/10/24: Use a newer config.guess version to support recent systems.
 2014/12/30: Change version to 1.5.5.
 2014/12/27: Build shared lib with gcc.
 2014/12/26: Add install/uninstall Makefile entries.

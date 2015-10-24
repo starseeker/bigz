@@ -213,7 +213,7 @@ BnDebug(const char *m,
                         }
 
                         while (i-- != 0) {
-                                BzShowUnsingnedInt(chunk[ i ]);
+                                BzShowUnsingnedInt(chunk[i]);
                         }
                 } else  {
                         /*
@@ -1349,11 +1349,11 @@ BzToStringBuffer(const BigZ z,
         if ((s - strg) > 0) {
                 BigNumLength i;
 
-                for (i = 0; s[ i ] != (BzChar)'\000'; ++i) {
-                        strg[ i ] = s[ i ];
+                for (i = 0; s[i] != (BzChar)'\000'; ++i) {
+                        strg[i] = s[i];
                 }
 
-                strg[ i ] = (BzChar)'\000';
+                strg[i] = (BzChar)'\000';
         }
 
         /*
