@@ -1,5 +1,5 @@
 /*
- * $Id: bigq.c,v 1.38 2014/12/28 13:27:52 jullien Exp $
+ * $Id: bigq.c,v 1.39 2015/10/25 14:15:30 jullien Exp $
  */
 
 /*
@@ -393,10 +393,10 @@ BqToString(const BigQ q, int sign) {
                 len = sizeof(BqNaN); /* works because BqNaN is an array */
                 res = (BzChar *)BzStringAlloc(len * sizeof(BzChar));
                 if (res != (BzChar *)NULL) {
-                        for (i = 0; BqNaN[ i ] != '\000'; ++i) {
-                                res[ i ] = (BzChar)BqNaN[ i ];
+                        for (i = 0; BqNaN[i] != '\000'; ++i) {
+                                res[i] = (BzChar)BqNaN[i];
                         }
-                        res[ i ] = (BzChar)'\000';
+                        res[i] = (BzChar)'\000';
                 }
                 return (res);
         } else  if (BzLength(BqGetDenominator(q)) == (BigNumLength)1) {
@@ -434,16 +434,16 @@ BqToString(const BigQ q, int sign) {
                 if ((res = (BzChar *)BzStringAlloc(len)) != (BzChar *)NULL) {
                         int pos = 0;
                         for (i = 0; n[i] != (BzChar)'\000'; ++i) {
-                                res[ pos++ ] = n[ i ];
+                                res[pos++] = n[i];
                         }
 
-                        res[ pos++ ] = (BzChar)'/';
+                        res[pos++] = (BzChar)'/';
 
                         for (i = 0; d[i] != (BzChar)'\000'; ++i) {
-                                res[ pos++ ] = d[ i ];
+                                res[pos++] = d[i];
                         }
 
-                        res[ pos ] = (BzChar)'\000';
+                        res[pos] = (BzChar)'\000';
                 }
 
                 BzFreeString(d);
