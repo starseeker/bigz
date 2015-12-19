@@ -2,7 +2,7 @@
  * Simplified BSD License
  *
  * Copyright (c) 1988-1989, Digital Equipment Corporation & INRIA.
- * Copyright (c) 1992-2015, Eligis
+ * Copyright (c) 1992-2016, Eligis
  * All rights reserved.
  *
  * Redistribution and  use in  source and binary  forms, with  or without
@@ -32,7 +32,7 @@
  *      bigz.c : provides an implementation of "unlimited-precision"
  *               arithmetic for signed integers.
  *
- *      $Id: bigz.c,v 1.119 2015/10/24 22:13:38 jullien Exp $
+ *      $Id: bigz.c,v 1.120 2015/12/19 08:15:23 jullien Exp $
  */
 
 /*

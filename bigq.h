@@ -1,11 +1,11 @@
 /*
- * $Id: bigq.h,v 1.16 2014/12/28 06:54:38 jullien Exp $
+ * $Id: bigq.h,v 1.17 2015/12/19 08:15:23 jullien Exp $
  */
 
 /*
  * Simplified BSD License
  *
- * Copyright (c) 1992-2015, Eligis
+ * Copyright (c) 1992-2016, Eligis
  * All rights reserved.
  *
  * Redistribution and  use in  source and binary  forms, with  or without

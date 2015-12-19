@@ -1,10 +1,10 @@
 /*
- * $Id: bzf.c,v 1.8 2014/12/28 06:54:38 jullien Exp $
+ * $Id: bzf.c,v 1.9 2015/12/19 08:15:23 jullien Exp $
  */
 
 /*
  * Copyright (c) 1988-1989, Digital Equipment Corporation & INRIA.
- * Copyright (c) 1992-2015, Eligis
+ * Copyright (c) 1992-2016, Eligis
  * All rights reserved.
  *
  * Redistribution and  use in  source and binary  forms, with  or without

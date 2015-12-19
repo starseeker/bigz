@@ -2,7 +2,7 @@
  * Simplified BSD License
  *
  * Copyright (c) 1988-1989, Digital Equipment Corporation & INRIA.
- * Copyright (c) 1992-2015, Eligis
+ * Copyright (c) 1992-2016, Eligis
  * All rights reserved.
  *
  * Redistribution and  use in  source and binary  forms, with  or without
@@ -31,7 +31,7 @@
 /*
  *      bign.c : the kernel written in pure C (it uses no C library)
  *
- *      $Id: bign.c,v 1.50 2015/01/01 16:53:42 jullien Exp $
+ *      $Id: bign.c,v 1.51 2015/12/19 08:15:23 jullien Exp $
  */
 
 /*

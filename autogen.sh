@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 1992-2015, Eligis
+# Copyright (c) 1992-2016, Eligis
 #
 
 fail() {

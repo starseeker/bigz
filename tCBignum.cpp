@@ -2,7 +2,7 @@
  * Simplified BSD License
  *
  * Copyright (c) 1988-1989, Digital Equipment Corporation & INRIA.
- * Copyright (c) 1992-2015, Eligis
+ * Copyright (c) 1992-2016, Eligis
  * All rights reserved.
  *
  * Redistribution and  use in  source and binary  forms, with  or without
@@ -29,7 +29,7 @@
  */
 
 /*
- * $Id: tCBignum.cpp,v 1.26 2014/12/31 14:21:46 jullien Exp $
+ * $Id: tCBignum.cpp,v 1.27 2015/12/19 08:15:23 jullien Exp $
  */
 
 #include <stdio.h>
@@ -155,7 +155,7 @@ main()
   {  // Force a new block to let dtor do cleanups.
 #endif
 
-    (void)printf("Bignum non-regression tests. (c) 1998-2015 C. Jullien\n");
+    (void)printf("Bignum non-regression tests. (c) 1998-2016 C. Jullien\n");
     (void)printf("Testing version %s ...\n\n", CBignum::version());
 
     CBignum x1(ffib(100));      /* 354224848179261915075        */

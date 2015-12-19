@@ -1,7 +1,7 @@
 /*
  * Simplified BSD License
  *
- * Copyright (c) 1992-2015, Eligis
+ * Copyright (c) 1992-2016, Eligis
  * All rights reserved.
  *
  * Redistribution and  use in  source and binary  forms, with  or without
@@ -28,7 +28,7 @@
  */
 
 /*
- * $Id: CRational.cpp,v 1.4 2015/01/01 08:59:10 jullien Exp $
+ * $Id: CRational.cpp,v 1.5 2015/12/19 08:15:22 jullien Exp $
  */
 
 #include <string.h>
