@@ -52,7 +52,7 @@ CBignum::operator std::string () const throw() {
 }
 
 std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
-  char* res;
+  const BzChar* res;
 
   std::ios_base::fmtflags ioflags = os.flags();
   bool showBase = ((ioflags & std::ios::showbase) != 0);
@@ -64,7 +64,7 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
     // hexadecimal output
     res = BzToString(bn.m_bz, 16, 0);
     len = strlen(res) + (showBase ? 2 : 0);
-    if ((len < width) && ((ioflags & std::ios::left) == 0)) {
+    if ((len < width) && !(ioflags & std::ios::left)) {
      const std::string pad(width - len, os.fill());
      os << pad;
     }
@@ -79,7 +79,7 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
     } else {
       os << res;
     }
-    if ((len < width) && ((ioflags & std::ios::left) != 0)) {
+    if ((len < width) && (ioflags & std::ios::left)) {
       const std::string pad(width - len, os.fill());
       os << pad;
     }
@@ -87,7 +87,7 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
     // octal output
     res = BzToString(bn.m_bz, 8, 0);
     len = strlen(res) + (showBase ? 1 : 0);
-    if ((len < width) && ((ioflags & std::ios::left) == 0)) {
+    if ((len < width) && !(ioflags & std::ios::left)) {
       const std::string pad(width - len, os.fill());
       os << pad;
     }
@@ -102,7 +102,7 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
     } else {
       os << res;
     }
-    if ((len < width) && ((ioflags & std::ios::left) != 0)) {
+    if ((len < width) && (ioflags & std::ios::left)) {
       const std::string pad(width - len, os.fill());
       os << pad;
     }
@@ -112,7 +112,7 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
     len = strlen(res);
     if (len < width) {
       const std::string pad(width - len, os.fill());
-      if ((ioflags & std::ios::left) == 0) {
+      if (!(ioflags & std::ios::left)) {
         os << pad << res;
       } else {
         os << res << pad;
@@ -121,7 +121,7 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
       os << res;
     }
   }
-  BzFreeString(res);
+  BzFreeString(const_cast<BzChar*>(res));
   os.flags(ioflags);
   return os;
 }

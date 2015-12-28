@@ -257,7 +257,7 @@ class CBignum {
   }
 
   friend bool logbitp(unsigned int bitnb, const CBignum& bz1) {
-    return BzTestBit(bitnb, bz1.m_bz) == 1;
+    return BzTestBit(bitnb, bz1.m_bz) == BN_TRUE;
   }
 
   // shifts
@@ -379,7 +379,7 @@ class CBignum {
   }
 
   friend bool evenp(const CBignum& bz) {
-    return (BzIsEven(bz.m_bz) == 1);
+    return (BzIsEven(bz.m_bz) == BN_TRUE);
   }
 
   friend bool evenp(int i) {
@@ -387,7 +387,7 @@ class CBignum {
   }
 
   friend bool oddp(const CBignum& bz) {
-    return (BzIsEven(bz.m_bz) == 0);
+    return (BzIsEven(bz.m_bz) == BN_FALSE);
   }
 
   friend bool oddp(int i) {
@@ -405,7 +405,7 @@ class CBignum {
   template<typename T>
   friend size_t length(T i) {
     const CBignum tmp(i);
-    return tmp.length()
+    return tmp.length();
   }
 
   friend CBignum abs(const CBignum& bz) {
