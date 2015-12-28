@@ -29,7 +29,7 @@
  */
 
 /*
- * $Id: CBignum.cpp,v 1.18 2015/12/19 08:15:22 jullien Exp $
+ * $Id: CBignum.cpp,v 1.20 2015/12/28 13:47:04 jullien Exp $
  */
 
 #include <string.h>
@@ -44,10 +44,22 @@ namespace bignum {
 extern const CBignum one(1);
 extern const CBignum two(2);
 
+/*
+ * compute string length with BzChar of any type.
+ */
+static size_t
+stringLength(const BzChar* s) {
+  size_t len;
+  for (len = 0; *s != 0; ++s) {
+    ++len;
+  }
+  return len;
+}
+
 CBignum::operator std::string () const throw() {
-  char* s = BzToString(m_bz, 10, 0);
+  const BzChar* s = BzToString(m_bz, 10, 0);
   std::string res(s);
-  BzFreeString(s);
+  BzFreeString(const_cast<BzChar*>(s));
   return res;
 }
 
@@ -63,7 +75,7 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
   if (ioflags & std::ios::hex) {
     // hexadecimal output
     res = BzToString(bn.m_bz, 16, 0);
-    len = strlen(res) + (showBase ? 2 : 0);
+    len = stringLength(res) + (showBase ? 2 : 0);
     if ((len < width) && !(ioflags & std::ios::left)) {
      const std::string pad(width - len, os.fill());
      os << pad;
@@ -86,7 +98,7 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
   } else if (ioflags & std::ios::oct) {
     // octal output
     res = BzToString(bn.m_bz, 8, 0);
-    len = strlen(res) + (showBase ? 1 : 0);
+    len = stringLength(res) + (showBase ? 1 : 0);
     if ((len < width) && !(ioflags & std::ios::left)) {
       const std::string pad(width - len, os.fill());
       os << pad;
@@ -109,7 +121,7 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
   } else {
     // decimal output
     res = BzToString(bn.m_bz, 10, (ioflags && std::ios::showpos));
-    len = strlen(res);
+    len = stringLength(res);
     if (len < width) {
       const std::string pad(width - len, os.fill());
       if (!(ioflags & std::ios::left)) {
