@@ -28,7 +28,7 @@
  */
 
 /*
- * $Id: CRational.cpp,v 1.5 2015/12/19 08:15:22 jullien Exp $
+ * $Id: CRational.cpp,v 1.7 2015/12/19 15:03:01 jullien Exp $
  */
 
 #include <string.h>
@@ -89,3 +89,10 @@ CRational::operator--(int) {
   return q;
 }
 } /* namespace rational */
+
+using bignum::CBignum;
+CBignum::CBignum(const rational::CRational& rhs)
+ : m_bz(0) {
+  const CBignum tmp(rhs.numerator() / rhs.denominator());
+  m_bz = BzCopy(tmp.m_bz);
+}

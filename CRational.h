@@ -1,5 +1,5 @@
 //
-// $Id: CRational.h,v 1.31 2015/12/19 08:15:22 jullien Exp $
+// $Id: CRational.h,v 1.32 2015/12/19 15:03:01 jullien Exp $
 //
 
 /*
@@ -128,9 +128,6 @@ class CRational {
     return BqToDouble(m_q);
   }
   operator std::string () const throw();
-  operator CBignum () const throw() {
-    return numerator() / denominator();
-  }
 
   // unary -
 

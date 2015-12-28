@@ -1,5 +1,5 @@
 //
-// $Id: CBignum.h,v 1.37 2015/12/19 08:15:22 jullien Exp $
+// $Id: CBignum.h,v 1.39 2015/12/19 15:03:01 jullien Exp $
 //
 
 /*
@@ -55,20 +55,18 @@ class CRational;
 namespace bignum {
 class CBignum {
   friend class rational::CRational;
- private:
-  enum Flags { ASSIGN };
-
  public:
-  CBignum(int init = 0)       : m_bz(BzFromInteger(init)) {}
-  CBignum(unsigned int init)  : m_bz(BzFromUnsignedInteger(init)) {}
+  CBignum() : m_bz(BzFromInteger(0)) {}
+  template<typename T>
+  CBignum(T init) : m_bz(fromIntType(init)) {}
   CBignum(const CBignum& rhs) : m_bz(BzCopy(rhs.m_bz)) {}
+  CBignum(const rational::CRational& rhs);
 #if defined(BN_CPP11)
-  CBignum(CBignum&& rhs)      : m_bz(rhs.m_bz) { rhs.m_bz = 0; }
+  CBignum(CBignum&& rhs) : m_bz(rhs.m_bz) { rhs.m_bz = 0; }
   // Thanks to C++11, allows nnnnnn_BN syntax
   friend CBignum operator"" _BN(const char* init) { return CBignum(init); }
 #endif
-  CBignum(const BigZ init) : m_bz(BzCopy(init)) {}
-  CBignum(const char* init, int base = 10)
+  CBignum(const char* init, unsigned int base = 10)
     : m_bz(BzFromString(init, base, BZ_UNTIL_END)) {}
   explicit CBignum(bool b) : m_bz(BzFromInteger(b ? 1 : 0)) {}
   ~CBignum() {
@@ -79,21 +77,16 @@ class CBignum {
 
   // convertions
 
-  operator int() const {
-    return static_cast<int>(BzToInteger(m_bz));
+  operator BzInt() const throw() {
+    return BzToInteger(m_bz);
   }
-  operator unsigned int() const {
-    return static_cast<unsigned int>(BzToUnsignedInteger(m_bz));
+  operator BzUInt() const throw() {
+    return BzToUnsignedInteger(m_bz);
   }
-  operator bool() const {
+  operator bool() const throw() {
     return BzGetSign(m_bz) != BZ_ZERO;
   }
   operator std::string() const throw();
-
- private:
-  operator BigZ() const {
-    return m_bz;
-  }
 
  public:
   // unary +, -, ++, --
@@ -115,50 +108,62 @@ class CBignum {
   friend CBignum operator+(const CBignum& bz1, const CBignum& bz2) {
     return CBignum(BzAdd(bz1.m_bz, bz2.m_bz), ASSIGN);
   }
-  friend CBignum operator+(const CBignum& bz1, int i) {
+
+  template<typename T>
+  friend CBignum operator+(const CBignum& bz1, T i) {
     return (bz1 + CBignum(i));
   }
-  friend CBignum operator+(int i, const CBignum& bz1) {
-    return (CBignum(i) + bz1);
+
+  template<typename T>
+  friend CBignum operator+(T i, const CBignum& bz1) {
+    return (bz1 + CBignum(i));
   }
 
   friend CBignum operator-(const CBignum& bz1, const CBignum& bz2) {
     return CBignum(BzSubtract(bz1.m_bz, bz2.m_bz), ASSIGN);
   }
-  friend CBignum operator-(const CBignum& bz1, int i) {
+  template<typename T>
+  friend CBignum operator-(const CBignum& bz1, T i) {
     return (bz1 - CBignum(i));
   }
-  friend CBignum operator-(int i, const CBignum& bz1) {
+  template<typename T>
+  friend CBignum operator-(T i, const CBignum& bz1) {
     return (CBignum(i) - bz1);
   }
 
   friend CBignum operator*(const CBignum& bz1, const CBignum& bz2) {
     return CBignum(BzMultiply(bz1.m_bz, bz2.m_bz), ASSIGN);
   }
-  friend CBignum operator*(const CBignum& bz1, int i) {
+  template<typename T>
+  friend CBignum operator*(const CBignum& bz1, T i) {
     return (bz1 * CBignum(i));
   }
-  friend CBignum operator*(int i, const CBignum& bz1) {
+  template<typename T>
+  friend CBignum operator*(T i, const CBignum& bz1) {
     return (CBignum(i) * bz1);
   }
 
   friend CBignum operator/(const CBignum& bz1, const CBignum& bz2) {
     return CBignum(BzDiv(bz1.m_bz, bz2.m_bz), ASSIGN);
   }
-  friend CBignum operator/(const CBignum& bz1, int i) {
+  template<typename T>
+  friend CBignum operator/(const CBignum& bz1, T i) {
     return (bz1 / CBignum(i));
   }
-  friend CBignum operator/(int i, const CBignum& bz1) {
+  template<typename T>
+  friend CBignum operator/(T i, const CBignum& bz1) {
     return (CBignum(i) / bz1);
   }
 
   friend CBignum operator%(const CBignum& bz1, const CBignum& bz2) {
     return CBignum(BzMod(bz1.m_bz, bz2.m_bz), ASSIGN);
   }
-  friend CBignum operator%(const CBignum& bz1, int i) {
+  template<typename T>
+  friend CBignum operator%(const CBignum& bz1, T i) {
     return (bz1 % CBignum(i));
   }
-  friend CBignum operator%(int i, const CBignum& bz1) {
+  template<typename T>
+  friend CBignum operator%(T i, const CBignum& bz1) {
     return (CBignum(i) % bz1);
   }
 
@@ -167,10 +172,12 @@ class CBignum {
   friend bool operator==(const CBignum& bz1, const CBignum& bz2) {
     return BzCompare(bz1.m_bz, bz2.m_bz) == BZ_EQ;
   }
-  friend bool operator==(const CBignum& bz1, int i) {
+  template<typename T>
+  friend bool operator==(const CBignum& bz1, T i) {
     return (bz1 == CBignum(i));
   }
-  friend bool operator==(int i, const CBignum& bz1) {
+  template<typename T>
+  friend bool operator==(T i, const CBignum& bz1) {
     return (CBignum(i) == bz1);
   }
   friend bool operator!=(const CBignum& bz1, const CBignum& bz2) {
@@ -180,10 +187,12 @@ class CBignum {
   friend bool operator>(const CBignum& bz1, const CBignum& bz2) {
     return BzCompare(bz1.m_bz, bz2.m_bz) == BZ_GT;
   }
-  friend bool operator>(const CBignum& bz1, int i) {
+  template<typename T>
+  friend bool operator>(const CBignum& bz1, T i) {
     return (bz1 > CBignum(i));
   }
-  friend bool operator>(int i, const CBignum& bz1) {
+  template<typename T>
+  friend bool operator>(T i, const CBignum& bz1) {
     return (CBignum(i) > bz1);
   }
   friend bool operator<=(const CBignum& bz1, const CBignum& bz2) {
@@ -193,10 +202,12 @@ class CBignum {
   friend bool operator<(const CBignum& bz1, const CBignum& bz2) {
     return BzCompare(bz1.m_bz, bz2.m_bz) == BZ_LT;
   }
-  friend bool operator<(const CBignum& bz1, int i) {
+  template<typename T>
+  friend bool operator<(const CBignum& bz1, T i) {
     return (bz1 < CBignum(i));
   }
-  friend bool operator<(int i, const CBignum& bz1) {
+  template<typename T>
+  friend bool operator<(T i, const CBignum& bz1) {
     return (CBignum(i) < bz1);
   }
   friend bool operator>=(const CBignum& bz1, const CBignum& bz2) {
@@ -208,30 +219,36 @@ class CBignum {
   friend CBignum operator&(const CBignum& bz1, const CBignum& bz2) {
     return CBignum(BzAnd(bz1.m_bz, bz2.m_bz), ASSIGN);
   }
-  friend CBignum operator&(const CBignum& bz1, int i) {
+  template<typename T>
+  friend CBignum operator&(const CBignum& bz1, T i) {
     return (bz1 & CBignum(i));
   }
-  friend CBignum operator&(int i, const CBignum& bz1) {
+  template<typename T>
+  friend CBignum operator&(T i, const CBignum& bz1) {
     return (CBignum(i) & bz1);
   }
 
   friend CBignum operator|(const CBignum& bz1, const CBignum& bz2) {
     return CBignum(BzOr(bz1.m_bz, bz2.m_bz), ASSIGN);
   }
-  friend CBignum operator|(const CBignum& bz1, int i) {
+  template<typename T>
+  friend CBignum operator|(const CBignum& bz1, T i) {
     return (bz1 | CBignum(i));
   }
-  friend CBignum operator|(int i, const CBignum& bz1) {
+  template<typename T>
+  friend CBignum operator|(T i, const CBignum& bz1) {
     return (CBignum(i) | bz1);
   }
 
   friend CBignum operator^(const CBignum& bz1, const CBignum& bz2) {
     return CBignum(BzXor(bz1.m_bz, bz2.m_bz), ASSIGN);
   }
-  friend CBignum operator^(const CBignum& bz1, int i) {
+  template<typename T>
+  friend CBignum operator^(const CBignum& bz1, T i) {
     return (bz1 ^ CBignum(i));
   }
-  friend CBignum operator^(int i, const CBignum& bz1) {
+  template<typename T>
+  friend CBignum operator^(T i, const CBignum& bz1) {
     return (CBignum(i) ^ bz1);
   }
 
@@ -239,7 +256,7 @@ class CBignum {
     return CBignum(BzNot(m_bz), ASSIGN);
   }
 
-  friend bool logbitp(int bitnb, const CBignum& bz1) {
+  friend bool logbitp(unsigned int bitnb, const CBignum& bz1) {
     return BzTestBit(bitnb, bz1.m_bz) == 1;
   }
 
@@ -247,23 +264,29 @@ class CBignum {
 
   friend CBignum operator<<(const CBignum& bz1, const CBignum& bz2) {
     return CBignum(BzAsh(bz1.m_bz,
-                         static_cast<int>(BzToInteger(bz2.m_bz))), ASSIGN);
+                         static_cast<int>(BzToInteger(bz2.m_bz))),
+		   ASSIGN);
   }
-  friend CBignum operator<<(const CBignum& bz1, int i) {
+  template<typename T>
+  friend CBignum operator<<(const CBignum& bz1, T i) {
     return (bz1 << CBignum(i));
   }
-  friend CBignum operator<<(int i, const CBignum& bz1) {
+  template<typename T>
+  friend CBignum operator<<(T i, const CBignum& bz1) {
     return (CBignum(i) << bz1);
   }
 
   friend CBignum operator>>(const CBignum& bz1, const CBignum& bz2) {
     return CBignum(BzAsh(bz1.m_bz,
-                         static_cast<int>(BzToInteger(bz2.m_bz))), ASSIGN);
+                         static_cast<int>(BzToInteger(bz2.m_bz))),
+		   ASSIGN);
   }
-  friend CBignum operator>>(const CBignum& bz1, int i) {
+  template<typename T>
+  friend CBignum operator>>(const CBignum& bz1, T i) {
     return (bz1 >> CBignum(i));
   }
-  friend CBignum operator>>(int i, const CBignum& bz1) {
+  template<typename T>
+  friend CBignum operator>>(T i, const CBignum& bz1) {
     return (CBignum(i) >> bz1);
   }
 
@@ -272,50 +295,60 @@ class CBignum {
   friend CBignum floor(const CBignum& bz1, const CBignum& bz2) {
     return CBignum(BzFloor(bz1.m_bz, bz2.m_bz), ASSIGN);
   }
-  friend CBignum floor(int i, const CBignum& bz2) {
+  template<typename T>
+  friend CBignum floor(T i, const CBignum& bz2) {
     return floor(CBignum(i), bz2);
   }
-  friend CBignum floor(const CBignum& bz1, int i) {
+  template<typename T>
+  friend CBignum floor(const CBignum& bz1, T i) {
     return floor(bz1, CBignum(i));
   }
 
   friend CBignum ceiling(const CBignum& bz1, const CBignum& bz2) {
     return CBignum(BzCeiling(bz1.m_bz, bz2.m_bz), ASSIGN);
   }
-  friend CBignum ceiling(int i, const CBignum& bz2) {
+  template<typename T>
+  friend CBignum ceiling(T i, const CBignum& bz2) {
     return ceiling(CBignum(i), bz2);
   }
-  friend CBignum ceiling(const CBignum& bz1, int i) {
+  template<typename T>
+  friend CBignum ceiling(const CBignum& bz1, T i) {
     return ceiling(bz1, CBignum(i));
   }
 
   friend CBignum round(const CBignum& bz1, const CBignum& bz2) {
     return CBignum(BzRound(bz1.m_bz, bz2.m_bz), ASSIGN);
   }
-  friend CBignum round(int i, const CBignum& bz2) {
+  template<typename T>
+  friend CBignum round(T i, const CBignum& bz2) {
     return round(CBignum(i), bz2);
   }
-  friend CBignum round(const CBignum& bz1, int i) {
+  template<typename T>
+  friend CBignum round(const CBignum& bz1, T i) {
     return round(bz1, CBignum(i));
   }
 
   friend CBignum gcd(const CBignum& bz1, const CBignum& bz2) {
     return CBignum(BzGcd(bz1.m_bz, bz2.m_bz), ASSIGN);
   }
-  friend CBignum gcd(int i, const CBignum& bz2) {
+  template<typename T>
+  friend CBignum gcd(T i, const CBignum& bz2) {
     return gcd(CBignum(i), bz2);
   }
-  friend CBignum gcd(const CBignum& bz1, int i) {
+  template<typename T>
+  friend CBignum gcd(const CBignum& bz1, T i) {
     return gcd(bz1, CBignum(i));
   }
 
   friend CBignum lcm(const CBignum& bz1, const CBignum& bz2) {
     return CBignum(BzLcm(bz1.m_bz, bz2.m_bz), ASSIGN);
   }
-  friend CBignum lcm(int i, const CBignum& bz2) {
+  template<typename T>
+  friend CBignum lcm(T i, const CBignum& bz2) {
     return lcm(CBignum(i), bz2);
   }
-  friend CBignum lcm(const CBignum& bz1, int i) {
+  template<typename T>
+  friend CBignum lcm(const CBignum& bz1, T i) {
     return lcm(bz1, CBignum(i));
   }
 
@@ -331,14 +364,17 @@ class CBignum {
   friend CBignum pow(const CBignum& bz, unsigned int exp) {
     return CBignum(BzPow(bz.m_bz, exp), ASSIGN);
   }
-  friend CBignum pow(int base, unsigned int exp) {
+  template<typename T>
+  friend CBignum pow(T base, unsigned int exp) {
     return CBignum(BzPow(CBignum(base), exp));
   }
 
   friend CBignum isqrt(const CBignum& bz) {
     return CBignum(BzSqrt(bz.m_bz), ASSIGN);
   }
-  friend CBignum isqrt(int i) {
+
+  template<typename T>
+  friend CBignum isqrt(T i) {
     return isqrt(CBignum(i));
   }
 
@@ -358,12 +394,18 @@ class CBignum {
     return ((i % 2) == 1);
   }
 
-  friend unsigned int length(const CBignum& bz) {
-    return BzLength(bz.m_bz);
+  size_t length() const throw() {
+    return BzLength(m_bz);
   }
 
-  friend unsigned int length(int i) {
-    return length(CBignum(i));
+  friend size_t length(const CBignum& bz) {
+    return bz.length();
+  }
+
+  template<typename T>
+  friend size_t length(T i) {
+    const CBignum tmp(i);
+    return tmp.length()
   }
 
   friend CBignum abs(const CBignum& bz) {
@@ -396,9 +438,10 @@ class CBignum {
   }
 #endif
 
-  CBignum& operator=(int i) {
+  template<typename T>
+  CBignum& operator=(T i) {
     BzFree(m_bz);
-    m_bz = BzFromInteger(i);
+    *this = CBignum(i);
     return *this;
   }
 
@@ -432,7 +475,21 @@ class CBignum {
   static const char *version() { return BzVersion(); }
 
  private:
-  BigZ m_bz;
+  enum Flags { ASSIGN };
+
+  operator BigZ() const throw() {
+    return m_bz;
+  }
+
+  static BigZ fromIntType(BzInt init) {
+    return BzFromInteger(init);
+  }
+  static BigZ fromIntType(BzUInt init) {
+    return BzFromUnsignedInteger(init);
+  }
+
+  CBignum(const BigZ init) : m_bz(BzCopy(init)) {}
+
   CBignum& replace(BigZ bz) {
     BzFree(m_bz);
     m_bz = bz;
@@ -440,6 +497,8 @@ class CBignum {
   }
 
   CBignum(const BigZ init, Flags) : m_bz(init) {}
+
+  BigZ m_bz;
 };
 
 extern const CBignum one;

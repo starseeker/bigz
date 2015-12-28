@@ -29,7 +29,7 @@
  */
 
 /*
- * $Id: tCBignum.cpp,v 1.27 2015/12/19 08:15:23 jullien Exp $
+ * $Id: tCBignum.cpp,v 1.29 2015/12/28 07:24:03 jullien Exp $
  */
 
 #include <stdio.h>
@@ -38,6 +38,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <sstream>
 #ifdef WIN32
 #include <crtdbg.h>
 #endif
@@ -93,7 +94,8 @@ checkResult(int count,
   ++testcnt;
 
   if (res != expected) {
-    (void)printf("test %3d (%s) fails: expected = %16s, computed = %16s\n",
+   std::cout << res.length() << " V.S. " << expected.length() << std::endl;
+    (void)printf("test %3d (%s) fails: expected = '%16s', computed = '%16s'\n",
                  count, op, res.c_str(), expected.c_str());
     ++failcnt;
   }
@@ -175,7 +177,6 @@ main()
     CRational rOne(1);
     CRational rZero(0);
     CBignum bn = q4;
-
     // Check pi to double conversion
     double dpi = static_cast<double>(pi);
     if (dpi < 3.14159 || dpi > 3.14160) {
@@ -199,33 +200,65 @@ main()
 
     tests();
 
-#if 1
     CBignum y(1);
     y <<= 80;
+
     // dec
-    std::cout << std::setw(32) << std::setfill('.') << std::showpos
-              << std::dec << -y << std::endl;
-    std::cout << std::setw(32) << std::setfill('.')
-              << std::showpos
-              << std::dec << y << std::endl;
+    {
+     std::ostringstream oss;
+     oss << std::setw(32) << std::setfill('.') << std::showpos
+         << std::dec << -y;
+     checkResult(1, "<<", oss.str(), "......-1208925819614629174706176");
+    }
+    {
+     std::ostringstream oss;
+     oss << std::setw(32) << std::setfill('.')
+         << std::showpos
+         << std::dec << y;
+     checkResult(1, "<<", oss.str(), "......+1208925819614629174706176");
+    }
+
     // hex
-    std::cout << std::setw(32) << std::setfill('.')
-              << std::hex << y << std::endl;
-    std::cout << std::setw(32) << std::setfill('.')
-              << std::showpos << std::right
-              << std::hex << std::showbase << y << std::endl;
-    std::cout << std::setw(32) << std::setfill('.')
-              << std::hex << std::showbase << -y << std::endl;
-    std::cout << std::setw(32) << std::setfill('.')
-              << std::showpos << std::left
-              << std::hex << std::showbase << y << std::right << std::endl;
+    {
+     std::ostringstream oss;
+     oss << std::setw(32) << std::setfill('.')
+         << std::hex << y;
+     checkResult(1, "<<", oss.str(), "...........100000000000000000000");
+    }
+    {
+     std::ostringstream oss;
+     oss << std::setw(32) << std::setfill('.')
+         << std::showpos << std::right
+         << std::hex << std::showbase << y;
+     checkResult(1, "<<", oss.str(), ".........0x100000000000000000000");
+    }
+    {
+     std::ostringstream oss;
+     oss << std::setw(32) << std::setfill('.')
+         << std::hex << std::showbase << -y;
+     checkResult(1, "<<", oss.str(), "........-0x100000000000000000000");
+    }
+    {
+     std::ostringstream oss;
+     oss << std::setw(32) << std::setfill('.')
+         << std::showpos << std::left
+         << std::hex << std::showbase << y << std::right;
+     checkResult(1, "<<", oss.str(), "0x100000000000000000000.........");
+    }
     // oct
-    std::cout << std::setw(32) << std::setfill('.') << std::showpos
-              << std::oct << y << std::endl;
+    {
+     std::ostringstream oss;
+     oss << std::setw(32) << std::setfill('.') << std::showpos
+         << std::oct << std::showbase << y;
+     checkResult(1, "<<", oss.str(), "....0400000000000000000000000000");
+    }
     // rational
-    std::cout << std::setw(32) << std::setfill('.')
-              << std::dec << r1 << std::endl;
-#endif
+    {
+     std::ostringstream oss;
+     oss << std::setw(32) << std::setfill('.')
+         << std::dec << r1;
+     checkResult(1, "<<", oss.str(), ".....................13717421/37");
+    }
 
     if (failcnt != 0) {
       (void)printf("%d tests made, fails %d.\n", testcnt, failcnt);
