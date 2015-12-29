@@ -1,5 +1,5 @@
 //
-// $Id: CBignum.h,v 1.40 2015/12/28 08:40:18 jullien Exp $
+// $Id: CBignum.h,v 1.41 2015/12/29 15:08:10 jullien Exp $
 //
 
 /*
@@ -59,6 +59,13 @@ class CBignum {
   CBignum() : m_bz(BzFromInteger(0)) {}
   template<typename T>
   CBignum(T init) : m_bz(fromIntType(init)) {}
+  CBignum(int init) : m_bz(BzFromInteger(init)) {}
+  CBignum(unsigned int init) : m_bz(BzFromUnsignedInteger(init)) {}
+#if 0 //    defined(_WIN64) || (defined(HAVE_STDINT_H) && (SIZEOF_VOID_P >= 8))
+  CBignum(BzInt init) : m_bz(BzFromInteger(init)) {}
+  CBignum(BzUInt init) : m_bz(BzFromUnsignedInteger(init)) {}
+#endif
+
   CBignum(const CBignum& rhs) : m_bz(BzCopy(rhs.m_bz)) {}
   CBignum(const rational::CRational& rhs);
 #if defined(BN_CPP11)
@@ -258,6 +265,11 @@ class CBignum {
 
   friend bool logbitp(unsigned int bitnb, const CBignum& bz1) {
     return BzTestBit(bitnb, bz1.m_bz) == BN_TRUE;
+  }
+
+  friend bool logbitp(const CBignum& bitnb, const CBignum& bz1) {
+    const BzUInt bn(bitnb);
+    return BzTestBit(static_cast<unsigned int>(bn), bz1.m_bz) == BN_TRUE;
   }
 
   // shifts

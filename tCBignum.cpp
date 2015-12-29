@@ -29,7 +29,7 @@
  */
 
 /*
- * $Id: tCBignum.cpp,v 1.29 2015/12/28 07:24:03 jullien Exp $
+ * $Id: tCBignum.cpp,v 1.30 2015/12/29 15:08:10 jullien Exp $
  */
 
 #include <stdio.h>
@@ -105,6 +105,13 @@ void
 Tz(int count, const char* op, unsigned int n, const char* expected) {
   checkResult(count, op, CBignum(n), expected);
 }
+
+#if defined(_WIN64) || (defined(HAVE_STDINT_H) && (SIZEOF_VOID_P >= 8))
+void
+Tz(int count, const char* op, size_t n, const char* expected) {
+  checkResult(count, op, CBignum(n), expected);
+}
+#endif
 
 void
 Tz(int count, const char* op, const CBignum& n, const char* expected) {
