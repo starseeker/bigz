@@ -103,13 +103,13 @@ checkResult(int count,
 
 void
 Tz(int count, const char* op, unsigned int n, const char* expected) {
-  checkResult(count, op, CBignum(n), expected);
+ checkResult(count, op, CBignum(n), expected);
 }
 
 #if defined(_WIN64) || (defined(HAVE_STDINT_H) && (SIZEOF_VOID_P >= 8))
 void
 Tz(int count, const char* op, size_t n, const char* expected) {
-  checkResult(count, op, CBignum(n), expected);
+ checkResult(count, op, CBignum(n), expected);
 }
 #endif
 

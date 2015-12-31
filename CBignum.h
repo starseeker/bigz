@@ -58,14 +58,10 @@ class CBignum {
  public:
   CBignum() : m_bz(BzFromInteger(0)) {}
   template<typename T>
-  CBignum(T init) : m_bz(fromIntType(init)) {}
-  CBignum(int init) : m_bz(BzFromInteger(init)) {}
-  CBignum(unsigned int init) : m_bz(BzFromUnsignedInteger(init)) {}
-#if 0 //    defined(_WIN64) || (defined(HAVE_STDINT_H) && (SIZEOF_VOID_P >= 8))
-  CBignum(BzInt init) : m_bz(BzFromInteger(init)) {}
-  CBignum(BzUInt init) : m_bz(BzFromUnsignedInteger(init)) {}
-#endif
-
+  CBignum(T init) : m_bz(signedType<T>()
+			 ? BzFromUnsignedInteger(static_cast<BzUInt>(init))
+			 : BzFromInteger(static_cast<BzInt>(init))) {
+  }
   CBignum(const CBignum& rhs) : m_bz(BzCopy(rhs.m_bz)) {}
   CBignum(const rational::CRational& rhs);
 #if defined(BN_CPP11)
@@ -487,17 +483,16 @@ class CBignum {
   static const char *version() { return BzVersion(); }
 
  private:
+  template<typename T>
+  inline static bool
+  signedType() {
+    return T(~0) < T(0);
+  }
+
   enum Flags { ASSIGN };
 
   operator BigZ() const throw() {
     return m_bz;
-  }
-
-  static BigZ fromIntType(BzInt init) {
-    return BzFromInteger(init);
-  }
-  static BigZ fromIntType(BzUInt init) {
-    return BzFromUnsignedInteger(init);
   }
 
   CBignum(const BigZ init) : m_bz(BzCopy(init)) {}

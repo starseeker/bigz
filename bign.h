@@ -43,6 +43,10 @@
 #include "config.h"
 #endif
 
+#if     defined(_WIN64) || (defined(HAVE_STDINT_H) && (SIZEOF_VOID_P >= 8))
+#include <stdint.h>
+#endif
+
 /*
  *  Bignum representation
  *
@@ -66,8 +70,8 @@ extern  "C"     {
 
 #if     !defined(BN_NUM_DIGIT_TYPE)
 #define BN_NUM_DIGIT_TYPE
-#if     defined(_WIN64)
-typedef unsigned __int64        BigNumDigit;
+#if     defined(_WIN64) || (defined(HAVE_STDINT_H) && (SIZEOF_VOID_P >= 8))
+typedef uint64_t                BigNumDigit;
 #else
 typedef unsigned long           BigNumDigit;
 #endif

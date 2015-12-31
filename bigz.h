@@ -45,7 +45,7 @@ extern  "C"     {
 
 #include <stdlib.h>
 
-#if     defined(HAVE_STDINT_H)
+#if     defined(_WIN64) || (defined(HAVE_STDINT_H) && (SIZEOF_VOID_P >= 8))
 #include <stdint.h>
 #endif
 
@@ -129,27 +129,19 @@ typedef char                            BzChar;
 
 #if     !defined(BZ_INT_TYPE)
 #define BZ_INT_TYPE
-#if     defined(_WIN64)
-typedef __int64                         BzInt;
-#else
-#if     defined(HAVE_STDINT_H) && (SIZEOF_VOID_P >= 8)
+#if     defined(_WIN64) || (defined(HAVE_STDINT_H) && (SIZEOF_VOID_P >= 8))
 typedef int64_t                         BzInt;
 #else
 typedef int                             BzInt;
 #endif
 #endif
-#endif
 
 #if     !defined(BZ_UINT_TYPE)
 #define BZ_UINT_TYPE
-#if     defined(_WIN64)
-typedef unsigned __int64                BzUInt;
-#else
-#if     defined(HAVE_STDINT_H) && (SIZEOF_VOID_P >= 8)
+#if     defined(_WIN64) || (defined(HAVE_STDINT_H) && (SIZEOF_VOID_P >= 8))
 typedef uint64_t                        BzUInt;
 #else
 typedef unsigned int                    BzUInt;
-#endif
 #endif
 #endif
 
