@@ -29,7 +29,7 @@
  */
 
 /*
- * $Id: tCBignum.cpp,v 1.30 2015/12/29 15:08:10 jullien Exp $
+ * $Id: tCBignum.cpp,v 1.33 2015/12/31 12:02:36 jullien Exp $
  */
 
 #include <stdio.h>
@@ -83,6 +83,72 @@ ffib(const CBignum& n) {
     } else {
       return square(ffib(ndiv2 + one)) - square(ffib(ndiv2 - one));
     }
+  }
+}
+
+class Matrix {
+ public:
+  Matrix(const CBignum& n0,
+         const CBignum& n1,
+         const CBignum& n2,
+         const CBignum& n3)
+   : _n0(n0),
+     _n1(n1),
+     _n2(n2),
+     _n3(n3) {
+  }
+
+  Matrix(const Matrix& rhs)
+   : _n0(rhs._n0),
+     _n1(rhs._n1),
+     _n2(rhs._n2),
+     _n3(rhs._n3) {
+  }
+
+  friend Matrix operator*(const Matrix& m1, const Matrix& m2) {
+    return Matrix((m1._n0 * m2._n0) + (m1._n1 * m2._n2),
+                  (m1._n0 * m2._n1) + (m1._n1 * m2._n3),
+                  (m1._n2 * m2._n0) + (m1._n3 * m2._n2),
+                  (m1._n2 * m2._n1) + (m1._n3 * m2._n3));
+  }
+
+  friend Matrix power(const Matrix& m, uint32_t n) {
+    if (n == 0) {
+      return Matrix(1, 0, 0, 1);
+    } else if (n == 1) {
+      return m;
+    } else if ((n % 2) == 0) {
+      return power((m * m), n / 2);
+    } else {
+      return m * power((m * m), (n - 1) / 2);
+    }
+  }
+
+  inline const CBignum& operator[](int n) const {
+    if (n == 0) {
+      return _n0;
+    } else if (n == 1) {
+      return _n1;
+    } else if (n == 2) {
+      return _n2;
+    } else {
+      return _n3;
+    }
+  }
+
+  const CBignum _n0;
+  const CBignum _n1;
+  const CBignum _n2;
+  const CBignum _n3;
+};
+
+CBignum
+fibm(uint32_t n) {
+  if (n < 2) {
+    return CBignum(1);
+  } else {
+    const Matrix& m = power(Matrix(1, 1, 1, 0), n-1);
+    return m[0];
   }
 }
 
@@ -204,7 +270,7 @@ main()
     Tz(  11, "mov",  x2 = x1+x2+x3,    "1594011816806678617885"       );
     Tz(  12, "nan",  CRational(5, 0),  "#.QNaN"                       );
     Tz(  12, "q->z", bn == 9346,       "1"                            );
-
+    Tz(  13, "fibm", fibm(128),        "251728825683549488150424261"  );
     tests();
 
     CBignum y(1);
