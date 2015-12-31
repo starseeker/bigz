@@ -485,8 +485,8 @@ class CBignum {
  private:
   template<typename T>
   inline static bool
-  signedType() {
-    return T(~0) < T(0);
+  signedType(T init = 0) {
+    return T(~0) < init;
   }
 
   enum Flags { ASSIGN };
