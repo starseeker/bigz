@@ -38,7 +38,7 @@
 #if     !defined(__CBIGNUM_H)
 #define __CBIGNUM_H
 
-#if __cplusplus >= 201103L
+#if (__cplusplus >= 201103L) || (defined(_MSC_VER) && (_MSC_VER >= 1800))
 #define BN_CPP11
 #endif
 
@@ -484,6 +484,9 @@ class CBignum {
 
  private:
   template<typename T>
+#if defined(BN_CPP11)
+  constexpr
+#endif
   inline static bool
   signedType(T init = 0) {
     return T(~0) < init;
