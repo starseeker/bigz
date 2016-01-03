@@ -29,7 +29,7 @@
  */
 
 /*
- * $Id: CBignum.cpp,v 1.20 2015/12/28 13:47:04 jullien Exp $
+ * $Id: CBignum.cpp,v 1.21 2016/01/03 07:53:06 jullien Exp $
  */
 
 #include <string.h>
@@ -41,8 +41,10 @@
 
 namespace bignum {
 
+extern const CBignum zero(0);
 extern const CBignum one(1);
 extern const CBignum two(2);
+extern const CBignum ten(10);
 
 /*
  * compute string length with BzChar of any type.
@@ -136,6 +138,12 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
   BzFreeString(const_cast<BzChar*>(res));
   os.flags(ioflags);
   return os;
+}
+
+CBignum::CBignum(unsigned int bitLength, unsigned int* seed)
+ : m_bz(0) {
+ CBignum init(one << (bitLength - 1));
+  m_bz = BzRandom(init.m_bz, reinterpret_cast<BzSeed*>(seed));
 }
 
 CBignum

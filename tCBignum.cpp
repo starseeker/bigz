@@ -29,7 +29,7 @@
  */
 
 /*
- * $Id: tCBignum.cpp,v 1.33 2015/12/31 12:02:36 jullien Exp $
+ * $Id: tCBignum.cpp,v 1.35 2016/01/03 16:51:16 jullien Exp $
  */
 
 #include <stdio.h>
@@ -236,6 +236,18 @@ main()
     CBignum x1(ffib(100));      /* 354224848179261915075        */
     CBignum x2(2);              /* 2                            */
     CBignum x3;                 /* 0                            */
+
+#if 0
+//    std::cout << "0x100"_bn << std::endl;
+    //  std::cout << 0100_bn << std::endl;
+    std::cout << "100"_bn << std::endl;
+
+    unsigned int seed = 0;
+    std::cout << CBignum(1000, &seed) << std::endl;
+    std::cout << CBignum(1000, &seed) << std::endl;
+    std::cout << CBignum(1000, &seed) << std::endl;
+#endif
+
     CRational r1("0123456789/333");
 
     CRational q1(-4, 6);
@@ -255,6 +267,13 @@ main()
     if (dpi < 3.14159 || dpi > 3.14160) {
       std::cerr << dpi << " != 3.14286" << std::endl;
     }
+
+    CBignum xxx = 1;
+    xxx = xxx << 1000;
+    double d(static_cast<double>(xxx));
+    std::cout << xxx << std::endl;
+    printf("double <<%200.30f>>\n", d);
+    std::cout << static_cast<double>(xxx) << std::endl;
 
     Tz(   1, "++",   ++x2,             "3"                            );
     Tz(   2, "--",   --x1,             "354224848179261915074"        );
