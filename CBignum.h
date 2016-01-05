@@ -636,13 +636,13 @@ extern const CBignum two;
 extern const CBignum ten;
 
 inline CBignum&
-CBignum::operator++() {
+  CBignum::operator++() throw() {
   *this += one;
   return *this;
 }
 
 inline CBignum&
-CBignum::operator--() {
+  CBignum::operator--() throw() {
   *this -= one;
   return *this;
 }
