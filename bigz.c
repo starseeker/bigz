@@ -32,7 +32,7 @@
  *      bigz.c : provides an implementation of "unlimited-precision"
  *               arithmetic for signed integers.
  *
- *      $Id: bigz.c,v 1.120 2015/12/19 08:15:23 jullien Exp $
+ *      $Id: bigz.c,v 1.121 2016/01/24 09:13:41 jullien Exp $
  */
 
 /*
@@ -1612,7 +1612,7 @@ BzToBigNum(const BigZ z, BigNumLength *nl) {
         }
 
         *nl  = BzNumDigits(z);
-        size = ((size_t)(*nl+1)) * sizeof(BigNumDigit);
+        size = ((size_t)(*nl + 1)) * sizeof(BigNumDigit);
 
         if ((n = (BigNum)(BzAlloc(size))) != NULL) {
                 *n = (BigNumDigit)*nl; /* set size */
@@ -2099,30 +2099,70 @@ BzAsh(const BigZ y, int n) {
                 BigNumLength len = (BigNumLength)(BN_DIGIT_SIZE - 1);
                 int          ll;
 
-                zl = (BigNumLength)(n / BN_DIGIT_SIZE);
+		if ((BzNumDigits(y) == (BigNumLength)1)
+		    && (BzGetDigit(y, 0) == (BigNumDigit)1)) {
+			/*
+			 * Optimize case where y == 1 (power of two).
+			 */
+			int bitnb = n + 1;
+			BigNumDigit digit;
 
-                if ((n % BN_DIGIT_SIZE) != 0) {
-                        zl++;
-                }
+			/*
+			 * Compute the number of buckets.
+			 */
 
-                zl += BzNumDigits(y);
+			zl = (BigNumLength)(bitnb / BN_DIGIT_SIZE);
 
-                if ((z = BzCreate(zl)) == BZNULL) {
-                        return (z);
-                }
+			if ((bitnb % BN_DIGIT_SIZE) != 0) {
+				zl++;
+			}
 
-                BnnAssign(BzToBn(z), BzToBn(y), BzNumDigits(y));
-                BzSetSign(z, BzGetSign(y));
+			/*
+			 * Create a zeroed BigZ of zl buckets.
+			 */
 
-                /*
-                 *      Now do the shift by BN_DIGIT_SIZE increment.
-                 */
+                	if ((z = BzCreate(zl)) == BZNULL) {
+				return (z);
+			}
 
-                for (ll = n; ll >= (int)BN_DIGIT_SIZE; ll -= len) {
-                        (void)BnnShiftLeft(BzToBn(z), zl, len);
-                }
+			/*
+			 * Set the highest bit.
+			 */
 
-                (void)BnnShiftLeft(BzToBn(z), zl, (BigNumLength)ll);
+			digit = ((BigNumDigit)1 << (n % BN_DIGIT_SIZE));
+			BzSetDigit(z, zl - 1, digit);
+
+			/*
+			 * Sign is the sign of y.
+			 */
+			BzSetSign(z, BzGetSign(y));
+			return (z);
+		} else {
+			zl = (BigNumLength)(n / BN_DIGIT_SIZE);
+
+			if ((n % BN_DIGIT_SIZE) != 0) {
+				zl++;
+			}
+
+			zl += BzNumDigits(y);
+
+			if ((z = BzCreate(zl)) == BZNULL) {
+				return (z);
+			}
+
+			BnnAssign(BzToBn(z), BzToBn(y), BzNumDigits(y));
+			BzSetSign(z, BzGetSign(y));
+
+			/*
+			 *      Now do the shift by BN_DIGIT_SIZE increment.
+			 */
+
+			for (ll = n; ll >= (int)BN_DIGIT_SIZE; ll -= len) {
+				(void)BnnShiftLeft(BzToBn(z), zl, len);
+			}
+
+			(void)BnnShiftLeft(BzToBn(z), zl, (BigNumLength)ll);
+		}
         } else  {
                 BigZ    one;
                 BigZ    d;

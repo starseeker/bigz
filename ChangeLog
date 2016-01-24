@@ -1,5 +1,7 @@
 Change log
 
+2016/01/03: Change version to 1.5.6.
+2016/01/03: CBignum class has been improved.
 2015/10/24: Change version to 1.5.6.
 2015/10/24: Use a newer config.guess version to support recent systems.
 2014/12/30: Change version to 1.5.5.

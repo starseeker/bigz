@@ -29,7 +29,7 @@
  */
 
 /*
- * $Id: tCBignum.cpp,v 1.35 2016/01/03 16:51:16 jullien Exp $
+ * $Id: tCBignum.cpp,v 1.36 2016/01/24 09:13:41 jullien Exp $
  */
 
 #include <stdio.h>
@@ -232,6 +232,13 @@ main()
 
     (void)printf("Bignum non-regression tests. (c) 1998-2016 C. Jullien\n");
     (void)printf("Testing version %s ...\n\n", CBignum::version());
+
+    {
+     CBignum bone(1);
+     for (int i = 30; i < 70; ++ i) {
+       std::cout << i << " => " << (bone << i) << std::endl;
+     }
+    }
 
     CBignum x1(ffib(100));      /* 354224848179261915075        */
     CBignum x2(2);              /* 2                            */
