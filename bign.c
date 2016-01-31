@@ -31,7 +31,7 @@
 /*
  *      bign.c : the kernel written in pure C (it uses no C library)
  *
- *      $Id: bign.c,v 1.51 2015/12/19 08:15:23 jullien Exp $
+ *      $Id: bign.c,v 1.52 2016/01/31 18:29:09 jullien Exp $
  */
 
 /*
@@ -300,12 +300,12 @@ BnnIsDigitEven(BigNumDigit d) {
 BigNumCmp
 BnnCompareDigits(BigNumDigit d1, BigNumDigit d2) {
         /*
-         * Returns      BN_GREATER      if digit1 > digit2
-         *              BN_EQUAL        if digit1 = digit2
-         *              BN_LESS         if digit1 < digit2
+         * Returns      BN_GT      if digit1 > digit2
+         *              BN_EQ      if digit1 = digit2
+         *              BN_LT      if digit1 < digit2
          */
 
-        return ((BigNumCmp)(d1 > d2 ? BN_GT : (d1 == d2 ? BN_EQ : BN_LT)));
+        return ((BigNumCmp)((d1 > d2) ? BN_GT : (d1 == d2 ? BN_EQ : BN_LT)));
 }
 
 void
@@ -377,6 +377,7 @@ BnnShiftLeft(BigNum mm, BigNumLength ml, BigNumLength nbits) {
 
         BigNumDigit res = BN_ZERO;
 
+#if 0
         if (nbits != 0) {
                 BigNumLength rnbits = (BigNumLength)(BN_DIGIT_SIZE - nbits);
                 BigNumLength d;
@@ -387,7 +388,33 @@ BnnShiftLeft(BigNum mm, BigNumLength ml, BigNumLength nbits) {
                         res   = save >> rnbits;
                 }
         }
+#else	
+        if (nbits != 0) {
+                BigNumLength rnbits = (BigNumLength)(BN_DIGIT_SIZE - nbits);
+                BigNumLength evenlen = (ml & ~(BigNumLength)1);
+                BigNumLength d;
 
+		/*
+		 * Loop is now unrooled two BigNumDigit at a time.
+		 */
+
+		for (d = 0; d < evenlen; ++d) {
+			BigNumDigit save0;
+			BigNumDigit save1;
+			save0 = mm[d];
+			mm[d] = (save0 << nbits) | res;
+			save1 = mm[++d];
+			mm[d] = (save1 << nbits) | (save0 >> rnbits);
+			res   = save1 >> rnbits;
+		}
+
+		if (ml != evenlen) {
+			BigNumDigit save = mm[d];
+			mm[d] = (save << nbits) | res;
+                        res   = save >> rnbits;
+		}
+        }
+#endif
         return (res);
 }
 
@@ -402,17 +429,34 @@ BnnShiftRight(BigNum mm, BigNumLength ml, BigNumLength nbits) {
         BigNumDigit res = BN_ZERO;
 
         if (nbits != 0) {
-                BigNumLength lnbits = (BigNumLength)BN_DIGIT_SIZE - nbits;
-                int d;
+                const BigNumLength lnbits = (BigNumLength)BN_DIGIT_SIZE - nbits;
 
                 /*
                  * loop starting from most significant digit
                  */
 
-                for (d = (int)(ml - 1); d >= 0; --d) {
-                        BigNumDigit save = mm[d];
-                        mm[d] = (save >> nbits) | res;
-                        res   = save << lnbits;
+		if ((ml & (BigNumLength)1) != (BigNumLength)0) {
+			/*
+			 * Odd number of digits, start with most significant
+			 * digit, then loop on even number of digits.
+			 */
+			BigNumDigit save = mm[--ml];
+                        mm[ml] = (save >> nbits); /* res==0, no need to | res */
+                        res    = save << lnbits;
+		}
+
+		/*
+		 * Loop is now unrooled two digits at a time.
+		 */
+
+                while (ml != (BigNumLength)0) {
+                        BigNumDigit save0;
+			BigNumDigit save1;
+			save0  = mm[--ml];
+                        mm[ml] = (save0 >> nbits) | res;
+			save1  = mm[--ml];
+			mm[ml] = (save1 >> nbits) | (save0 << lnbits);
+			res    = save1 << lnbits;
                 }
         }
 
@@ -829,6 +873,8 @@ BnnMultiply(BigNum pp,
         return (c);
 }
 
+#define BNN_COMPARE_DIGITS(d1, d2) (d1 == d2)
+
 static void
 BnnDivideHelper(BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl) {
         /*
@@ -907,7 +953,7 @@ BnnDivideHelper(BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl) {
                  * If first digits of numerator and denominator are the same,
                  */
 
-                if (BnnCompareDigits(*(nn+nl), DDigit) == BN_EQ) {
+                if (BNN_COMPARE_DIGITS(*(nn + nl), DDigit)) {
                         /*
                          * Use "Base - 1" for the approximate quotient
                          */
@@ -918,9 +964,9 @@ BnnDivideHelper(BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl) {
                          * first digit of D
                          */
                         (void)BnnDivideDigit(&QApp,
-                                              nn+nl-1,
-                                              (BigNumLength)2,
-                                              DDigit);
+					     nn + nl - 1,
+					     (BigNumLength)2,
+					     DDigit);
                 }
 
                 /*
@@ -933,7 +979,7 @@ BnnDivideHelper(BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl) {
                  * Correct the approximate quotient, in case it was too large
                  */
 
-                while (BnnCompareDigits(*(nn + nl), QApp) != BN_EQ) {
+                while (!BNN_COMPARE_DIGITS(*(nn + nl), QApp)) {
                         /*
                          * Subtract D from N
                          */
@@ -995,7 +1041,7 @@ BnnDivide(BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl) {
                          * note: nn+1 = nn+dl
                          */
 
-                        *nn = BnnDivideDigit(nn+1, nn, nl, *dd);
+                        *nn = BnnDivideDigit(nn + 1, nn, nl, *dd);
 
                         /*
                          * Otherwise, divide one digit at a time
@@ -1005,7 +1051,7 @@ BnnDivide(BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl) {
                          * Normalize
                          */
 
-                        nshift = BnnNumLeadingZeroBitsInDigit(*(dd+dl-1));
+                        nshift = BnnNumLeadingZeroBitsInDigit(*(dd + dl - 1));
                         (void)BnnShiftLeft(dd, dl, nshift);
                         (void)BnnShiftLeft(nn, nl, nshift);
 
@@ -1013,7 +1059,7 @@ BnnDivide(BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl) {
                          * Divide
                          */
 
-                        BnnDivideHelper(nn, nl-1, dd, dl);
+                        BnnDivideHelper(nn, nl - 1, dd, dl);
 
                         /*
                          * Unnormalize

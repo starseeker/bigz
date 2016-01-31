@@ -32,7 +32,7 @@
  *      bigz.c : provides an implementation of "unlimited-precision"
  *               arithmetic for signed integers.
  *
- *      $Id: bigz.c,v 1.122 2016/01/31 06:46:37 jullien Exp $
+ *      $Id: bigz.c,v 1.123 2016/01/31 18:29:09 jullien Exp $
  */
 
 /*
@@ -2129,7 +2129,7 @@ BzAsh(const BigZ y, int n) {
 			 * Set the highest bit.
 			 */
 
-			digit = ((BigNumDigit)1 << (n % BN_DIGIT_SIZE));
+			digit = ((BigNumDigit)1 << ((BzUInt)n % BN_DIGIT_SIZE));
 			BzSetDigit(z, zl - 1, digit);
 
 			/*
