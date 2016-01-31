@@ -32,7 +32,7 @@
  *      bigz.c : provides an implementation of "unlimited-precision"
  *               arithmetic for signed integers.
  *
- *      $Id: bigz.c,v 1.121 2016/01/24 09:13:41 jullien Exp $
+ *      $Id: bigz.c,v 1.122 2016/01/31 06:46:37 jullien Exp $
  */
 
 /*
@@ -109,7 +109,7 @@ static const int BigHexToDigit[] = {
 };
 
 #define CTOI(c) ((((unsigned int)c) < (unsigned int)255) \
-                 ? BigHexToDigit[(unsigned int)c]      \
+                 ? BigHexToDigit[(unsigned int)c]	 \
                  : -1)
 #endif
 
@@ -1125,7 +1125,7 @@ static const BzPrintTable BzPrintBase[] = {
   { 12, (BigNumDigit)4738381338321616896UL  }  /* 36 */
 };
 #endif /* BZ_BUCKET_SIZE == 64 */
-#endif  /* BZ_OPTIMIZE_PRINT */
+#endif /* BZ_OPTIMIZE_PRINT */
 
 BzChar *
 BzToString(const BigZ z, BigNumDigit base, int sign) {
@@ -1263,9 +1263,9 @@ BzToStringBuffer(const BigZ z,
                          */
 
                         r = BnnDivideDigit(BzToBn(q),
-                                            BzToBn(y),
-                                            zl,
-                                            maxval);
+					   BzToBn(y),
+					   zl,
+					   maxval);
 
                         if (BnnIsZero(BzToBn(q), zl) == BN_FALSE) {
                                 /*
