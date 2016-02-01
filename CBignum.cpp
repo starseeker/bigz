@@ -69,7 +69,7 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
   const BzChar* res;
 
   std::ios_base::fmtflags ioflags = os.flags();
-  bool showBase = ((ioflags & std::ios::showbase) != 0);
+  bool showBase = static_cast<bool>(ioflags & std::ios::showbase);
   size_t len;
   size_t width = (size_t)os.width();
   os << std::setw(0);
