@@ -29,7 +29,7 @@
  */
 
 /*
- * $Id: CBignum.cpp,v 1.22 2016/02/02 04:41:46 jullien Exp $
+ * $Id: CBignum.cpp,v 1.23 2016/02/07 08:05:05 jullien Exp $
  */
 
 #include <string.h>
@@ -46,21 +46,10 @@ extern const CBignum one(1);
 extern const CBignum two(2);
 extern const CBignum ten(10);
 
-/*
- * compute string length with BzChar of any type.
- */
-static size_t
-stringLength(const BzChar* s) {
-  size_t len;
-  for (len = 0; *s != 0; ++s) {
-    ++len;
-  }
-  return len;
-}
-
 CBignum::operator std::string () const throw() {
-  const BzChar* s = BzToString(m_bz, 10, 0);
-  std::string res(s);
+  size_t len = 0;
+  const BzChar* s = BzToStringBufferExt(m_bz, 10, 0, 0, 0, &len);
+  std::string res(s, len);
   BzFreeString(const_cast<BzChar*>(s));
   return res;
 }
@@ -76,8 +65,10 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
 
   if (ioflags & std::ios::hex) {
     // hexadecimal output
-    res = BzToString(bn.m_bz, 16, 0);
-    len = stringLength(res) + (showBase ? 2 : 0);
+    res = BzToStringBufferExt(bn.m_bz, 16, 0, 0, 0, &len);
+    if (showBase) {
+     len += 2;  // '0x' prefix
+    }
     if ((len < width) && !(ioflags & std::ios::left)) {
      const std::string pad(width - len, os.fill());
      os << pad;
@@ -99,8 +90,10 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
     }
   } else if (ioflags & std::ios::oct) {
     // octal output
-    res = BzToString(bn.m_bz, 8, 0);
-    len = stringLength(res) + (showBase ? 1 : 0);
+    res = BzToStringBufferExt(bn.m_bz, 8, 0, 0, 0, &len);
+    if (showBase) {
+     len += 1; // '0' prefix
+    }
     if ((len < width) && !(ioflags & std::ios::left)) {
       const std::string pad(width - len, os.fill());
       os << pad;
@@ -122,8 +115,12 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
     }
   } else {
     // decimal output
-    res = BzToString(bn.m_bz, 10, (ioflags & std::ios::showpos));
-    len = stringLength(res);
+    if ((ioflags & std::ios::showpos) != 0) {
+      res = BzToStringBufferExt(bn.m_bz, 10, BZ_FORCE_SIGN, 0, 0, &len);
+    } else {
+      res = BzToStringBufferExt(bn.m_bz, 10, 0, 0, 0, &len);
+    }
+      
     if (len < width) {
       const std::string pad(width - len, os.fill());
       if (!(ioflags & std::ios::left)) {

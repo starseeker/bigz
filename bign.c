@@ -388,31 +388,31 @@ BnnShiftLeft(BigNum mm, BigNumLength ml, BigNumLength nbits) {
                         res   = save >> rnbits;
                 }
         }
-#else	
+#else   
         if (nbits != 0) {
                 BigNumLength rnbits = (BigNumLength)(BN_DIGIT_SIZE - nbits);
                 BigNumLength evenlen = (ml & ~(BigNumLength)1);
                 BigNumLength d;
 
-		/*
-		 * Loop is now unrooled two BigNumDigit at a time.
-		 */
+                /*
+                 * Loop is now unrooled two BigNumDigit at a time.
+                 */
 
-		for (d = 0; d < evenlen; ++d) {
-			BigNumDigit save0;
-			BigNumDigit save1;
-			save0 = mm[d];
-			mm[d] = (save0 << nbits) | res;
-			save1 = mm[++d];
-			mm[d] = (save1 << nbits) | (save0 >> rnbits);
-			res   = save1 >> rnbits;
-		}
+                for (d = 0; d < evenlen; ++d) {
+                        BigNumDigit save0;
+                        BigNumDigit save1;
+                        save0 = mm[d];
+                        mm[d] = (save0 << nbits) | res;
+                        save1 = mm[++d];
+                        mm[d] = (save1 << nbits) | (save0 >> rnbits);
+                        res   = save1 >> rnbits;
+                }
 
-		if (ml != evenlen) {
-			BigNumDigit save = mm[d];
-			mm[d] = (save << nbits) | res;
+                if (ml != evenlen) {
+                        BigNumDigit save = mm[d];
+                        mm[d] = (save << nbits) | res;
                         res   = save >> rnbits;
-		}
+                }
         }
 #endif
         return (res);
@@ -435,28 +435,28 @@ BnnShiftRight(BigNum mm, BigNumLength ml, BigNumLength nbits) {
                  * loop starting from most significant digit
                  */
 
-		if ((ml & (BigNumLength)1) != (BigNumLength)0) {
-			/*
-			 * Odd number of digits, start with most significant
-			 * digit, then loop on even number of digits.
-			 */
-			BigNumDigit save = mm[--ml];
+                if ((ml & (BigNumLength)1) != (BigNumLength)0) {
+                        /*
+                         * Odd number of digits, start with most significant
+                         * digit, then loop on even number of digits.
+                         */
+                        BigNumDigit save = mm[--ml];
                         mm[ml] = (save >> nbits); /* res==0, no need to | res */
                         res    = save << lnbits;
-		}
+                }
 
-		/*
-		 * Loop is now unrooled two digits at a time.
-		 */
+                /*
+                 * Loop is now unrooled two digits at a time.
+                 */
 
                 while (ml != (BigNumLength)0) {
                         BigNumDigit save0;
-			BigNumDigit save1;
-			save0  = mm[--ml];
+                        BigNumDigit save1;
+                        save0  = mm[--ml];
                         mm[ml] = (save0 >> nbits) | res;
-			save1  = mm[--ml];
-			mm[ml] = (save1 >> nbits) | (save0 << lnbits);
-			res    = save1 << lnbits;
+                        save1  = mm[--ml];
+                        mm[ml] = (save1 >> nbits) | (save0 << lnbits);
+                        res    = save1 << lnbits;
                 }
         }
 
@@ -964,9 +964,9 @@ BnnDivideHelper(BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl) {
                          * first digit of D
                          */
                         (void)BnnDivideDigit(&QApp,
-					     nn + nl - 1,
-					     (BigNumLength)2,
-					     DDigit);
+                                             nn + nl - 1,
+                                             (BigNumLength)2,
+                                             DDigit);
                 }
 
                 /*

@@ -32,7 +32,7 @@
  *      bigz.c : provides an implementation of "unlimited-precision"
  *               arithmetic for signed integers.
  *
- *      $Id: bigz.c,v 1.123 2016/01/31 18:29:09 jullien Exp $
+ *      $Id: bigz.c,v 1.124 2016/02/07 08:05:05 jullien Exp $
  */
 
 /*
@@ -50,6 +50,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <ctype.h>
 
 #if     !defined(__BIGZ_H)
@@ -109,7 +110,7 @@ static const int BigHexToDigit[] = {
 };
 
 #define CTOI(c) ((((unsigned int)c) < (unsigned int)255) \
-                 ? BigHexToDigit[(unsigned int)c]	 \
+                 ? BigHexToDigit[(unsigned int)c]        \
                  : -1)
 #endif
 
@@ -1132,7 +1133,6 @@ BzToString(const BigZ z, BigNumDigit base, int sign) {
         /*
          * wrapper to BzToStringBuffer that always allocate buffer.
          */
-
         return (BzToStringBuffer(z, base, sign, (BzChar *)0, (size_t *)0));
 }
 
@@ -1142,6 +1142,21 @@ BzToStringBuffer(const BigZ z,
                  int sign,
                  BzChar *buf,
                  size_t *len) {
+        return (BzToStringBufferExt(z,
+                                    base,
+                                    sign,
+                                    buf,
+                                    len,
+                                    (size_t *)0));
+}
+
+BzChar *
+BzToStringBufferExt(const BigZ z,
+                    BigNumDigit base,
+                    int sign,
+                    BzChar *buf,
+                    size_t *len,
+                    size_t *slen) {
         /*
          * Returns  a  pointer  to  a string that represents Z in the
          * specified   base.   Assumes   BZ_MIN_BASE   <=   base   <=
@@ -1225,6 +1240,13 @@ BzToStringBuffer(const BigZ z,
                         BzFree(q);
                         return ((BzChar *)NULL);
                 }
+                if (len != (size_t *)NULL) {
+                        /*
+                         * a buffer is allocated and caller wants to know
+                         * allocated size.
+                         */
+                        *len = (size_t)sl;
+                }
         }
 
         BnnAssign(BzToBn(y), BzToBn(z), zl - 1);
@@ -1263,9 +1285,9 @@ BzToStringBuffer(const BigZ z,
                          */
 
                         r = BnnDivideDigit(BzToBn(q),
-					   BzToBn(y),
-					   zl,
-					   maxval);
+                                           BzToBn(y),
+                                           zl,
+                                           maxval);
 
                         if (BnnIsZero(BzToBn(q), zl) == BN_FALSE) {
                                 /*
@@ -1362,6 +1384,14 @@ BzToStringBuffer(const BigZ z,
 
         BzFree(y);
         BzFree(q);
+
+        if (slen != (size_t *)NULL) {
+                /*
+                 * A non null pointer was passed to get string length.
+		 * (which is not the same a buffer length used to bild string).
+		 */
+                *slen = (size_t)(strg + sl - s - 1);
+        }
 
         return (strg);
 }
@@ -2099,70 +2129,70 @@ BzAsh(const BigZ y, int n) {
                 BigNumLength len = (BigNumLength)(BN_DIGIT_SIZE - 1);
                 int          ll;
 
-		if ((BzNumDigits(y) == (BigNumLength)1)
-		    && (BzGetDigit(y, 0) == (BigNumDigit)1)) {
-			/*
-			 * Optimize case where y == 1 (power of two).
-			 */
-			int bitnb = n + 1;
-			BigNumDigit digit;
+                if ((BzNumDigits(y) == (BigNumLength)1)
+                    && (BzGetDigit(y, 0) == (BigNumDigit)1)) {
+                        /*
+                         * Optimize case where y == 1 (power of two).
+                         */
+                        int bitnb = n + 1;
+                        BigNumDigit digit;
 
-			/*
-			 * Compute the number of buckets.
-			 */
+                        /*
+                         * Compute the number of buckets.
+                         */
 
-			zl = (BigNumLength)(bitnb / BN_DIGIT_SIZE);
+                        zl = (BigNumLength)(bitnb / BN_DIGIT_SIZE);
 
-			if ((bitnb % BN_DIGIT_SIZE) != 0) {
-				zl++;
-			}
+                        if ((bitnb % BN_DIGIT_SIZE) != 0) {
+                                zl++;
+                        }
 
-			/*
-			 * Create a zeroed BigZ of zl buckets.
-			 */
+                        /*
+                         * Create a zeroed BigZ of zl buckets.
+                         */
 
-                	if ((z = BzCreate(zl)) == BZNULL) {
-				return (z);
-			}
+                        if ((z = BzCreate(zl)) == BZNULL) {
+                                return (z);
+                        }
 
-			/*
-			 * Set the highest bit.
-			 */
+                        /*
+                         * Set the highest bit.
+                         */
 
-			digit = ((BigNumDigit)1 << ((BzUInt)n % BN_DIGIT_SIZE));
-			BzSetDigit(z, zl - 1, digit);
+                        digit = ((BigNumDigit)1 << ((BzUInt)n % BN_DIGIT_SIZE));
+                        BzSetDigit(z, zl - 1, digit);
 
-			/*
-			 * Sign is the sign of y.
-			 */
-			BzSetSign(z, BzGetSign(y));
-			return (z);
-		} else {
-			zl = (BigNumLength)(n / BN_DIGIT_SIZE);
+                        /*
+                         * Sign is the sign of y.
+                         */
+                        BzSetSign(z, BzGetSign(y));
+                        return (z);
+                } else {
+                        zl = (BigNumLength)(n / BN_DIGIT_SIZE);
 
-			if ((n % BN_DIGIT_SIZE) != 0) {
-				zl++;
-			}
+                        if ((n % BN_DIGIT_SIZE) != 0) {
+                                zl++;
+                        }
 
-			zl += BzNumDigits(y);
+                        zl += BzNumDigits(y);
 
-			if ((z = BzCreate(zl)) == BZNULL) {
-				return (z);
-			}
+                        if ((z = BzCreate(zl)) == BZNULL) {
+                                return (z);
+                        }
 
-			BnnAssign(BzToBn(z), BzToBn(y), BzNumDigits(y));
-			BzSetSign(z, BzGetSign(y));
+                        BnnAssign(BzToBn(z), BzToBn(y), BzNumDigits(y));
+                        BzSetSign(z, BzGetSign(y));
 
-			/*
-			 *      Now do the shift by BN_DIGIT_SIZE increment.
-			 */
+                        /*
+                         *      Now do the shift by BN_DIGIT_SIZE increment.
+                         */
 
-			for (ll = n; ll >= (int)BN_DIGIT_SIZE; ll -= len) {
-				(void)BnnShiftLeft(BzToBn(z), zl, len);
-			}
+                        for (ll = n; ll >= (int)BN_DIGIT_SIZE; ll -= len) {
+                                (void)BnnShiftLeft(BzToBn(z), zl, len);
+                        }
 
-			(void)BnnShiftLeft(BzToBn(z), zl, (BigNumLength)ll);
-		}
+                        (void)BnnShiftLeft(BzToBn(z), zl, (BigNumLength)ll);
+                }
         } else  {
                 BigZ    one;
                 BigZ    d;

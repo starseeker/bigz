@@ -29,7 +29,7 @@
  */
 
 /*
- * $Id: tCBignum.cpp,v 1.36 2016/01/24 09:13:41 jullien Exp $
+ * $Id: tCBignum.cpp,v 1.37 2016/02/07 08:05:05 jullien Exp $
  */
 
 #include <stdio.h>
@@ -316,7 +316,7 @@ main()
      oss << std::setw(32) << std::setfill('.')
          << std::showpos
          << std::dec << y;
-     checkResult(1, "<<", oss.str(), ".......1208925819614629174706176");
+     checkResult(1, "<<", oss.str(), "......+1208925819614629174706176");
     }
 
     // hex
