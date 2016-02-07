@@ -31,7 +31,7 @@
 /*
  *      bign.c : the kernel written in pure C (it uses no C library)
  *
- *      $Id: bign.c,v 1.52 2016/01/31 18:29:09 jullien Exp $
+ *      $Id: bign.c,v 1.53 2016/02/07 14:09:55 jullien Exp $
  */
 
 /*

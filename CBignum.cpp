@@ -29,7 +29,7 @@
  */
 
 /*
- * $Id: CBignum.cpp,v 1.23 2016/02/07 08:05:05 jullien Exp $
+ * $Id: CBignum.cpp,v 1.24 2016/02/07 14:09:55 jullien Exp $
  */
 
 #include <string.h>
@@ -115,7 +115,7 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
     }
   } else {
     // decimal output
-    if ((ioflags & std::ios::showpos) != 0) {
+    if (ioflags & std::ios::showpos) {
       res = BzToStringBufferExt(bn.m_bz, 10, BZ_FORCE_SIGN, 0, 0, &len);
     } else {
       res = BzToStringBufferExt(bn.m_bz, 10, 0, 0, 0, &len);
