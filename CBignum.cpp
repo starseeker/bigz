@@ -29,7 +29,7 @@
  */
 
 /*
- * $Id: CBignum.cpp,v 1.21 2016/01/03 07:53:06 jullien Exp $
+ * $Id: CBignum.cpp,v 1.22 2016/02/02 04:41:46 jullien Exp $
  */
 
 #include <string.h>
@@ -69,7 +69,7 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
   const BzChar* res;
 
   std::ios_base::fmtflags ioflags = os.flags();
-  bool showBase = static_cast<bool>(ioflags & std::ios::showbase);
+  bool showBase = !!(ioflags & std::ios::showbase);
   size_t len;
   size_t width = (size_t)os.width();
   os << std::setw(0);
@@ -122,7 +122,7 @@ std::ostream& operator<<(std::ostream& os, const CBignum& bn) {
     }
   } else {
     // decimal output
-    res = BzToString(bn.m_bz, 10, (ioflags && std::ios::showpos));
+    res = BzToString(bn.m_bz, 10, (ioflags & std::ios::showpos));
     len = stringLength(res);
     if (len < width) {
       const std::string pad(width - len, os.fill());

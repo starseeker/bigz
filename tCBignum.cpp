@@ -233,12 +233,21 @@ main()
     (void)printf("Bignum non-regression tests. (c) 1998-2016 C. Jullien\n");
     (void)printf("Testing version %s ...\n\n", CBignum::version());
 
+#if 0
     {
-     CBignum bone(1);
+     CBignum bnOne(1);
      for (int i = 30; i < 70; ++ i) {
-       std::cout << i << " => " << (bone << i) << std::endl;
+       std::cout << i << " => " << (bnOne << i) << std::endl;
      }
+
+    CBignum xxx = bnOne << 1000;
+    double d(static_cast<double>(xxx));
+    std::cout << xxx << std::endl << std::endl;
+    (void)printf("%200f\n", d);
+    std::cout << d << std::endl;
+
     }
+#endif
 
     CBignum x1(ffib(100));      /* 354224848179261915075        */
     CBignum x2(2);              /* 2                            */
@@ -275,13 +284,6 @@ main()
       std::cerr << dpi << " != 3.14286" << std::endl;
     }
 
-    CBignum xxx = 1;
-    xxx = xxx << 1000;
-    double d(static_cast<double>(xxx));
-    std::cout << xxx << std::endl;
-    printf("double <<%200.30f>>\n", d);
-    std::cout << static_cast<double>(xxx) << std::endl;
-
     Tz(   1, "++",   ++x2,             "3"                            );
     Tz(   2, "--",   --x1,             "354224848179261915074"        );
     Tz(   3, "*=",   x1 *= x2,         "1062674544537785745222"       );
@@ -314,7 +316,7 @@ main()
      oss << std::setw(32) << std::setfill('.')
          << std::showpos
          << std::dec << y;
-     checkResult(1, "<<", oss.str(), "......+1208925819614629174706176");
+     checkResult(1, "<<", oss.str(), ".......1208925819614629174706176");
     }
 
     // hex
