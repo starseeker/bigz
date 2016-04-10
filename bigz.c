@@ -32,7 +32,7 @@
  *      bigz.c : provides an implementation of "unlimited-precision"
  *               arithmetic for signed integers.
  *
- *      $Id: bigz.c,v 1.127 2016/04/10 07:27:21 jullien Exp $
+ *      $Id: bigz.c,v 1.128 2016/04/10 09:43:48 jullien Exp $
  */
 
 /*
@@ -1297,8 +1297,16 @@ BzToStringBufferExt(const BigZ z,
                                  */
                                 int     i;
                                 for (i = 0; i < (int)digits; ++i) {
-                                        *--s = Digit[r % base];
-                                        r = r / base;
+					if (r == 0) {
+						/*
+						 * No need to divide, fill
+						 * the rest with '0'.
+						 */
+						*--s = (BzChar)'0';
+					} else {
+	                                        *--s = Digit[r % base];
+						r = r / base;
+					}
                                 }
                         } else  {
                                 /*
