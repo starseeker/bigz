@@ -32,7 +32,7 @@
  *      bigz.c : provides an implementation of "unlimited-precision"
  *               arithmetic for signed integers.
  *
- *      $Id: bigz.c,v 1.125 2016/02/07 14:09:55 jullien Exp $
+ *      $Id: bigz.c,v 1.127 2016/04/10 07:27:21 jullien Exp $
  */
 
 /*
@@ -1387,8 +1387,8 @@ BzToStringBufferExt(const BigZ z,
 
         if (slen != (size_t *)NULL) {
                 /*
-                 * A non null pointer was passed to get string length.
-		 * (which is not the same a buffer length used to bild string).
+                 * A non null pointer was passed to get string length
+		 * (which is not the same a buffer length used to build string).
 		 */
                 *slen = (size_t)(strg + sl - s - 1);
         }
@@ -2235,10 +2235,16 @@ BzSqrt(const BigZ z) {
         two = BzFromInteger((BzInt)2);
         n   = BzLength(z);
 
-        if ((n % 2) != 0) {
-                n = n / 2 + 1;
+        if (n & 1) {
+		/*
+		 * n is odd.
+		 */
+                n = (n >> 1) + 1;
         } else  {
-                n = n / 2;
+		/*
+		 * n is even.
+		 */
+                n = (n >> 1);
         }
 
         x = BzAsh(one, (int)n);
