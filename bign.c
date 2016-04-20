@@ -924,7 +924,7 @@ BnnDivideHelper(BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl) {
          */
 
         DDigit = BN_ZERO;
-        BnnAssign(&DDigit, dd+dl-1, (BigNumLength)1);
+        BnnAssign(&DDigit, dd + dl - 1, (BigNumLength)1);
 
         /*
          * Replace D by Base - D
@@ -939,7 +939,7 @@ BnnDivideHelper(BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl) {
 
         QApp = BN_ZERO;
         nl += 1;
-        ni = nl-dl;
+        ni = nl - dl;
 
         while (ni != 0) {
                 /*
@@ -973,7 +973,7 @@ BnnDivideHelper(BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl) {
                  * Compute the remainder
                  */
 
-                (void)BnnMultiplyDigit(nn+ni, dl+1, dd, dl, QApp);
+                (void)BnnMultiplyDigit(nn + ni, dl + 1, dd, dl, QApp);
 
                 /*
                  * Correct the approximate quotient, in case it was too large
@@ -984,15 +984,15 @@ BnnDivideHelper(BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl) {
                          * Subtract D from N
                          */
 
-                        (void)BnnSubtract(nn+ni, dl+1, dd, dl, BN_CARRY);
+                        (void)BnnSubtract(nn+ni, dl + 1, dd, dl, BN_CARRY);
 
                         /*
                          * Q -= 1
                          */
 
                         (void)BnnSubtractBorrow(&QApp,
-                                                 (BigNumLength)1,
-                                                 BN_NOCARRY);
+                                                (BigNumLength)1,
+                                                BN_NOCARRY);
                 }
         }
 
@@ -1025,11 +1025,11 @@ BnnDivide(BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl) {
         switch (BnnCompare(nn, nl, dd, dl)) {
         case BN_LT:     /* n < d */
                 /* nop */                              /* N => R */
-                BnnSetToZero(nn+dl, nl-dl);            /* 0 => Q */
+                BnnSetToZero(nn + dl, nl - dl);        /* 0 => Q */
                 return;
         case BN_EQ:     /* n == d */
                 BnnSetToZero(nn, nl);                  /* 0 => R */
-                BnnSetDigit(nn+nl-1, BN_ONE);          /* 1 => Q */
+                BnnSetDigit(nn + nl - 1, BN_ONE);      /* 1 => Q */
                 return;
         case BN_GT:     /* n > d */
                 /*
@@ -1091,7 +1091,7 @@ BnnCompare(const BigNum mm,
         nl = BnnNumDigits(nn, nl);
 
         if (ml != nl) {
-                return (ml > nl ? BN_GT : BN_LT);
+                return ((ml > nl) ? BN_GT : BN_LT);
         } else  {
                 int     d;
 
@@ -1100,11 +1100,8 @@ BnnCompare(const BigNum mm,
                  */
 
                 for (d = (int)(nl - 1); d >= 0; --d) {
-                        if (mm[d] > nn[d]) {
-                                return (BN_GT);
-                        }
-                        if (mm[d] < nn[d]) {
-                                return (BN_LT);
+                        if (mm[d] != nn[d]) {
+                                return ((mm[d] > nn[d]) ? BN_GT : BN_LT);
                         }
                 }
 

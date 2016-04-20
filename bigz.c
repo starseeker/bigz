@@ -1140,7 +1140,7 @@ BzChar *
 BzToStringBuffer(const BigZ z,
                  BigNumDigit base,
                  int sign,
-                 BzChar *buf,
+                 BzChar * const buf,
                  size_t *len) {
         return (BzToStringBufferExt(z,
                                     base,
@@ -1154,7 +1154,7 @@ BzChar *
 BzToStringBufferExt(const BigZ z,
                     BigNumDigit base,
                     int sign,
-                    BzChar *buf,
+                    BzChar * const buf,
                     size_t *len,
                     size_t *slen) {
         /*
@@ -1372,6 +1372,7 @@ BzToStringBufferExt(const BigZ z,
                 }
         }
 
+#if 0
         /*
          * and move string into position
          */
@@ -1384,7 +1385,24 @@ BzToStringBufferExt(const BigZ z,
                 }
 
                 strg[i] = (BzChar)'\000';
-        }
+	}
+#else
+        if (buf != (BzChar *)NULL) {
+		strg = &s[0];
+	} else if ((s - strg) > 0) {
+               /*
+                * and move string into position as no buffer
+                * has been supplied.
+                */
+                BigNumLength i;
+
+                for (i = 0; s[i] != (BzChar)'\000'; ++i) {
+                        strg[i] = s[i];
+                }
+
+                strg[i] = (BzChar)'\000';
+	}
+#endif
 
         /*
          * Free temporary BigNums and return the string
