@@ -32,7 +32,7 @@
  *      bigz.c : provides an implementation of "unlimited-precision"
  *               arithmetic for signed integers.
  *
- *      $Id: bigz.c,v 1.128 2016/04/10 09:43:48 jullien Exp $
+ *      $Id: bigz.c,v 1.129 2016/04/20 10:39:21 jullien Exp $
  */
 
 /*
@@ -619,7 +619,7 @@ BzDivide(const BigZ y, const BigZ z, BigZ *r) {
 
         yl = BzNumDigits(y);
         zl = BzNumDigits(z);
-        ql = (BigNumLength)MaxInt((int)yl - (int)zl+1, 1) + 1;
+        ql = (BigNumLength)MaxInt((int)yl - (int)zl + 1, 1) + 1;
         rl = (BigNumLength)MaxInt(zl, yl) + 1;
 
         /*
@@ -642,8 +642,8 @@ BzDivide(const BigZ y, const BigZ z, BigZ *r) {
          */
 
         BnnDivide(BzToBn(*r), rl, BzToBn(z), zl);
-        BnnAssign(BzToBn(q), BzToBn(*r) + zl, rl-zl);
-        BnnSetToZero(BzToBn(*r) + zl, rl-zl);
+        BnnAssign(BzToBn(q), BzToBn(*r) + zl, rl - zl);
+        BnnSetToZero(BzToBn(*r) + zl, rl - zl);
         rl = zl;
 
         /*
@@ -2250,18 +2250,15 @@ BigZ
 BzSqrt(const BigZ z) {
         BigNumLength    n;
         BigZ            x;
-        BigZ            one;
         BigZ            two;
 
         if (BzGetSign(z) == BZ_ZERO) {
                 return (BzFromInteger((BzInt)0));
         }
 
-        one = BzFromInteger((BzInt)1);
-        two = BzFromInteger((BzInt)2);
         n   = BzLength(z);
 
-        if (n & 1) {
+        if ((n & 1) != 0) {
 		/*
 		 * n is odd.
 		 */
@@ -2273,7 +2270,14 @@ BzSqrt(const BigZ z) {
                 n = (n >> 1);
         }
 
-        x = BzAsh(one, (int)n);
+	{
+		BigZ one = BzFromInteger((BzInt)1);
+		
+		x = BzAsh(one, (int)n);
+		BzFree(one);
+	}
+
+        two = BzFromInteger((BzInt)2);
 
         for (;;) {
                 BigZ v;
@@ -2293,11 +2297,10 @@ BzSqrt(const BigZ z) {
         }
 
         /*
-         * Free temporary BigNums
+         * Free temporary two
          */
 
         BzFree(two);
-        BzFree(one);
 
         return (x);
 }

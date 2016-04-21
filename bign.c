@@ -31,7 +31,7 @@
 /*
  *      bign.c : the kernel written in pure C (it uses no C library)
  *
- *      $Id: bign.c,v 1.53 2016/02/07 14:09:55 jullien Exp $
+ *      $Id: bign.c,v 1.54 2016/04/20 10:39:21 jullien Exp $
  */
 
 /*
@@ -377,18 +377,6 @@ BnnShiftLeft(BigNum mm, BigNumLength ml, BigNumLength nbits) {
 
         BigNumDigit res = BN_ZERO;
 
-#if 0
-        if (nbits != 0) {
-                BigNumLength rnbits = (BigNumLength)(BN_DIGIT_SIZE - nbits);
-                BigNumLength d;
-
-                for (d = 0; d < ml; ++d) {
-                        BigNumDigit save = mm[d];
-                        mm[d] = (save << nbits) | res;
-                        res   = save >> rnbits;
-                }
-        }
-#else   
         if (nbits != 0) {
                 BigNumLength rnbits = (BigNumLength)(BN_DIGIT_SIZE - nbits);
                 BigNumLength evenlen = (ml & ~(BigNumLength)1);
@@ -414,7 +402,7 @@ BnnShiftLeft(BigNum mm, BigNumLength ml, BigNumLength nbits) {
                         res   = save >> rnbits;
                 }
         }
-#endif
+
         return (res);
 }
 
@@ -596,7 +584,7 @@ BnnSubtract(BigNum mm,
 #define HIGH(x)  (BigNumDigit)(x >> (BN_DIGIT_SIZE / 2))
 #define L2H(x)   (BigNumDigit)(x << (BN_DIGIT_SIZE / 2))
 
-#define UPDATE_S(c, V, X3) c += V; if (c < V) { X3++; }
+#define UPDATE_S(c, V, X3) c += V; X3 += (int)(c < V);
 
 BigNumCarry
 BnnMultiplyDigit(BigNum pp,
@@ -684,13 +672,8 @@ BnnMultiplyDigit(BigNum pp,
 /* xh:xl -= yh:yl */
 
 #define SUB(xh, xl, yh, yl)                                     \
-        if (yl > xl) {                                          \
-                xl -= yl;                                       \
-                xh -= yh + 1;                                   \
-        } else  {                                               \
-                xl -= yl;                                       \
-                xh -= yh;                                       \
-        }
+        xh -= yh + (int)(yl > xl);				\
+        xl -= yl;
 
 BigNumDigit
 BnnDivideDigit(BigNum qq, BigNum nn, BigNumLength nl, BigNumDigit d) {
