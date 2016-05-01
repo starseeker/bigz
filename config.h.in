@@ -15,8 +15,14 @@
 /* Define if you have the ANSI C header files. */
 #undef STDC_HEADERS
 
+/* The number of bytes in a int. */
+#undef SIZEOF_INT
+
 /* The number of bytes in a long. */
-#undef SIZEOF_LONG
+#undef SIZEOF_LONG     
+
+/* The number of bytes in a size_t. */
+#undef SIZEOF_SIZE_T
 
 /* The number of bytes in a void *. */
 #undef SIZEOF_VOID_P

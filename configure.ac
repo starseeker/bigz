@@ -48,8 +48,13 @@ then
    AC_MSG_RESULT(yes)
    AC_PROG_CXX
    AC_LANG(C++)
-   AX_CHECK_COMPILE_FLAG([-std=c++11], [
-                           CXXFLAGS="$CXXFLAGS -std=c++11"])
+   AX_CHECK_COMPILE_FLAG([-std=c++14], [
+                           CXXFLAGS="$CXXFLAGS -std=c++14"])
+   if test x"$ax_cv_check_cxxflags___std_cpp14" = x"no"
+   then
+     AX_CHECK_COMPILE_FLAG([-std=c++11], [
+                             CXXFLAGS="$CXXFLAGS -std=c++11"])
+   fi
    AC_LANG(C)
 else
    NOCXX="# "
@@ -135,6 +140,7 @@ fi
 # get type size
 
 AC_CHECK_SIZEOF(void *, 4)
+AC_CHECK_SIZEOF(int,    4)
 AC_CHECK_SIZEOF(long,   4)
 AC_CHECK_SIZEOF(size_t, 4)
 

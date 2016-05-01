@@ -32,7 +32,7 @@
  *      bigz.c : provides an implementation of "unlimited-precision"
  *               arithmetic for signed integers.
  *
- *      $Id: bigz.c,v 1.129 2016/04/20 10:39:21 jullien Exp $
+ *      $Id: bigz.c,v 1.131 2016/04/21 06:01:16 jullien Exp $
  */
 
 /*
@@ -1297,16 +1297,16 @@ BzToStringBufferExt(const BigZ z,
                                  */
                                 int     i;
                                 for (i = 0; i < (int)digits; ++i) {
-					if (r == 0) {
-						/*
-						 * No need to divide, fill
-						 * the rest with '0'.
-						 */
-						*--s = (BzChar)'0';
-					} else {
-	                                        *--s = Digit[r % base];
-						r = r / base;
-					}
+                                        if (r == 0) {
+                                                /*
+                                                 * No need to divide, fill
+                                                 * the rest with '0'.
+                                                 */
+                                                *--s = (BzChar)'0';
+                                        } else {
+                                                *--s = Digit[r % base];
+                                                r = r / base;
+                                        }
                                 }
                         } else  {
                                 /*
@@ -1385,11 +1385,11 @@ BzToStringBufferExt(const BigZ z,
                 }
 
                 strg[i] = (BzChar)'\000';
-	}
+        }
 #else
         if (buf != (BzChar *)NULL) {
-		strg = &s[0];
-	} else if ((s - strg) > 0) {
+                strg = &s[0];
+        } else if ((s - strg) > 0) {
                /*
                 * and move string into position as no buffer
                 * has been supplied.
@@ -1401,7 +1401,7 @@ BzToStringBufferExt(const BigZ z,
                 }
 
                 strg[i] = (BzChar)'\000';
-	}
+        }
 #endif
 
         /*
@@ -1414,8 +1414,8 @@ BzToStringBufferExt(const BigZ z,
         if (slen != (size_t *)NULL) {
                 /*
                  * A non null pointer was passed to get string length
-		 * (which is not the same a buffer length used to build string).
-		 */
+                 * (which is not the same a buffer length used to build string).
+                 */
                 *slen = (size_t)(strg + sl - s - 1);
         }
 
@@ -2259,23 +2259,23 @@ BzSqrt(const BigZ z) {
         n   = BzLength(z);
 
         if ((n & 1) != 0) {
-		/*
-		 * n is odd.
-		 */
+                /*
+                 * n is odd.
+                 */
                 n = (n >> 1) + 1;
         } else  {
-		/*
-		 * n is even.
-		 */
+                /*
+                 * n is even.
+                 */
                 n = (n >> 1);
         }
 
-	{
-		BigZ one = BzFromInteger((BzInt)1);
-		
-		x = BzAsh(one, (int)n);
-		BzFree(one);
-	}
+        {
+                BigZ one = BzFromInteger((BzInt)1);
+                
+                x = BzAsh(one, (int)n);
+                BzFree(one);
+        }
 
         two = BzFromInteger((BzInt)2);
 
