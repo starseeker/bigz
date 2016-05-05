@@ -56,7 +56,7 @@ extern  "C"     {
  * BigZ.h: Types and structures for clients of BigZ
  */
 
-#define BZ_VERSION                      "1.6.0"
+#define BZ_VERSION                      "1.6.1"
 
 /*
  * BigZ sign
@@ -234,6 +234,7 @@ extern BigZ         BzSqrt(const BigZ z);
 extern BigZ         BzLcm(const BigZ y, const BigZ z);
 extern BigZ         BzGcd(const BigZ y, const BigZ z);
 extern BigZ         BzRandom(const BigZ n, BzSeed *seed);
+extern BigZ         BzModExp(const BigZ base, BzUInt exponent, const BigZ modulus);
 
 /*
 #define BZ_DEBUG

@@ -233,6 +233,14 @@ main()
     (void)printf("Bignum non-regression tests. (c) 1998-2016 C. Jullien\n");
     (void)printf("Testing version %s ...\n\n", CBignum::version());
 
+    {
+     CBignum four(4);
+     CBignum xx = four.pow(13);
+     std::cout << xx << std::endl;
+     std::cout << (xx % 497) << std::endl;
+     std::cout << four.modExp(13, 497) << std::endl;
+    }
+
 #if 0
     {
      CBignum bnOne(1);

@@ -2469,3 +2469,73 @@ BzPow(const BigZ base, BzUInt exponent) {
                 }
         }
 }
+
+/*
+  Right-to-left binary method
+  https://en.wikipedia.org/wiki/Modular_exponentiation
+ function modular_pow(base, exponent, modulus)
+    if modulus = 1 then return 0
+    Assert :: (modulus - 1) * (modulus - 1) does not overflow base
+    result := 1
+    base := base mod modulus
+    while exponent > 0
+        if (exponent mod 2 == 1):
+           result := (result * base) mod modulus
+        exponent := exponent >> 1
+        base := (base * base) mod modulus
+    return result
+*/
+BigZ
+BzModExp(const BigZ base, BzUInt exponent, const BigZ modulus) {
+        BigZ result;
+
+        if ((result = BzFromInteger(1)) == BZNULL) {
+                return (BZNULL);
+        }
+
+        if (BzCompare(modulus, result) == BZ_EQ) {
+                BnnSetToZero(BzToBn(result), (BigNumLength)1);
+                BzSetSign(result, BZ_ZERO);
+                return result;
+        } else {
+                BigZ b;
+
+                if ((b = BzCopy(base)) == BZNULL) {
+                        BzFree(result);
+                        return (BZNULL);
+                }
+
+                while (exponent > 0) {
+                        BigZ tmp;
+                        if ((exponent & (BzUInt)1) == (BzUInt)1) {
+                                tmp = BzMultiply(result, b);
+                                BzFree(result);
+                                if (tmp == BZNULL) {
+                                        BzFree(b);
+                                        return (BZNULL);
+                                }
+                                result = BzMod(tmp, modulus);
+                                BzFree(tmp);
+                                if (result == BZNULL) {
+                                        BzFree(b);
+                                        return (BZNULL);
+                                }
+                        }
+                        exponent = exponent >> 1;
+                        tmp = BzMultiply(b, b);
+                        BzFree(b);
+                        if (tmp == BZNULL) {
+                                BzFree(result);
+                                return (BZNULL);
+                        }
+                        b = BzMod(tmp, modulus);
+                        BzFree(tmp);
+                        if (b == BZNULL) {
+                                BzFree(result);
+                                return (BZNULL);
+                        }
+                }
+                BzFree(b);
+                return result;
+        }
+}
