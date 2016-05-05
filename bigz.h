@@ -207,6 +207,7 @@ extern BzChar *     BzToString(const BigZ z, BigNumDigit base, int sign);
 extern size_t       BzStrLen(const BzChar *s) BN_PURE_FUNCTION;
 extern BzChar *     BzToStringBuffer(const BigZ z, BigNumDigit base, int sign, /*@null@*/ BzChar * const buf, /*@null@*/ size_t *len);
 extern BzChar *     BzToStringBufferExt(const BigZ z, BigNumDigit base, int sign, /*@null@*/ BzChar * const buf, /*@null@*/ size_t *len, /*@null@*/ size_t *slen);
+extern BigZ         BzFromStringLen(const BzChar *s, size_t len, BigNumDigit base, BzStrFlag flag);
 extern BigZ         BzFromString(const BzChar *s, BigNumDigit base, BzStrFlag flag);
 extern BigZ         BzFromInteger(BzInt i);
 extern BigZ         BzFromUnsignedInteger(BzUInt i);

@@ -583,11 +583,11 @@ BzMultiply(const BigZ y, const BigZ z) {
         yl = BzNumDigits(y);
         zl = BzNumDigits(z);
 
-        if ((n = BzCreate(yl+zl)) == BZNULL) {
+        if ((n = BzCreate(yl + zl)) == BZNULL) {
                 return (BZNULL);
         }
 
-        (void)BnnMultiply(BzToBn(n), yl+zl, BzToBn(y), yl, BzToBn(z), zl);
+        (void)BnnMultiply(BzToBn(n), yl + zl, BzToBn(y), yl, BzToBn(z), zl);
 
         if (BzGetSign(y) == BzGetSign(z)) {
                 BzSetSign(n, BZ_PLUS);
@@ -1434,7 +1434,7 @@ BzStrLen(const BzChar *s) {
 }
 
 BigZ
-BzFromString(const BzChar *s, BigNumDigit base, BzStrFlag flag) {
+BzFromStringLen(const BzChar *s, size_t len, BigNumDigit base, BzStrFlag flag) {
         /*
          * Creates  a  BigZ whose value is represented by "string" in
          * the  specified  base.  The  "string"  may  contain leading
@@ -1447,6 +1447,7 @@ BzFromString(const BzChar *s, BigNumDigit base, BzStrFlag flag) {
         BigZ            p;
         BzSign          sign;
         BigNumLength    zl;
+	size_t          i;
 
         /*
          * Throw away any initial space
@@ -1456,14 +1457,34 @@ BzFromString(const BzChar *s, BigNumDigit base, BzStrFlag flag) {
                || (*s == (BzChar)'\t')
                || (*s == (BzChar)'\n')
                || (*s == (BzChar)'\r')) {
-                s++;
+                ++s;
+		--len;
+        }
+
+        /*
+         * Set up sign, base, initialize result
+         */
+
+        switch (*s) {
+        case ((BzChar)'-'):
+                sign = BZ_MINUS;
+                ++s;
+                --len;
+                break;
+        case ((BzChar)'+'):
+                sign = BZ_PLUS;
+                ++s;
+                --len;
+                break;
+        default:
+                sign = BZ_PLUS;
         }
 
         /*
          * Allocate BigNums
          */
 
-        zl = (BigNumLength)(BzStrLen(s)*BzLog[base]/(BzLog[2]*BN_DIGIT_SIZE)+1);
+        zl = (BigNumLength)(len*BzLog[base] / (BzLog[2]*BN_DIGIT_SIZE)+1);
 
         if ((z = BzCreate(zl)) == BZNULL) {
                 return (BZNULL);
@@ -1475,29 +1496,12 @@ BzFromString(const BzChar *s, BigNumDigit base, BzStrFlag flag) {
         }
 
         /*
-         * Set up sign, base, initialize result
-         */
-
-        switch (*s) {
-        case ((BzChar)'-'):
-                sign = BZ_MINUS;
-                ++s;
-                break;
-        case ((BzChar)'+'):
-                sign = BZ_PLUS;
-                ++s;
-                break;
-        default:
-                sign = BZ_PLUS;
-        }
-
-        /*
          * Multiply in the digits of the string, one at a time
          */
 
-        for (; *s != (BzChar)'\000';  s++) {
+        for (i = 0; i < len; ++i) {
                 BigZ        v;
-                int         val  = CTOI(*s);
+                int         val  = CTOI(s[i]);
                 BigNumDigit next = (BigNumDigit)val;
 
                 if (val == -1 || next >= base) {
@@ -1538,6 +1542,11 @@ BzFromString(const BzChar *s, BigNumDigit base, BzStrFlag flag) {
         BzFree(p);
 
         return (z);
+}
+
+BigZ
+BzFromString(const BzChar *s, BigNumDigit base, BzStrFlag flag) {
+	return (BzFromStringLen(s, BzStrLen(s), base, flag));
 }
 
 BigZ
@@ -2493,11 +2502,16 @@ BzModExp(const BigZ base, BzUInt exponent, const BigZ modulus) {
                 return (BZNULL);
         }
 
-        if (BzCompare(modulus, result) == BZ_EQ) {
+        if (exponent == 0) {
+                /*
+                 * Any nonzero number raised by the exponent 0 is 1
+                 */
+                return (result);
+        } else  if (BzCompare(modulus, result) == BZ_EQ) {
                 BnnSetToZero(BzToBn(result), (BigNumLength)1);
                 BzSetSign(result, BZ_ZERO);
                 return (result);
-        } else {
+        } else  {
                 BigZ b;
 
                 if ((b = BzCopy(base)) == BZNULL) {
@@ -2535,6 +2549,7 @@ BzModExp(const BigZ base, BzUInt exponent, const BigZ modulus) {
                                 return (BZNULL);
                         }
                 }
+
                 BzFree(b);
                 return (result);
         }

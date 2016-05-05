@@ -286,6 +286,7 @@ main()
 
     {
       CBignum four(4);
+      Tz(   1, "modExp", four.modExp( 0, 497),    "1" );
       Tz(   1, "modExp", four.modExp( 1, 497),    "4" );
       Tz(   2, "modExp", four.modExp( 2, 497),   "16" );
       Tz(   3, "modExp", four.modExp( 3, 497),   "64" );
