@@ -32,7 +32,7 @@
  *      bigz.c : provides an implementation of "unlimited-precision"
  *               arithmetic for signed integers.
  *
- *      $Id: bigz.c,v 1.133 2016/05/05 09:54:17 jullien Exp $
+ *      $Id: bigz.c,v 1.134 2016/05/05 16:26:00 jullien Exp $
  */
 
 /*

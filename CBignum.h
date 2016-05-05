@@ -1,5 +1,5 @@
 //
-// $Id: CBignum.h,v 1.48 2016/05/05 07:44:16 jullien Exp $
+// $Id: CBignum.h,v 1.49 2016/05/05 16:26:00 jullien Exp $
 //
 
 /*
@@ -126,6 +126,19 @@ class CBignum {
    */
   CBignum(const char* init, unsigned int base = 10)
     : m_bz(BzFromString(init, base, BZ_UNTIL_END)) {
+    if (m_bz == 0) {
+      throw std::domain_error("Invalid CBignum string: "
+			      + std::string(init));
+    }
+  }
+  /**
+   * Translates the String representation of a CBignum in the specified base
+   * into a CBignum.
+   * @param [in] init string representation of a CBignum.
+   * @param [in] base integer base.
+   */
+  CBignum(const char* init, size_t len, unsigned int base = 10)
+    : m_bz(BzFromStringLen(init, len, base, BZ_UNTIL_END)) {
     if (m_bz == 0) {
       throw std::domain_error("Invalid CBignum string: "
 			      + std::string(init));
@@ -495,7 +508,7 @@ class CBignum {
   }
 
   CBignum modExp(unsigned int exponent, const CBignum& modulus) const throw() {
-    return CBignum(BzModExp(m_bz, exponent, modulus.m_bz));
+    return CBignum(BzModExp(m_bz, exponent, modulus.m_bz), ASSIGN);
   }
 
   /**
