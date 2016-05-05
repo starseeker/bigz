@@ -32,7 +32,7 @@
  *      bigz.c : provides an implementation of "unlimited-precision"
  *               arithmetic for signed integers.
  *
- *      $Id: bigz.c,v 1.131 2016/04/21 06:01:16 jullien Exp $
+ *      $Id: bigz.c,v 1.133 2016/05/05 09:54:17 jullien Exp $
  */
 
 /*
@@ -2471,20 +2471,20 @@ BzPow(const BigZ base, BzUInt exponent) {
 }
 
 /*
-  Right-to-left binary method
-  https://en.wikipedia.org/wiki/Modular_exponentiation
- function modular_pow(base, exponent, modulus)
-    if modulus = 1 then return 0
-    Assert :: (modulus - 1) * (modulus - 1) does not overflow base
-    result := 1
-    base := base mod modulus
-    while exponent > 0
-        if (exponent mod 2 == 1):
-           result := (result * base) mod modulus
-        exponent := exponent >> 1
-        base := (base * base) mod modulus
-    return result
-*/
+ *  Right-to-left binary method
+ *  https://en.wikipedia.org/wiki/Modular_exponentiation
+ *  function modular_pow(base, exponent, modulus)
+ *    if modulus = 1 then return 0
+ *    Assert :: (modulus - 1) * (modulus - 1) does not overflow base
+ *    result := 1
+ *    base := base mod modulus
+ *    while exponent > 0
+ *        if (exponent mod 2 == 1):
+ *           result := (result * base) mod modulus
+ *        exponent := exponent >> 1
+ *        base := (base * base) mod modulus
+ *    return result
+ */
 BigZ
 BzModExp(const BigZ base, BzUInt exponent, const BigZ modulus) {
         BigZ result;
@@ -2496,7 +2496,7 @@ BzModExp(const BigZ base, BzUInt exponent, const BigZ modulus) {
         if (BzCompare(modulus, result) == BZ_EQ) {
                 BnnSetToZero(BzToBn(result), (BigNumLength)1);
                 BzSetSign(result, BZ_ZERO);
-                return result;
+                return (result);
         } else {
                 BigZ b;
 
@@ -2536,6 +2536,6 @@ BzModExp(const BigZ base, BzUInt exponent, const BigZ modulus) {
                         }
                 }
                 BzFree(b);
-                return result;
+                return (result);
         }
 }

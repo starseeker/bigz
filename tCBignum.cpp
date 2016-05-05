@@ -29,7 +29,7 @@
  */
 
 /*
- * $Id: tCBignum.cpp,v 1.38 2016/02/07 14:09:55 jullien Exp $
+ * $Id: tCBignum.cpp,v 1.40 2016/05/05 12:08:37 jullien Exp $
  */
 
 #include <stdio.h>
@@ -160,7 +160,7 @@ checkResult(int count,
   ++testcnt;
 
   if (res != expected) {
-   std::cout << res.length() << " V.S. " << expected.length() << std::endl;
+    std::cout << res.length() << " V.S. " << expected.length() << std::endl;
     (void)printf("test %3d (%s) fails: expected = '%16s', computed = '%16s'\n",
                  count, op, res.c_str(), expected.c_str());
     ++failcnt;
@@ -233,14 +233,6 @@ main()
     (void)printf("Bignum non-regression tests. (c) 1998-2016 C. Jullien\n");
     (void)printf("Testing version %s ...\n\n", CBignum::version());
 
-    {
-     CBignum four(4);
-     CBignum xx = four.pow(13);
-     std::cout << xx << std::endl;
-     std::cout << (xx % 497) << std::endl;
-     std::cout << four.modExp(13, 497) << std::endl;
-    }
-
 #if 0
     {
      CBignum bnOne(1);
@@ -290,6 +282,23 @@ main()
     double dpi = static_cast<double>(pi);
     if (dpi < 3.14159 || dpi > 3.14160) {
       std::cerr << dpi << " != 3.14286" << std::endl;
+    }
+
+    {
+      CBignum four(4);
+      Tz(   1, "modExp", four.modExp( 1, 497),    "4" );
+      Tz(   2, "modExp", four.modExp( 2, 497),   "16" );
+      Tz(   3, "modExp", four.modExp( 3, 497),   "64" );
+      Tz(   4, "modExp", four.modExp( 4, 497),  "256" );
+      Tz(   5, "modExp", four.modExp( 5, 497),   "30" );
+      Tz(   6, "modExp", four.modExp( 6, 497),  "120" );
+      Tz(   7, "modExp", four.modExp( 7, 497),  "480" );
+      Tz(   8, "modExp", four.modExp( 8, 497),  "429" );
+      Tz(   9, "modExp", four.modExp( 9, 497),  "225" );
+      Tz(  10, "modExp", four.modExp(10, 497),  "403" );
+      Tz(  11, "modExp", four.modExp(11, 497),  "121" );
+      Tz(  12, "modExp", four.modExp(12, 497),  "484" );
+      Tz(  13, "modExp", four.modExp(13, 497),  "445" );
     }
 
     Tz(   1, "++",   ++x2,             "3"                            );
