@@ -1,12 +1,12 @@
 /*
- static	const char rcsid[] = "$Id: bztest.c,v 1.17 2014/03/02 12:04:21 jullien Exp $";
+ static const char rcsid[] = "$Id: bztest.c,v 1.17 2014/03/02 12:04:21 jullien Exp $";
 */
 
 /*
  * Simplified BSD License
  *
  * Copyright (c) 1988-1989, Digital Equipment Corporation & INRIA.
- * Copyright (c) 1992-2012, Eligis
+ * Copyright (c) 1992-2016, Eligis
  * All rights reserved.
  *
  * Redistribution and  use in  source and binary  forms, with  or without
@@ -33,68 +33,69 @@
  */
 
 /*
- *	bztest.c :	
+ *      bztest.c :      
  */
 
 #include <stdio.h>
 #include <string.h>
 #include "bigz.h"
 
-#define S(A,B)		strcmp(A,B)
-#define NEWLINE		fprintf(stderr,"\n")
-#define P(A)		fprintf(stderr,"%03d..",A)
-#define E(A,B,C)	fprintf(stderr,"\nError in test #%d:\nComputed: %s\nCorrect:  %s\n",A,C,B)
-#define T(A,B,C)	S(B,C)?E(A,B,C):P(A)
-#define To(A)		BzToString(A,10,0)
+#define S(A,B)          strcmp(A,B)
+#define NEWLINE         fprintf(stderr,"\n")
+#define P(A)            fprintf(stderr,"%03d..",A)
+#define E(A,B,C)        fprintf(stderr,"\nError in test #%d:\nComputed: %s\nCorrect:  %s\n",A,C,B)
+#define T(A,B,C)        S(B,C)?E(A,B,C):P(A)
+#define To(A)           BzToString(A,10,0)
 
-#define From(A)		BzFromString(A,10,BZ_UNTIL_END)
-#define Abs(A)		BzAbs(A)
-#define Neg(A)		BzNegate(A)
-#define Add(A,B)	BzAdd(A,B)
-#define Sub(A,B)	BzSubtract(A,B)
-#define Mul(A,B)	BzMultiply(A,B)
-#define Div(A,B)	BzDiv(A,B)
-#define Mod(A,B)	BzMod(A,B)
-#define Fac(A)		BzFactorial(A)
-#define And(A,B)	BzAnd(A,B)
-#define Or(A,B)		BzOr(A,B)
-#define Xor(A,B)	BzXor(A,B)
-#define Ash(A,B)	BzAsh(A,B)
+#define From(A)         BzFromString(A,10,BZ_UNTIL_END)
+#define Abs(A)          BzAbs(A)
+#define Neg(A)          BzNegate(A)
+#define Add(A,B)        BzAdd(A,B)
+#define Sub(A,B)        BzSubtract(A,B)
+#define Mul(A,B)        BzMultiply(A,B)
+#define Div(A,B)        BzDiv(A,B)
+#define Mod(A,B)        BzMod(A,B)
+#define Fac(A)          BzFactorial(A)
+#define And(A,B)        BzAnd(A,B)
+#define Or(A,B)         BzOr(A,B)
+#define Xor(A,B)        BzXor(A,B)
+#define Ash(A,B)        BzAsh(A,B)
+#define ModExp(A,B,C)   BzModExp(A,B,C)
 
 /*
  * bzf.c: Miscellaneous functions built on top of BigZ.
  */
 
-extern BigZ BzFactorial( BigZ z );
+extern BigZ BzFactorial(BigZ z);
 
 BigZ
-BzFactorial( BigZ z )
+BzFactorial(BigZ z)
 {
-	/*
-	 * Returns Z!
-	 * Assumes Z < Base.
-	 */
+        /*
+         * Returns Z!
+         * Assumes Z < Base.
+         */
 
-	BigZ		f;
-	BigNumDigit	zval;
-	int		fl = 1;
+        BigZ            f;
+        BigNumDigit     zval;
+        int             fl = 1;
 
-	zval = BnnGetDigit( BzToBn( z ) );
-	f = BzCreate( (BigNumLength)zval+1 );
-	BnnSetDigit( BzToBn( f ), 1);
-	BzSetSign( f, BzGetSign( z ) );
+        zval = BnnGetDigit( BzToBn( z ) );
+        f = BzCreate( (BigNumLength)zval+1 );
+        BnnSetDigit( BzToBn( f ), 1);
+        BzSetSign( f, BzGetSign( z ) );
 
-	while( zval-- > 1 ) {
-		BnnMultiplyDigit( BzToBn( f ), fl+1, BzToBn( f ), fl, zval );
-		fl = BnnNumDigits( BzToBn( f ), fl+1);
-	}
-	return( f );
+        while( zval-- > 1 ) {
+                BnnMultiplyDigit( BzToBn( f ), fl+1, BzToBn( f ), fl, zval );
+                fl = BnnNumDigits( BzToBn( f ), fl+1);
+        }
+        return( f );
 }
 
 int
 main(void)
 {
-   BigZ	a;
+   BigZ a;
    BigZ b;
 
    printf("BzTest v%s test suite\n", BzVersion());
@@ -116,6 +117,7 @@ main(void)
    T(9,"-32768", To(Mul(From("2"),From("-16384")))) ;
    T(10,"-16384", To(Div(From("-32768"),From("2")))) ;
    NEWLINE;
+
    T(11,"100000", To(Add(From("1"),From("99999")))) ;
    T(12,"12343994",To(Add(From("-1684"),From("12345678"))));
    T(13,"-12329294",To(Sub(From("16384"),From("12345678"))));
@@ -127,6 +129,7 @@ main(void)
    T(19,"123456135801",To(Sub(From("12345"),From("-123456123456"))));
    T(20,"135801",To(Sub(From("123456"),From("-12345"))));
    NEWLINE;
+
    T(21,"123456135801",To(Sub(From("123456123456"),From("-12345"))));
    T(22,"-111111",To(Sub(From("12345"),From("123456"))));
    T(23,"111111",To(Sub(From("123456"),From("12345"))));
@@ -138,6 +141,7 @@ main(void)
    T(29,"123456111111",To(Add(From("123456123456"),From("-12345"))));
    T(30,"2", To(Div(From("264195"),From("97200")))) ;
    NEWLINE;
+
    T(31,"27405", To(Mod(From("97200"),From("69795")))) ;
    T(32,"4294967295", To(Div(From("22685491128062564230891640495451214097"),From("5281877500950955845296219748")))) ;
    T(33,"99997",To(Add(From("-3"),From("100000"))));
@@ -151,6 +155,7 @@ main(void)
    T(39,"1234567",To(Add(Mul(Div(a,Neg(b)),Neg(b)),Mod(a,Neg(b)))));
    T(40,"10000000000000000000000",To(Mul(From("-100000000000"),From("-100000000000"))));
    NEWLINE;
+
    T(41,"-10000000000000000000000",To(Mul(From("-100000000000"),From("100000000000"))));
    T(42,"-10000000000000000000000",To(Mul(From("100000000000"),From("-100000000000"))));
    T(43,"10000000000000000000000",To(Mul(From("100000000000"),From("100000000000"))));
@@ -163,6 +168,7 @@ main(void)
    T(49,"532",To(Mod(From("3000"),Sub(From("1234567891234"),From("1234567890000")))));
    T(50,"9",To(Mod(From("-1234567890"),From("1234567899"))));
    NEWLINE;
+
    T(51,"2",To(Mod(Sub(From("12345678900000"),From("12345678926887")),From("3"))));
    T(52,"40830949904677684825316369628906250000000000000",To(Mul(From("48270948888581289062500000000"),From("845870049062500000"))));
    T(53,"22666179639240748063923391983020279316955515",To(Mul(From("6956883693"),From("3258093801689886619170103176686855"))));
@@ -174,6 +180,7 @@ main(void)
    T(59,"59",To(Div(Fac(From("59")),Fac(From("58")))));
    T(60,"2",To(Div(From("5"),From("2"))));
    NEWLINE;
+
    T(61,"1",To(Mod(From("5"),From("2"))));
    T(62,"-3",To(Div(From("-5"),From("2"))));
    T(63,"1",To(Mod(From("-5"),From("2"))));
@@ -185,6 +192,7 @@ main(void)
    T(69,"0",To(Mod(From("6"),From("2"))));
    T(70,"-3",To(Div(From("-6"),From("2"))));
    NEWLINE;
+
    T(71,"0",To(Mod(From("-6"),From("2"))));
    T(72,"3",To(Div(From("-6"),From("-2"))));
    T(73,"0",To(Mod(From("-6"),From("-2"))));
@@ -196,12 +204,11 @@ main(void)
    T(79,"1",BzCompare(From("-1234567890"),From("12345"))<0?"1":"0");
    T(80,"1",BzGetSign(From("-1234567890"))<0?"1":"0");
    NEWLINE; 
-#if 1
+
    T(81,"1026",To(And(From("1234"),From("5679"))));
    T(82,"4654",To(And(From("-1234"),From("5679"))));
    T(83,"208",To(And(From("1234"),From("-5679"))));
    T(84,"-5888",To(And(From("-1234"),From("-5679"))));
-
    T(85,"32",To(And(From("123458956781234"),From("45"))));
    T(86,"12",To(And(From("-123458956781234"),From("45"))));
    T(87,"-123458956781246",To(And(From("-123458956781234"),From("-45"))));
@@ -209,21 +216,20 @@ main(void)
    T(89,"32",To(And(From("45"),From("123458956781234"))));
    T(90,"12",To(And(From("45"),From("-123458956781234"))));
    NEWLINE; 
+
    T(91,"-123458956781246",To(And(From("-45"),From("-123458956781234"))));
    T(92,"123458956781202",To(And(From("-45"),From("123458956781234"))));
-
    T(93,"867583672336",To(And(From("9234589568881234"),From("7899898989896764"))));
    T(94,"9233721985208896",To(And(From("9234589568881234"),From("-7899898989896764"))));
    T(95,"-17133620975105660",To(And(From("-9234589568881234"),From("-7899898989896764"))));
    T(96,"7899031406224428",To(And(From("-9234589568881234"),From("7899898989896764"))));
-
    /* Or */
-
    T(97,"5887",To(Or(From("1234"),From("5679"))));
    T(98,"-209",To(Or(From("-1234"),From("5679"))));
    T(99,"-4653",To(Or(From("1234"),From("-5679"))));
    T(100,"-1025",To(Or(From("-1234"),From("-5679"))));
    NEWLINE; 
+
    T(101,"123458956781247",To(Or(From("123458956781234"),From("45"))));
    T(102,"-123458956781201",To(Or(From("-123458956781234"),From("45"))));
    T(103,"-33",To(Or(From("-123458956781234"),From("-45"))));
@@ -232,7 +238,6 @@ main(void)
    T(106,"-123458956781201",To(Or(From("45"),From("-123458956781234"))));
    T(107,"-33",To(Or(From("-45"),From("-123458956781234"))));
    T(108,"-13",To(Or(From("-45"),From("123458956781234"))));
-
    T(109,"17133620975105662",To(Or(From("9234589568881234"),From("7899898989896764"))));
    T(110,"-7899031406224426",To(Or(From("9234589568881234"),From("-7899898989896764"))));
    NEWLINE; 
@@ -240,12 +245,10 @@ main(void)
    T(111,"-867583672338",To(Or(From("-9234589568881234"),From("-7899898989896764"))));
    T(112,"-9233721985208898",To(Or(From("-9234589568881234"),From("7899898989896764"))));
    /* Xor */
-
    T(113,"4861",To(Xor(From("1234"),From("5679"))));
    T(114,"-4863",To(Xor(From("-1234"),From("5679"))));
    T(115,"-4861",To(Xor(From("1234"),From("-5679"))));
    T(116,"4863",To(Xor(From("-1234"),From("-5679"))));
-
    T(117,"123458956781215",To(Xor(From("123458956781234"),From("45"))));
    T(118,"-123458956781213",To(Xor(From("-123458956781234"),From("45"))));
    T(119,"123458956781213",To(Xor(From("-123458956781234"),From("-45"))));
@@ -264,6 +267,7 @@ main(void)
    T(129,"160000000",To(Ash(From("80000000"),1)));
    T(130,"320000000",To(Ash(From("80000000"),2)));
    NEWLINE; 
+
    T(131,"640000000",To(Ash(From("80000000"),3)));
    T(132,"1280000000",To(Ash(From("80000000"),4)));
    T(133,"5120000000",To(Ash(From("80000000"),6)));
@@ -280,10 +284,15 @@ main(void)
    T(142,"-10240000000",To(Ash(From("-80000000"),7)));
    T(143,"-20480000000",To(Ash(From("-80000000"),8)));
    T(144,"-81920000000",To(Ash(From("-80000000"),10)));
+   T(145,"1",To(ModExp(From("4"),0,From("497"))));
+   T(146,"4",To(ModExp(From("4"),1,From("497"))));
+   T(147,"256",To(ModExp(From("4"),4,From("497"))));
+   T(148,"30",To(ModExp(From("4"),5,From("497"))));
+   T(149,"484",To(ModExp(From("4"),12,From("497"))));
+   T(150,"445",To(ModExp(From("4"),13,From("497"))));
+   NEWLINE;
+
    NEWLINE; 
 
-#endif
-   NEWLINE; 
-
-   return( 0 );
+   return (0);
 }
