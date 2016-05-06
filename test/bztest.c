@@ -284,12 +284,12 @@ main(void)
    T(142,"-10240000000",To(Ash(From("-80000000"),7)));
    T(143,"-20480000000",To(Ash(From("-80000000"),8)));
    T(144,"-81920000000",To(Ash(From("-80000000"),10)));
-   T(145,"1",To(ModExp(From("4"),0,From("497"))));
-   T(146,"4",To(ModExp(From("4"),1,From("497"))));
-   T(147,"256",To(ModExp(From("4"),4,From("497"))));
-   T(148,"30",To(ModExp(From("4"),5,From("497"))));
-   T(149,"484",To(ModExp(From("4"),12,From("497"))));
-   T(150,"445",To(ModExp(From("4"),13,From("497"))));
+   T(145,"1",To(ModExp(From("4"),From("0"),From("497"))));
+   T(146,"4",To(ModExp(From("4"),From("1"),From("497"))));
+   T(147,"256",To(ModExp(From("4"),From("4"),From("497"))));
+   T(148,"30",To(ModExp(From("4"),From("5"),From("497"))));
+   T(149,"484",To(ModExp(From("4"),From("12"),From("497"))));
+   T(150,"445",To(ModExp(From("4"),From("13"),From("497"))));
    NEWLINE;
 
    NEWLINE; 

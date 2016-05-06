@@ -2202,7 +2202,7 @@ BzAsh(const BigZ y, int n) {
                          */
                         BzSetSign(z, BzGetSign(y));
                         return (z);
-                } else {
+                } else  {
                         zl = (BigNumLength)(n / BN_DIGIT_SIZE);
 
                         if ((n % BN_DIGIT_SIZE) != 0) {
@@ -2495,14 +2495,14 @@ BzPow(const BigZ base, BzUInt exponent) {
  *    return result
  */
 BigZ
-BzModExp(const BigZ base, BzUInt exponent, const BigZ modulus) {
+BzModExp(const BigZ base, const BigZ exponent, const BigZ modulus) {
         BigZ result;
 
         if ((result = BzFromInteger(1)) == BZNULL) {
                 return (BZNULL);
         }
 
-        if (exponent == 0) {
+        if (BzGetSign(exponent) == BZ_ZERO) {
                 /*
                  * Any nonzero number raised by the exponent 0 is 1
                  */
@@ -2512,44 +2512,66 @@ BzModExp(const BigZ base, BzUInt exponent, const BigZ modulus) {
                 BzSetSign(result, BZ_ZERO);
                 return (result);
         } else  {
+                BigZ exp;
                 BigZ b;
+
+                /*
+                 * Copy base as it will be modified.
+                 */
 
                 if ((b = BzCopy(base)) == BZNULL) {
                         BzFree(result);
                         return (BZNULL);
                 }
 
-                while (exponent > 0) {
+                /*
+                 * Copy exponent as it will be modified.
+                 */
+
+                if ((exp = BzCopy(exponent)) == BZNULL) {
+                        BzFree(b);
+                        BzFree(result);
+                        return (BZNULL);
+                }
+
+                while (BzGetSign(exp) == BZ_PLUS) {
                         BigZ tmp;
-                        if ((exponent & (BzUInt)1) == (BzUInt)1) {
+                        if (BzIsOdd(exp)) {
                                 tmp = BzMultiply(result, b);
                                 BzFree(result);
                                 if (tmp == BZNULL) {
+                                        BzFree(exp);
                                         BzFree(b);
                                         return (BZNULL);
                                 }
                                 result = BzMod(tmp, modulus);
                                 BzFree(tmp);
                                 if (result == BZNULL) {
+                                        BzFree(exp);
                                         BzFree(b);
                                         return (BZNULL);
                                 }
                         }
-                        exponent = exponent >> 1;
+                        tmp = BzAsh(exp, -1);
+                        BzFree(exp);
+                        exp = tmp;
                         tmp = BzMultiply(b, b);
                         BzFree(b);
                         if (tmp == BZNULL) {
+                                BzFree(exp);
                                 BzFree(result);
                                 return (BZNULL);
                         }
                         b = BzMod(tmp, modulus);
                         BzFree(tmp);
                         if (b == BZNULL) {
+                                BzFree(exp);
                                 BzFree(result);
                                 return (BZNULL);
                         }
                 }
 
+                BzFree(exp);
                 BzFree(b);
                 return (result);
         }

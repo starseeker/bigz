@@ -235,7 +235,7 @@ extern BigZ         BzSqrt(const BigZ z);
 extern BigZ         BzLcm(const BigZ y, const BigZ z);
 extern BigZ         BzGcd(const BigZ y, const BigZ z);
 extern BigZ         BzRandom(const BigZ n, BzSeed *seed);
-extern BigZ         BzModExp(const BigZ base, BzUInt exponent, const BigZ modulus);
+extern BigZ         BzModExp(const BigZ base, const BigZ exponent, const BigZ modulus);
 
 /*
 #define BZ_DEBUG

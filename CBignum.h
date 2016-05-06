@@ -507,7 +507,8 @@ class CBignum {
     return CBignum(BzRandom(m_bz, reinterpret_cast<BzSeed*>(seed)));
   }
 
-  CBignum modExp(unsigned int exponent, const CBignum& modulus) const throw() {
+  CBignum modExp(const CBignum& exponent,
+                 const CBignum& modulus) const throw() {
     return CBignum(BzModExp(m_bz, exponent, modulus.m_bz), ASSIGN);
   }
 

@@ -300,6 +300,22 @@ main()
       Tz(  11, "modExp", four.modExp(11, 497),  "121" );
       Tz(  12, "modExp", four.modExp(12, 497),  "484" );
       Tz(  13, "modExp", four.modExp(13, 497),  "445" );
+
+#if 0
+      CBignum three(3);
+      CBignum exponent(10001);
+      CBignum modulus(one << 30000);
+      std::cout << "==> " << three.modExp(exponent, modulus) << std::endl;
+      std::cout << "==> " << (three.pow(exponent) % modulus) << std::endl;
+#endif
+
+      // Example taken from https://rosettacode.org/wiki/Modular_exponentiation
+
+      CBignum a("2988348162058574136915891421498819466320163312926952423791023078876139");
+      CBignum b("2351399303373464486466122544523690094744975233415544072992656881240319");
+      CBignum m(CBignum(10).pow(40));
+
+      Tz(  14, "modExp", a.modExp(b, m), "1527229998585248450016808958343740453059");
     }
 
     Tz(   1, "++",   ++x2,             "3"                            );
