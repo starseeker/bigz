@@ -2507,7 +2507,11 @@ BzModExp(const BigZ base, const BigZ exponent, const BigZ modulus) {
                  * Any nonzero number raised by the exponent 0 is 1
                  */
                 return (result);
-        } else  if (BzCompare(modulus, result) == BZ_EQ) {
+        } else  if ((BzGetSign(exponent) == BZ_MINUS)
+                    || (BzCompare(modulus, result) == BZ_EQ)) {
+                /*
+                 * Any nonzero number modulus 1 is 0. Same if exp < 0.
+                 */
                 BnnSetToZero(BzToBn(result), (BigNumLength)1);
                 BzSetSign(result, BZ_ZERO);
                 return (result);
@@ -2552,6 +2556,9 @@ BzModExp(const BigZ base, const BigZ exponent, const BigZ modulus) {
                                         return (BZNULL);
                                 }
                         }
+                        /*
+                         * exp = exp >> 1;
+                         */
                         tmp = BzAsh(exp, -1);
                         BzFree(exp);
                         exp = tmp;
