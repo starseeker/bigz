@@ -1,5 +1,5 @@
 /*
- static const char rcsid[] = "$Id: bztest.c,v 1.17 2014/03/02 12:04:21 jullien Exp $";
+ static const char rcsid[] = "$Id: bztest.c,v 1.18 2016/05/06 17:34:56 jullien Exp $";
 */
 
 /*
@@ -290,6 +290,11 @@ main(void)
    T(148,"30",To(ModExp(From("4"),From("5"),From("497"))));
    T(149,"484",To(ModExp(From("4"),From("12"),From("497"))));
    T(150,"445",To(ModExp(From("4"),From("13"),From("497"))));
+   NEWLINE;
+
+   T(151,"0",To(ModExp(From("4"),From("0"),From("1"))));
+   T(152,"1",To(ModExp(From("4"),From("0"),From("497"))));
+   T(153,"-52",To(ModExp(From("4"),From("13"),From("-497"))));
    NEWLINE;
 
    NEWLINE; 

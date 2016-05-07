@@ -29,7 +29,7 @@
  */
 
 /*
- * $Id: tCBignum.cpp,v 1.41 2016/05/05 16:26:00 jullien Exp $
+ * $Id: tCBignum.cpp,v 1.42 2016/05/06 17:34:56 jullien Exp $
  */
 
 #include <stdio.h>
@@ -286,36 +286,47 @@ main()
 
     {
       CBignum four(4);
-      Tz(   1, "modExp", four.modExp( 0, 497),    "1" );
-      Tz(   1, "modExp", four.modExp( 1, 497),    "4" );
-      Tz(   2, "modExp", four.modExp( 2, 497),   "16" );
-      Tz(   3, "modExp", four.modExp( 3, 497),   "64" );
-      Tz(   4, "modExp", four.modExp( 4, 497),  "256" );
-      Tz(   5, "modExp", four.modExp( 5, 497),   "30" );
-      Tz(   6, "modExp", four.modExp( 6, 497),  "120" );
-      Tz(   7, "modExp", four.modExp( 7, 497),  "480" );
-      Tz(   8, "modExp", four.modExp( 8, 497),  "429" );
-      Tz(   9, "modExp", four.modExp( 9, 497),  "225" );
-      Tz(  10, "modExp", four.modExp(10, 497),  "403" );
-      Tz(  11, "modExp", four.modExp(11, 497),  "121" );
-      Tz(  12, "modExp", four.modExp(12, 497),  "484" );
-      Tz(  13, "modExp", four.modExp(13, 497),  "445" );
+      CBignum mod(497);
+      Tz(   1, "modExp", four.modExp( 0, mod),    "1" );
+      Tz(   1, "modExp", four.modExp( 1, mod),    "4" );
+      Tz(   2, "modExp", four.modExp( 2, mod),   "16" );
+      Tz(   3, "modExp", four.modExp( 3, mod),   "64" );
+      Tz(   4, "modExp", four.modExp( 4, mod),  "256" );
+      Tz(   5, "modExp", four.modExp( 5, mod),   "30" );
+      Tz(   6, "modExp", four.modExp( 6, mod),  "120" );
+      Tz(   7, "modExp", four.modExp( 7, mod),  "480" );
+      Tz(   8, "modExp", four.modExp( 8, mod),  "429" );
+      Tz(   9, "modExp", four.modExp( 9, mod),  "225" );
+      Tz(  10, "modExp", four.modExp(10, mod),  "403" );
+      Tz(  11, "modExp", four.modExp(11, mod),  "121" );
+      Tz(  12, "modExp", four.modExp(12, mod),  "484" );
+      Tz(  13, "modExp", four.modExp(13, mod),  "445" );
+      Tz(  14, "modExp", four.modExp(0,    1),    "0" );
+      Tz(  15, "modExp", four.modExp(0,  mod),    "1" );
+      Tz(  16, "modExp", four.modExp(13, -mod), "-52" );
 
-#if 0
-      CBignum three(3);
-      CBignum exponent(10001);
-      CBignum modulus(one << 30000);
-      std::cout << "==> " << three.modExp(exponent, modulus) << std::endl;
-      std::cout << "==> " << (three.pow(exponent) % modulus) << std::endl;
-#endif
+      {
+        CBignum three(3);
+        CBignum exponent(10001);
+        CBignum modulus(one << 30000);
+        CBignum a(three.modExp(exponent, modulus));
+        CBignum b(three.pow(exponent) % modulus);
+
+        if (a != b) {
+          std::cerr << "modExp: " << a << " V.S. " << b << std::endl;
+        }
+      }
 
       // Example taken from https://rosettacode.org/wiki/Modular_exponentiation
 
-      CBignum a("2988348162058574136915891421498819466320163312926952423791023078876139");
-      CBignum b("2351399303373464486466122544523690094744975233415544072992656881240319");
+      CBignum a("29883481620585741369158914214988194"
+                "66320163312926952423791023078876139");
+      CBignum b("23513993033734644864661225445236900"
+                "94744975233415544072992656881240319");
       CBignum m(CBignum(10).pow(40));
 
-      Tz(  14, "modExp", a.modExp(b, m), "1527229998585248450016808958343740453059");
+      Tz(  16, "modExp", a.modExp(b, m),
+           "1527229998585248450016808958343740453059");
     }
 
     Tz(   1, "++",   ++x2,             "3"                            );

@@ -32,7 +32,7 @@
  *      bigz.c : provides an implementation of "unlimited-precision"
  *               arithmetic for signed integers.
  *
- *      $Id: bigz.c,v 1.134 2016/05/05 16:26:00 jullien Exp $
+ *      $Id: bigz.c,v 1.135 2016/05/06 17:34:56 jullien Exp $
  */
 
 /*
@@ -62,6 +62,8 @@
 
 #define BZMAXINT                ((BzInt)((~(BzUInt)0) >> 1))
 #define BZMAXUINT               (~(BzUInt)0)
+
+#define BzFreeIf(cond, ptr)     if (cond) BzFree(ptr)
 
 /*
  *      See ./etc/hextable.c if you need to change BigHexToDigit tables.
@@ -1447,7 +1449,7 @@ BzFromStringLen(const BzChar *s, size_t len, BigNumDigit base, BzStrFlag flag) {
         BigZ            p;
         BzSign          sign;
         BigNumLength    zl;
-	size_t          i;
+        size_t          i;
 
         /*
          * Throw away any initial space
@@ -1458,7 +1460,7 @@ BzFromStringLen(const BzChar *s, size_t len, BigNumDigit base, BzStrFlag flag) {
                || (*s == (BzChar)'\n')
                || (*s == (BzChar)'\r')) {
                 ++s;
-		--len;
+                --len;
         }
 
         /*
@@ -1546,7 +1548,7 @@ BzFromStringLen(const BzChar *s, size_t len, BigNumDigit base, BzStrFlag flag) {
 
 BigZ
 BzFromString(const BzChar *s, BigNumDigit base, BzStrFlag flag) {
-	return (BzFromStringLen(s, BzStrLen(s), base, flag));
+        return (BzFromStringLen(s, BzStrLen(s), base, flag));
 }
 
 BigZ
@@ -2497,33 +2499,65 @@ BzPow(const BigZ base, BzUInt exponent) {
 BigZ
 BzModExp(const BigZ base, const BigZ exponent, const BigZ modulus) {
         BigZ result;
+        BigZ mod;
+        BigZ exp;
+        BigZ b;
+        int  neg;
 
         if ((result = BzFromInteger(1)) == BZNULL) {
                 return (BZNULL);
         }
 
-        if (BzGetSign(exponent) == BZ_ZERO) {
+        switch (BzGetSign(exponent)) {
+        case BZ_ZERO:
                 /*
-                 * Any nonzero number raised by the exponent 0 is 1
+                 * exponent == 0, (base ** 0) == 1, two cases to consider:
                  */
-                return (result);
-        } else  if ((BzGetSign(exponent) == BZ_MINUS)
-                    || (BzCompare(modulus, result) == BZ_EQ)) {
+                if (BzCompare(modulus, result) == BZ_EQ) {
+                        /*
+                         * modulus == 1 => 0
+                         */
+                        BnnSetToZero(BzToBn(result), (BigNumLength)1);
+                        BzSetSign(result, BZ_ZERO);
+                        return (result);
+                } else  {
+                        /*
+                         * modulus != 1 => 1
+                         */
+                        return (result);
+                }
+        case BZ_MINUS:
                 /*
-                 * Any nonzero number modulus 1 is 0. Same if exp < 0.
+                 * Negative exponent is not supported.
                  */
-                BnnSetToZero(BzToBn(result), (BigNumLength)1);
-                BzSetSign(result, BZ_ZERO);
-                return (result);
-        } else  {
-                BigZ exp;
-                BigZ b;
+                BzFree(result);
+                return (BZNULL);
+        default:
+                if (BzGetSign(modulus) == BZ_PLUS) {
+                        /*
+                         * modulus is positive, don't need to copy it.
+                         */
+                        neg = 0;
+                        mod = modulus;
+                } else  {
+                        /*
+                         * Make a copy of modulus as positive value.
+                         */
+
+                        if ((mod = BzNegate(modulus)) == BZNULL) {
+                                BzFree(result);
+                                return (BZNULL);
+                        }
+
+                        neg = 1;
+                }
 
                 /*
                  * Copy base as it will be modified.
                  */
 
                 if ((b = BzCopy(base)) == BZNULL) {
+                        BzFreeIf(neg, mod);
                         BzFree(result);
                         return (BZNULL);
                 }
@@ -2533,6 +2567,7 @@ BzModExp(const BigZ base, const BigZ exponent, const BigZ modulus) {
                  */
 
                 if ((exp = BzCopy(exponent)) == BZNULL) {
+                        BzFreeIf(neg, mod);
                         BzFree(b);
                         BzFree(result);
                         return (BZNULL);
@@ -2544,13 +2579,15 @@ BzModExp(const BigZ base, const BigZ exponent, const BigZ modulus) {
                                 tmp = BzMultiply(result, b);
                                 BzFree(result);
                                 if (tmp == BZNULL) {
+                                        BzFreeIf(neg, mod);
                                         BzFree(exp);
                                         BzFree(b);
                                         return (BZNULL);
                                 }
-                                result = BzMod(tmp, modulus);
+                                result = BzMod(tmp, mod);
                                 BzFree(tmp);
                                 if (result == BZNULL) {
+                                        BzFreeIf(neg, mod);
                                         BzFree(exp);
                                         BzFree(b);
                                         return (BZNULL);
@@ -2565,13 +2602,15 @@ BzModExp(const BigZ base, const BigZ exponent, const BigZ modulus) {
                         tmp = BzMultiply(b, b);
                         BzFree(b);
                         if (tmp == BZNULL) {
+                                BzFreeIf(neg, mod);
                                 BzFree(exp);
                                 BzFree(result);
                                 return (BZNULL);
                         }
-                        b = BzMod(tmp, modulus);
+                        b = BzMod(tmp, mod);
                         BzFree(tmp);
                         if (b == BZNULL) {
+                                BzFreeIf(neg, mod);
                                 BzFree(exp);
                                 BzFree(result);
                                 return (BZNULL);
@@ -2580,6 +2619,18 @@ BzModExp(const BigZ base, const BigZ exponent, const BigZ modulus) {
 
                 BzFree(exp);
                 BzFree(b);
-                return (result);
+
+                if (neg) {
+                        /*
+                         * Modulus is negative. Adjust value.
+                         */
+                        BigZ tmp;
+                        BzFree(mod);
+                        tmp = BzMod(result, modulus);
+                        BzFree(result);
+                        return (tmp);
+                } else  {
+                        return (result);
+                }
         }
 }
