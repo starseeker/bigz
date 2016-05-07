@@ -32,7 +32,7 @@
  *      bigz.c : provides an implementation of "unlimited-precision"
  *               arithmetic for signed integers.
  *
- *      $Id: bigz.c,v 1.135 2016/05/06 17:34:56 jullien Exp $
+ *      $Id: bigz.c,v 1.137 2016/05/07 14:38:55 jullien Exp $
  */
 
 /*
@@ -2520,9 +2520,16 @@ BzModExp(const BigZ base, const BigZ exponent, const BigZ modulus) {
                         BnnSetToZero(BzToBn(result), (BigNumLength)1);
                         BzSetSign(result, BZ_ZERO);
                         return (result);
+                } else  if (BzGetSign(modulus) == BZ_MINUS) {
+                        /*
+                         * modulus < 0 => modulus + 1
+                         */
+			BigZ tmp = BzAdd(modulus, result);
+                        BzFree(result);
+                        return (tmp);
                 } else  {
                         /*
-                         * modulus != 1 => 1
+                         * modulus > 1 => 1
                          */
                         return (result);
                 }

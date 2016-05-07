@@ -1,5 +1,6 @@
-Change log
+ChangeLog
 
+2016/05/07: BzModExp accepts negative modulus value.
 2016/05/06: BzModExp exponent is BigZ as it can be really big like with RSA.
 2016/05/05: Add BzFromStringLen that pass the length of string.
 2016/05/05: Add experimental BzModExp using Right-to-left binary method.
