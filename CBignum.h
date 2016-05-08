@@ -1,5 +1,5 @@
 //
-// $Id: CBignum.h,v 1.51 2016/05/08 06:40:29 jullien Exp $
+// $Id: CBignum.h,v 1.52 2016/05/08 07:06:34 jullien Exp $
 //
 
 /*
@@ -76,8 +76,8 @@ class CBignum {
   template<typename T>
   CBignum(T init)
     : m_bz(signedType<T>(init)
-	   ? BzFromUnsignedInteger(static_cast<BzUInt>(init))
-	   : BzFromInteger(static_cast<BzInt>(init))) {
+	   ? BzFromInteger(static_cast<BzInt>(init))
+	   : BzFromUnsignedInteger(static_cast<BzUInt>(init))) {
   }
   /**
    * Constructs a randomly generated positive CBignum with the specified
@@ -625,8 +625,8 @@ class CBignum {
   constexpr
 #endif
   inline static bool
-  signedType(T init = 0) {
-    return T(~0) < init;
+  signedType(T init) {
+    return init < T(0);
   }
 
   enum Flags { ASSIGN };

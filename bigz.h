@@ -1,5 +1,5 @@
 /*
- * $Id: bigz.h,v 1.89 2016/05/06 17:34:56 jullien Exp $
+ * $Id: bigz.h,v 1.90 2016/05/08 07:06:34 jullien Exp $
  */
 
 /*
@@ -56,7 +56,7 @@ extern  "C"     {
  * BigZ.h: Types and structures for clients of BigZ
  */
 
-#define BZ_VERSION                      "1.6.1"
+#define BZ_VERSION                      "1.6.2"
 
 /*
  * BigZ sign
