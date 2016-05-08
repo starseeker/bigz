@@ -1,5 +1,5 @@
 //
-// $Id: CBignum.h,v 1.50 2016/05/06 17:34:56 jullien Exp $
+// $Id: CBignum.h,v 1.51 2016/05/08 06:40:29 jullien Exp $
 //
 
 /*
@@ -75,7 +75,7 @@ class CBignum {
    */
   template<typename T>
   CBignum(T init)
-    : m_bz(signedType<T>()
+    : m_bz(signedType<T>(init)
 	   ? BzFromUnsignedInteger(static_cast<BzUInt>(init))
 	   : BzFromInteger(static_cast<BzInt>(init))) {
   }

@@ -32,7 +32,7 @@
  *      bigz.c : provides an implementation of "unlimited-precision"
  *               arithmetic for signed integers.
  *
- *      $Id: bigz.c,v 1.137 2016/05/07 14:38:55 jullien Exp $
+ *      $Id: bigz.c,v 1.138 2016/05/07 16:06:43 jullien Exp $
  */
 
 /*
@@ -2500,7 +2500,7 @@ BigZ
 BzModExp(const BigZ base, const BigZ exponent, const BigZ modulus) {
         BigZ result;
         BigZ mod;
-        BigZ exp;
+        BigZ expnt;
         BigZ b;
         int  neg;
 
@@ -2573,21 +2573,21 @@ BzModExp(const BigZ base, const BigZ exponent, const BigZ modulus) {
                  * Copy exponent as it will be modified.
                  */
 
-                if ((exp = BzCopy(exponent)) == BZNULL) {
+                if ((expnt = BzCopy(exponent)) == BZNULL) {
                         BzFreeIf(neg, mod);
                         BzFree(b);
                         BzFree(result);
                         return (BZNULL);
                 }
 
-                while (BzGetSign(exp) == BZ_PLUS) {
+                while (BzGetSign(expnt) == BZ_PLUS) {
                         BigZ tmp;
-                        if (BzIsOdd(exp)) {
+                        if (BzIsOdd(expnt)) {
                                 tmp = BzMultiply(result, b);
                                 BzFree(result);
                                 if (tmp == BZNULL) {
                                         BzFreeIf(neg, mod);
-                                        BzFree(exp);
+                                        BzFree(expnt);
                                         BzFree(b);
                                         return (BZNULL);
                                 }
@@ -2595,22 +2595,22 @@ BzModExp(const BigZ base, const BigZ exponent, const BigZ modulus) {
                                 BzFree(tmp);
                                 if (result == BZNULL) {
                                         BzFreeIf(neg, mod);
-                                        BzFree(exp);
+                                        BzFree(expnt);
                                         BzFree(b);
                                         return (BZNULL);
                                 }
                         }
                         /*
-                         * exp = exp >> 1;
+                         * expnt = expnt >> 1;
                          */
-                        tmp = BzAsh(exp, -1);
-                        BzFree(exp);
-                        exp = tmp;
+                        tmp = BzAsh(expnt, -1);
+                        BzFree(expnt);
+                        expnt = tmp;
                         tmp = BzMultiply(b, b);
                         BzFree(b);
                         if (tmp == BZNULL) {
                                 BzFreeIf(neg, mod);
-                                BzFree(exp);
+                                BzFree(expnt);
                                 BzFree(result);
                                 return (BZNULL);
                         }
@@ -2618,13 +2618,13 @@ BzModExp(const BigZ base, const BigZ exponent, const BigZ modulus) {
                         BzFree(tmp);
                         if (b == BZNULL) {
                                 BzFreeIf(neg, mod);
-                                BzFree(exp);
+                                BzFree(expnt);
                                 BzFree(result);
                                 return (BZNULL);
                         }
                 }
 
-                BzFree(exp);
+                BzFree(expnt);
                 BzFree(b);
 
                 if (neg) {

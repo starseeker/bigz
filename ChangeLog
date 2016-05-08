@@ -1,5 +1,6 @@
 ChangeLog
 
+2016/05/08: Fix CBignum ctor with negative value.
 2016/05/07: BzModExp accepts negative modulus value.
 2016/05/06: BzModExp exponent is BigZ as it can be really big like with RSA.
 2016/05/05: Add BzFromStringLen that pass the length of string.
