@@ -1,6 +1,6 @@
 #
 #	Makefile for 'Bignums'	(c) C. Jullien
-#	$Id: makefile.nt,v 1.60 2016/05/08 07:06:34 jullien Exp $
+#	$Id: makefile.nt,v 1.61 2016/05/11 05:00:49 jullien Exp $
 #
 
 .SUFFIXES: .lsp .dat .$(SUFFIXES)
@@ -194,12 +194,12 @@ MASTER		= \
 		makefile.tcc		      \
 		tCBignum.cpp		      \
 		tCBignum.dat		      \
-		tCBignum.dat		      \
 		test/BntoBnn.h		      \
 		test/bztest.c		      \
 		test/testkern.c
 
 save:
+	@bash -c "./notabs.sh"
 	@if exist bignum-$(VERSION).tar.gz del bignum-$(VERSION).tar.gz
 	@touch bignum-$(VERSION).tar.gz
 	@tar -czf bignum-$(VERSION).tar.gz $(MASTER)
@@ -212,4 +212,5 @@ save:
 	@tar tvzf bignum-$(VERSION).tar.gz
 
 tosvn:
+	@bash -c "./notabs.sh"
 	@for %%i in ($(MASTER)) do @echo bigz/%%i && cp %%i bigz/%%i

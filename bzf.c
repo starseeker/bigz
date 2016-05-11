@@ -1,5 +1,5 @@
 /*
- * $Id: bzf.c,v 1.9 2015/12/19 08:15:23 jullien Exp $
+ * $Id: bzf.c,v 1.10 2016/05/11 04:54:46 jullien Exp $
  */
 
 /*
@@ -31,32 +31,32 @@
  */
 
 /*
- *	bzf.c :	 Miscellaneous functions built on top of BigZ.
+ *      bzf.c :  Miscellaneous functions built on top of BigZ.
  */
 
-extern	BigZ	BzFactorial(BigZ z);
+extern  BigZ    BzFactorial(BigZ z);
 
 BigZ
 BzFactorial(BigZ z)
 {
-	/*
-	 * Returns Z!
-	 * Assumes Z < Base.
-	 */
+        /*
+         * Returns Z!
+         * Assumes Z < Base.
+         */
 
-	BigZ		f;
-	BigNumDigit	zval;
-	int		fl = 1;
+        BigZ            f;
+        BigNumDigit     zval;
+        int             fl = 1;
 
-	zval = BnnGetDigit(BzToBn(z));
-	f = BzCreate(zval+1);
-	BnnSetDigit(BzToBn(f), 1);
-	BzSetSign(f, BzGetSign(z));
+        zval = BnnGetDigit(BzToBn(z));
+        f = BzCreate(zval+1);
+        BnnSetDigit(BzToBn(f), 1);
+        BzSetSign(f, BzGetSign(z));
 
-	while (zval-- > 1) {
-		BnnMultiplyDigit(BzToBn(f), fl+1, BzToBn(f), fl, zval);
-		fl = BnnNumDigits(BzToBn(f), fl+1);
-	}
+        while (zval-- > 1) {
+                BnnMultiplyDigit(BzToBn(f), fl+1, BzToBn(f), fl, zval);
+                fl = BnnNumDigits(BzToBn(f), fl+1);
+        }
     
-	return (f);
+        return (f);
 }

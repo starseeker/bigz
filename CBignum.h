@@ -1,5 +1,5 @@
 //
-// $Id: CBignum.h,v 1.53 2016/05/08 09:06:16 jullien Exp $
+// $Id: CBignum.h,v 1.54 2016/05/11 04:54:45 jullien Exp $
 //
 
 /*
@@ -76,8 +76,8 @@ class CBignum {
   template<typename T>
   CBignum(T init)
     : m_bz(signedType<T>(init)
-	   ? BzFromInteger(static_cast<BzInt>(init))
-	   : BzFromUnsignedInteger(static_cast<BzUInt>(init))) {
+           ? BzFromInteger(static_cast<BzInt>(init))
+           : BzFromUnsignedInteger(static_cast<BzUInt>(init))) {
   }
   /**
    * Constructs a randomly generated positive CBignum with the specified
@@ -128,7 +128,7 @@ class CBignum {
     : m_bz(BzFromString(init, base, BZ_UNTIL_END)) {
     if (m_bz == 0) {
       throw std::domain_error("Invalid CBignum string: "
-			      + std::string(init));
+                              + std::string(init));
     }
   }
   /**
@@ -141,7 +141,7 @@ class CBignum {
     : m_bz(BzFromStringLen(init, len, base, BZ_UNTIL_END)) {
     if (m_bz == 0) {
       throw std::domain_error("Invalid CBignum string: "
-			      + std::string(init));
+                              + std::string(init));
     }
   }
   /**
@@ -346,7 +346,7 @@ class CBignum {
   bool logbitp(const CBignum& bitnb) const {
     if (BzGetSign(bitnb.m_bz) == BZ_MINUS) {
       throw std::domain_error("logbitp, bitnb is a negative value: "
-			      + static_cast<std::string>(bitnb));
+                              + static_cast<std::string>(bitnb));
     }
     const BzUInt bn(bitnb);
     return BzTestBit(static_cast<unsigned int>(bn), m_bz) == BN_TRUE;
@@ -362,7 +362,7 @@ class CBignum {
   friend CBignum operator<<(const CBignum& bz1, const CBignum& bz2) {
     return CBignum(BzAsh(bz1.m_bz,
                          static_cast<int>(BzToInteger(bz2.m_bz))),
-		   ASSIGN);
+                   ASSIGN);
   }
 
   /**
@@ -373,7 +373,7 @@ class CBignum {
   friend CBignum operator>>(const CBignum& bz1, const CBignum& bz2) {
     return CBignum(BzAsh(bz1.m_bz,
                          -static_cast<int>(BzToInteger(bz2.m_bz))),
-		   ASSIGN);
+                   ASSIGN);
   }
 
   /**
@@ -384,7 +384,7 @@ class CBignum {
   CBignum isqrt() const {
     if (BzGetSign(m_bz) == BZ_MINUS) {
       throw std::domain_error("isqrt of a negative value: "
-			      + static_cast<std::string>(*this));
+                              + static_cast<std::string>(*this));
     }
     return CBignum(BzSqrt(m_bz), ASSIGN);
   }
@@ -492,7 +492,7 @@ class CBignum {
       return CBignum(1);
     } else {
       throw std::domain_error("pow is passed a negative argument " +
-			      static_cast<std::string>(exp));
+                              static_cast<std::string>(exp));
     }
   }
 
@@ -776,7 +776,7 @@ inline CBignum random(const CBignum& bz, unsigned int* seed) {
   return bz.random(seed);
 }
 
-#define	BN_CMP_OP(op)                                 \
+#define BN_CMP_OP(op)                                 \
   template<typename T>                                \
   inline bool operator op (const CBignum& bz1, T i) { \
     return (bz1 op CBignum(i));                       \
@@ -786,7 +786,7 @@ inline CBignum random(const CBignum& bz, unsigned int* seed) {
     return (CBignum(i) op bz1);                       \
 }
 
-#define	BN_BIN_OP(op)                                 \
+#define BN_BIN_OP(op)                                 \
   template<typename T>                                \
   inline CBignum operator op (const CBignum& bz1, T i) { \
     return (bz1 op CBignum(i));                       \
