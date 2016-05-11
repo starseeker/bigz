@@ -1,5 +1,5 @@
 //
-// $Id: CBignum.h,v 1.52 2016/05/08 07:06:34 jullien Exp $
+// $Id: CBignum.h,v 1.53 2016/05/08 09:06:16 jullien Exp $
 //
 
 /*
@@ -497,16 +497,29 @@ class CBignum {
   }
 
   /**
+   * Compute this**exp
+   * @param [in] exp exponent.
    * @eturn a CBignum whose value is (this exponent).
    */
   CBignum pow(unsigned int exp) const throw() {
     return CBignum(BzPow(m_bz, exp), ASSIGN);
   }
 
+  /**
+   * Get a random CBignum using seed.
+   * @param [in, out] seed value used to compute next random number.
+   * @eturn a CBignum random number.
+   */
   CBignum random(unsigned int* seed) const throw() {
     return CBignum(BzRandom(m_bz, reinterpret_cast<BzSeed*>(seed)));
   }
 
+  /**
+   * Compute more efficiently this**exponent % modulus.
+   * @param [in] exponent
+   * @param [in] modulus
+   * @return Modular exponentiation of this**exponent % modulus.
+   */
   CBignum modExp(const CBignum& exponent,
                  const CBignum& modulus) const throw() {
     return CBignum(BzModExp(m_bz, exponent, modulus.m_bz), ASSIGN);
