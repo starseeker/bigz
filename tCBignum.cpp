@@ -2,7 +2,7 @@
  * Simplified BSD License
  *
  * Copyright (c) 1988-1989, Digital Equipment Corporation & INRIA.
- * Copyright (c) 1992-2016, Eligis
+ * Copyright (c) 1992-2017, Eligis
  * All rights reserved.
  *
  * Redistribution and  use in  source and binary  forms, with  or without
@@ -230,7 +230,7 @@ main()
   {  // Force a new block to let dtor do cleanups.
 #endif
 
-    (void)printf("Bignum non-regression tests. (c) 1998-2016 C. Jullien\n");
+    (void)printf("Bignum non-regression tests. (c) 1998-2017 C. Jullien\n");
     (void)printf("Testing version %s ...\n\n", CBignum::version());
 
 #if 0

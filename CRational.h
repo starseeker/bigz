@@ -5,7 +5,7 @@
 /*
  * Simplified BSD License
  *
- * Copyright (c) 1992-2016, Eligis
+ * Copyright (c) 1992-2017, Eligis
  * All rights reserved.
  *
  * Redistribution and  use in  source and binary  forms, with  or without

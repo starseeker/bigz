@@ -621,12 +621,12 @@ ac_includes_default="\
 
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
-WARNINGS
+PGO_USE
+PGO_GEN
 VERSION
 SOEXT
 SHARED
 PIC
-OPTIMS
 NOCXX
 AROPTS
 AEXT
@@ -5058,11 +5058,567 @@ fi
 
 
 
-# Optimization and Warnings options
 
-OPTIMS=""
-WARNINGS=""
-UNUSUED="-Wunused-value -Wunused-variable -Wunused-parameter -Wunused-label -Wunused-function"
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -m64" >&5
+$as_echo_n "checking whether C compiler accepts -m64... " >&6; }
+if ${ax_cv_check_cflags___m64+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  ax_check_save_flags=$CFLAGS
+  CFLAGS="$CFLAGS  -m64"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ax_cv_check_cflags___m64=yes
+else
+  ax_cv_check_cflags___m64=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  CFLAGS=$ax_check_save_flags
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_check_cflags___m64" >&5
+$as_echo "$ax_cv_check_cflags___m64" >&6; }
+if test x"$ax_cv_check_cflags___m64" = xyes; then :
+  CFLAGS="$CFLAGS -m64"
+else
+  :
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -O3" >&5
+$as_echo_n "checking whether C compiler accepts -O3... " >&6; }
+if ${ax_cv_check_cflags___O3+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  ax_check_save_flags=$CFLAGS
+  CFLAGS="$CFLAGS  -O3"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ax_cv_check_cflags___O3=yes
+else
+  ax_cv_check_cflags___O3=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  CFLAGS=$ax_check_save_flags
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_check_cflags___O3" >&5
+$as_echo "$ax_cv_check_cflags___O3" >&6; }
+if test x"$ax_cv_check_cflags___O3" = xyes; then :
+  CFLAGS="$CFLAGS -O3"
+else
+  :
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -Wall" >&5
+$as_echo_n "checking whether C compiler accepts -Wall... " >&6; }
+if ${ax_cv_check_cflags___Wall+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  ax_check_save_flags=$CFLAGS
+  CFLAGS="$CFLAGS  -Wall"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ax_cv_check_cflags___Wall=yes
+else
+  ax_cv_check_cflags___Wall=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  CFLAGS=$ax_check_save_flags
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_check_cflags___Wall" >&5
+$as_echo "$ax_cv_check_cflags___Wall" >&6; }
+if test x"$ax_cv_check_cflags___Wall" = xyes; then :
+  CFLAGS="$CFLAGS -Wall"
+else
+  :
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -Wextra" >&5
+$as_echo_n "checking whether C compiler accepts -Wextra... " >&6; }
+if ${ax_cv_check_cflags___Wextra+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  ax_check_save_flags=$CFLAGS
+  CFLAGS="$CFLAGS  -Wextra"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ax_cv_check_cflags___Wextra=yes
+else
+  ax_cv_check_cflags___Wextra=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  CFLAGS=$ax_check_save_flags
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_check_cflags___Wextra" >&5
+$as_echo "$ax_cv_check_cflags___Wextra" >&6; }
+if test x"$ax_cv_check_cflags___Wextra" = xyes; then :
+  CFLAGS="$CFLAGS -Wextra"
+else
+  :
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -Wshadow" >&5
+$as_echo_n "checking whether C compiler accepts -Wshadow... " >&6; }
+if ${ax_cv_check_cflags___Wshadow+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  ax_check_save_flags=$CFLAGS
+  CFLAGS="$CFLAGS  -Wshadow"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ax_cv_check_cflags___Wshadow=yes
+else
+  ax_cv_check_cflags___Wshadow=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  CFLAGS=$ax_check_save_flags
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_check_cflags___Wshadow" >&5
+$as_echo "$ax_cv_check_cflags___Wshadow" >&6; }
+if test x"$ax_cv_check_cflags___Wshadow" = xyes; then :
+  CFLAGS="$CFLAGS -Wshadow"
+else
+  :
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -Wunused" >&5
+$as_echo_n "checking whether C compiler accepts -Wunused... " >&6; }
+if ${ax_cv_check_cflags___Wunused+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  ax_check_save_flags=$CFLAGS
+  CFLAGS="$CFLAGS  -Wunused"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ax_cv_check_cflags___Wunused=yes
+else
+  ax_cv_check_cflags___Wunused=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  CFLAGS=$ax_check_save_flags
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_check_cflags___Wunused" >&5
+$as_echo "$ax_cv_check_cflags___Wunused" >&6; }
+if test x"$ax_cv_check_cflags___Wunused" = xyes; then :
+  CFLAGS="$CFLAGS -Wunused"
+else
+  :
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -Wunused-value" >&5
+$as_echo_n "checking whether C compiler accepts -Wunused-value... " >&6; }
+if ${ax_cv_check_cflags___Wunused_value+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  ax_check_save_flags=$CFLAGS
+  CFLAGS="$CFLAGS  -Wunused-value"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ax_cv_check_cflags___Wunused_value=yes
+else
+  ax_cv_check_cflags___Wunused_value=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  CFLAGS=$ax_check_save_flags
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_check_cflags___Wunused_value" >&5
+$as_echo "$ax_cv_check_cflags___Wunused_value" >&6; }
+if test x"$ax_cv_check_cflags___Wunused_value" = xyes; then :
+  CFLAGS="$CFLAGS -Wunused-value"
+else
+  :
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -Wunused-variable" >&5
+$as_echo_n "checking whether C compiler accepts -Wunused-variable... " >&6; }
+if ${ax_cv_check_cflags___Wunused_variable+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  ax_check_save_flags=$CFLAGS
+  CFLAGS="$CFLAGS  -Wunused-variable"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ax_cv_check_cflags___Wunused_variable=yes
+else
+  ax_cv_check_cflags___Wunused_variable=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  CFLAGS=$ax_check_save_flags
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_check_cflags___Wunused_variable" >&5
+$as_echo "$ax_cv_check_cflags___Wunused_variable" >&6; }
+if test x"$ax_cv_check_cflags___Wunused_variable" = xyes; then :
+  CFLAGS="$CFLAGS -Wunused-variable"
+else
+  :
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -Wunused-parameter" >&5
+$as_echo_n "checking whether C compiler accepts -Wunused-parameter... " >&6; }
+if ${ax_cv_check_cflags___Wunused_parameter+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  ax_check_save_flags=$CFLAGS
+  CFLAGS="$CFLAGS  -Wunused-parameter"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ax_cv_check_cflags___Wunused_parameter=yes
+else
+  ax_cv_check_cflags___Wunused_parameter=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  CFLAGS=$ax_check_save_flags
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_check_cflags___Wunused_parameter" >&5
+$as_echo "$ax_cv_check_cflags___Wunused_parameter" >&6; }
+if test x"$ax_cv_check_cflags___Wunused_parameter" = xyes; then :
+  CFLAGS="$CFLAGS -Wunused-parameter"
+else
+  :
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -Wunused-label" >&5
+$as_echo_n "checking whether C compiler accepts -Wunused-label... " >&6; }
+if ${ax_cv_check_cflags___Wunused_label+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  ax_check_save_flags=$CFLAGS
+  CFLAGS="$CFLAGS  -Wunused-label"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ax_cv_check_cflags___Wunused_label=yes
+else
+  ax_cv_check_cflags___Wunused_label=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  CFLAGS=$ax_check_save_flags
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_check_cflags___Wunused_label" >&5
+$as_echo "$ax_cv_check_cflags___Wunused_label" >&6; }
+if test x"$ax_cv_check_cflags___Wunused_label" = xyes; then :
+  CFLAGS="$CFLAGS -Wunused-label"
+else
+  :
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -Wunused-function" >&5
+$as_echo_n "checking whether C compiler accepts -Wunused-function... " >&6; }
+if ${ax_cv_check_cflags___Wunused_function+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  ax_check_save_flags=$CFLAGS
+  CFLAGS="$CFLAGS  -Wunused-function"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ax_cv_check_cflags___Wunused_function=yes
+else
+  ax_cv_check_cflags___Wunused_function=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  CFLAGS=$ax_check_save_flags
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_check_cflags___Wunused_function" >&5
+$as_echo "$ax_cv_check_cflags___Wunused_function" >&6; }
+if test x"$ax_cv_check_cflags___Wunused_function" = xyes; then :
+  CFLAGS="$CFLAGS -Wunused-function"
+else
+  :
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -finline-functions" >&5
+$as_echo_n "checking whether C compiler accepts -finline-functions... " >&6; }
+if ${ax_cv_check_cflags___finline_functions+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  ax_check_save_flags=$CFLAGS
+  CFLAGS="$CFLAGS  -finline-functions"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ax_cv_check_cflags___finline_functions=yes
+else
+  ax_cv_check_cflags___finline_functions=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  CFLAGS=$ax_check_save_flags
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_check_cflags___finline_functions" >&5
+$as_echo "$ax_cv_check_cflags___finline_functions" >&6; }
+if test x"$ax_cv_check_cflags___finline_functions" = xyes; then :
+  CFLAGS="$CFLAGS -finline-functions"
+else
+  :
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -finline-limit=4096" >&5
+$as_echo_n "checking whether C compiler accepts -finline-limit=4096... " >&6; }
+if ${ax_cv_check_cflags___finline_limit_4096+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  ax_check_save_flags=$CFLAGS
+  CFLAGS="$CFLAGS  -finline-limit=4096"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ax_cv_check_cflags___finline_limit_4096=yes
+else
+  ax_cv_check_cflags___finline_limit_4096=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  CFLAGS=$ax_check_save_flags
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_check_cflags___finline_limit_4096" >&5
+$as_echo "$ax_cv_check_cflags___finline_limit_4096" >&6; }
+if test x"$ax_cv_check_cflags___finline_limit_4096" = xyes; then :
+  CFLAGS="$CFLAGS -finline-limit=4096"
+else
+  :
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -fomit-frame-pointer" >&5
+$as_echo_n "checking whether C compiler accepts -fomit-frame-pointer... " >&6; }
+if ${ax_cv_check_cflags___fomit_frame_pointer+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  ax_check_save_flags=$CFLAGS
+  CFLAGS="$CFLAGS  -fomit-frame-pointer"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ax_cv_check_cflags___fomit_frame_pointer=yes
+else
+  ax_cv_check_cflags___fomit_frame_pointer=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  CFLAGS=$ax_check_save_flags
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_check_cflags___fomit_frame_pointer" >&5
+$as_echo "$ax_cv_check_cflags___fomit_frame_pointer" >&6; }
+if test x"$ax_cv_check_cflags___fomit_frame_pointer" = xyes; then :
+  CFLAGS="$CFLAGS -fomit-frame-pointer"
+else
+  :
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -fprofile-generate" >&5
+$as_echo_n "checking whether C compiler accepts -fprofile-generate... " >&6; }
+if ${ax_cv_check_cflags___fprofile_generate+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  ax_check_save_flags=$CFLAGS
+  CFLAGS="$CFLAGS  -fprofile-generate"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ax_cv_check_cflags___fprofile_generate=yes
+else
+  ax_cv_check_cflags___fprofile_generate=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  CFLAGS=$ax_check_save_flags
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_check_cflags___fprofile_generate" >&5
+$as_echo "$ax_cv_check_cflags___fprofile_generate" >&6; }
+if test x"$ax_cv_check_cflags___fprofile_generate" = xyes; then :
+  PGO_GEN="-fprofile-generate"
+else
+  :
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -fprofile-use" >&5
+$as_echo_n "checking whether C compiler accepts -fprofile-use... " >&6; }
+if ${ax_cv_check_cflags___fprofile_use+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  ax_check_save_flags=$CFLAGS
+  CFLAGS="$CFLAGS  -fprofile-use"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ax_cv_check_cflags___fprofile_use=yes
+else
+  ax_cv_check_cflags___fprofile_use=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  CFLAGS=$ax_check_save_flags
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_check_cflags___fprofile_use" >&5
+$as_echo "$ax_cv_check_cflags___fprofile_use" >&6; }
+if test x"$ax_cv_check_cflags___fprofile_use" = xyes; then :
+  PGO_USE="-fprofile-use"
+else
+  :
+fi
+
 
 # Local options
 
@@ -5075,18 +5631,7 @@ SOEXT="so"
 case "${CC}" in
   gcc*|clang)
 	# We can also add -std=iso9899:1999 or -std=c99 with gcc > 3.2
-	WARNINGS="-Dlint -Wall -Wshadow -Wunused"
 	CXX=g++
-	OPTIMS="-finline-functions -fomit-frame-pointer -funroll-loops"
-	CCVERION=`${CC} -v 2>&1 | grep " version " | sed -e "s/^[a-z ]*\([.0-9]*\).*/\1/g"`
-	if `${CC} -v --help 2>&1 | grep finline-limit= > /dev/null`
-	then
-	  OPTIMS="$OPTIMS -finline-limit=4096"
-	fi
-	if `${CC} -v --help 2>&1 | grep Wunused-function > /dev/null`
-	then
-	  WARNINGS="$WARNINGS $UNUSED"
-	fi
 	;;
   *tcc*)
         # No C++ with tcc
@@ -5094,7 +5639,7 @@ case "${CC}" in
 	SHARED=""
         ;;
   icc)
-	OPTIMS="-g -O3 -mcpu=pentiumpro -axi -ip -unroll -I."
+	#OPTIMS="-g -O3 -mcpu=pentiumpro -axi -ip -unroll -I."
 	;;
 esac
 
@@ -6403,8 +6948,6 @@ Configuration:
  Source:        ${srcdir}
  Compiler:	${CC} ${CCVERSION}
  Flags:         ${CFLAGS}
- Optimizations:
-`for i in ${OPTIMS}; do echo \"                $i\"; done`
  Build:         ${build}
  Host:          ${host}
  Target:        ${target}

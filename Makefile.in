@@ -30,7 +30,7 @@ EXE		= @EXEEXT@
 ARFLAGS		= @AROPTS@
 DEBUG		=
 WITHPIC         =
-CFLAGS		= @CFLAGS@ @OPTIMS@ @WARNINGS@ $(WITHPIC) -I. -DHAVE_CONFIG_H
+CFLAGS		= @CFLAGS@ $(WITHPIC) -I. -DHAVE_CONFIG_H
 CXXFLAGS	= @CXXFLAGS@
 INSTALL		= ./conf/install-sh
 LIBS		= @LIBS@
@@ -57,7 +57,7 @@ libs: @SHARED@ static-@STATIC_BUILD@
 
 .cpp.$(O):
 	@echo $*.cpp
-	@$(CPP) -c $(CFLAGS) $(PGO) $(CXXFLAGS) $*.cpp
+	@$(CPP) -c $(CFLAGS) $(CXXFLAGS) $(PGO) $*.cpp
 
 # KerN lib
 
@@ -78,16 +78,16 @@ static-std:
 static-pgo:
 	@rm -f *.o *.gcda *.a bztest$(EXE) testkern$(EXE)
 	@echo Making $(KRNLIB) for Profile Guided Optimizations...
-	@$(MAKE) $(NOPRINTDIR) WITHPIC= PGO=-fprofile-generate $(KRNLIB)
+	@$(MAKE) $(NOPRINTDIR) WITHPIC= PGO=@PGO_GEN@ $(KRNLIB)
 	@echo Making tests with $(KRNLIB) for Profile Guided Optimizations...
-	@$(MAKE) $(NOPRINTDIR) WITHPIC= PGO=-fprofile-generate bztest$(EXE)
-	@$(MAKE) $(NOPRINTDIR) WITHPIC= PGO=-fprofile-generate testkern$(EXE)
+	@$(MAKE) $(NOPRINTDIR) WITHPIC= PGO=@PGO_GEN@ bztest$(EXE)
+	@$(MAKE) $(NOPRINTDIR) WITHPIC= PGO=@PGO_GEN@ testkern$(EXE)
 	@echo Collecting Profile Guided Optimizations from bztest/testkern...
 	@./bztest> /dev/null 2>&1
 	@./testkern A> /dev/null 2>&1
 	@echo Making final $(KRNLIB) using Profile Guided Optimizations...
 	@rm -f *.o
-	@$(MAKE) $(NOPRINTDIR) WITHPIC= PGO=-fprofile-use $(KRNLIB)
+	@$(MAKE) $(NOPRINTDIR) WITHPIC= PGO=@PGO_USE@ $(KRNLIB)
 	@rm -f *.gcda
 
 $(KRNLIB): $(OBJECT)

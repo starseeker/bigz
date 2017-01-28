@@ -155,11 +155,40 @@ AC_PROG_GCC_TRADITIONAL
 AC_EXEEXT
 AC_OBJEXT
 
-# Optimization and Warnings options
+dnl Optimization and Warnings options
 
-OPTIMS=""
-WARNINGS=""
-UNUSUED="-Wunused-value -Wunused-variable -Wunused-parameter -Wunused-label -Wunused-function"
+AX_CHECK_COMPILE_FLAG([-m64],
+                      [CFLAGS="$CFLAGS -m64"])
+AX_CHECK_COMPILE_FLAG([-O3],
+                      [CFLAGS="$CFLAGS -O3"])
+AX_CHECK_COMPILE_FLAG([-Wall],
+                      [CFLAGS="$CFLAGS -Wall"])
+AX_CHECK_COMPILE_FLAG([-Wextra],
+                      [CFLAGS="$CFLAGS -Wextra"])
+AX_CHECK_COMPILE_FLAG([-Wshadow],
+                      [CFLAGS="$CFLAGS -Wshadow"])
+AX_CHECK_COMPILE_FLAG([-Wunused],
+                      [CFLAGS="$CFLAGS -Wunused"])
+AX_CHECK_COMPILE_FLAG([-Wunused-value],
+                      [CFLAGS="$CFLAGS -Wunused-value"])
+AX_CHECK_COMPILE_FLAG([-Wunused-variable],
+                      [CFLAGS="$CFLAGS -Wunused-variable"])
+AX_CHECK_COMPILE_FLAG([-Wunused-parameter],
+                      [CFLAGS="$CFLAGS -Wunused-parameter"])
+AX_CHECK_COMPILE_FLAG([-Wunused-label],
+                      [CFLAGS="$CFLAGS -Wunused-label"])
+AX_CHECK_COMPILE_FLAG([-Wunused-function],
+                      [CFLAGS="$CFLAGS -Wunused-function"])
+AX_CHECK_COMPILE_FLAG([-finline-functions],
+                      [CFLAGS="$CFLAGS -finline-functions"])
+AX_CHECK_COMPILE_FLAG([-finline-limit=4096],
+                      [CFLAGS="$CFLAGS -finline-limit=4096"])
+AX_CHECK_COMPILE_FLAG([-fomit-frame-pointer],
+                      [CFLAGS="$CFLAGS -fomit-frame-pointer"])
+AX_CHECK_COMPILE_FLAG([-fprofile-generate],
+                      [PGO_GEN="-fprofile-generate"])
+AX_CHECK_COMPILE_FLAG([-fprofile-use],
+                      [PGO_USE="-fprofile-use"])
 
 # Local options
 
@@ -170,28 +199,13 @@ SHARED="shared-std"
 SOEXT="so"
 
 case "${CC}" in
-  gcc*|clang)
-	# We can also add -std=iso9899:1999 or -std=c99 with gcc > 3.2
-	WARNINGS="-Dlint -Wall -Wshadow -Wunused"
-	CXX=g++
-	OPTIMS="-finline-functions -fomit-frame-pointer -funroll-loops"
-	CCVERION=`${CC} -v 2>&1 | grep " version " | sed -e "s/^[[a-z ]]*\([[.0-9]]*\).*/\1/g"`
-	if `${CC} -v --help 2>&1 | grep finline-limit= > /dev/null`
-	then
-	  OPTIMS="$OPTIMS -finline-limit=4096"
-	fi
-	if `${CC} -v --help 2>&1 | grep Wunused-function > /dev/null`
-	then
-	  WARNINGS="$WARNINGS $UNUSED"
-	fi
-	;;
   *tcc*)
         # No C++ with tcc
         NOCXX="# "
 	SHARED=""
         ;;
   icc)
-	OPTIMS="-g -O3 -mcpu=pentiumpro -axi -ip -unroll -I."
+	#OPTIMS="-g -O3 -mcpu=pentiumpro -axi -ip -unroll -I."
 	;;
 esac
 
@@ -205,12 +219,12 @@ AC_SUBST(LIBS)
 AC_SUBST(CXX)
 AC_SUBST(NOCXX)
 AC_SUBST(LDFLAGS)
-AC_SUBST(OPTIMS)
 AC_SUBST(PIC)
 AC_SUBST(SHARED)
 AC_SUBST(SOEXT)
 AC_SUBST(VERSION)
-AC_SUBST(WARNINGS)
+AC_SUBST(PGO_GEN)
+AC_SUBST(PGO_USE)
 
 # Save result in Makefile (using Makefile.in template).
 
@@ -225,8 +239,6 @@ Configuration:
  Source:        ${srcdir}
  Compiler:	${CC} ${CCVERSION}
  Flags:         ${CFLAGS}
- Optimizations:
-`for i in ${OPTIMS}; do echo \"                $i\"; done`
  Build:         ${build}
  Host:          ${host}
  Target:        ${target}
