@@ -25,6 +25,7 @@ VERSION		= @VERSION@
 O		= @OBJEXT@
 RANLIB		= @RANLIB@
 SOEXT		= @SOEXT@
+SONAME		= @SONAME@
 AEXT		= @AEXT@
 EXE		= @EXEEXT@
 ARFLAGS		= @AROPTS@
@@ -96,7 +97,7 @@ $(KRNLIB): $(OBJECT)
 	-@$(RANLIB) $(KRNLIB)
 
 $(KRNSHARED): $(OBJECT)
-	@$(CC) $(CFLAGS) -shared -Wl,-soname,$(KRNSHARED) -o $(KRNSHARED) \
+	@$(CC) $(CFLAGS) -shared -Wl,-$(SONAME),$(KRNSHARED) -o $(KRNSHARED) \
 	       $(OBJECT)
 
 # KerN test
