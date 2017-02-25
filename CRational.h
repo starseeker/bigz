@@ -36,7 +36,7 @@
 //
 
 #if     !defined(__CRATIONAL_H)
-#define __CRATIONAL_H_H
+#define __CRATIONAL_H
 
 #if __cplusplus >= 201103L
 #define BN_CPP11
