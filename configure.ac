@@ -179,16 +179,20 @@ AX_CHECK_COMPILE_FLAG([-Wunused-label],
                       [CFLAGS="$CFLAGS -Wunused-label"])
 AX_CHECK_COMPILE_FLAG([-Wunused-function],
                       [CFLAGS="$CFLAGS -Wunused-function"])
-AX_CHECK_COMPILE_FLAG([-finline-functions],
-                      [CFLAGS="$CFLAGS -finline-functions"])
-AX_CHECK_COMPILE_FLAG([-finline-limit=4096],
-                      [CFLAGS="$CFLAGS -finline-limit=4096"])
 AX_CHECK_COMPILE_FLAG([-fomit-frame-pointer],
                       [CFLAGS="$CFLAGS -fomit-frame-pointer"])
 AX_CHECK_COMPILE_FLAG([-fprofile-generate],
                       [PGO_GEN="-fprofile-generate"])
 AX_CHECK_COMPILE_FLAG([-fprofile-use],
                       [PGO_USE="-fprofile-use"])
+
+if test `uname` != Darwin
+then
+  AX_CHECK_COMPILE_FLAG([-finline-functions],
+                        [CFLAGS="$CFLAGS -finline-functions"])
+  AX_CHECK_COMPILE_FLAG([-finline-limit=4096],
+                        [CFLAGS="$CFLAGS -finline-limit=4096"])
+fi
 
 # Local options
 
