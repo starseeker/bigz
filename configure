@@ -5632,6 +5632,13 @@ PIC=""
 SHARED="shared-std"
 SOEXT="so"
 
+if test `uname` != Darwin
+then
+  SONAME=soname
+else
+  SONAME=install_name
+fi
+
 case "${CC}" in
   *tcc*)
         # No C++ with tcc
