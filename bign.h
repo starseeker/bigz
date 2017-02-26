@@ -1,5 +1,5 @@
 /*
- * $Id: bign.h,v 1.37 2015/12/31 08:06:56 jullien Exp $
+ * $Id: bign.h,v 1.38 2017/01/28 06:37:39 jullien Exp $
  */
 
 /*

@@ -28,7 +28,7 @@
  */
 
 /*
- * $Id: CRational.cpp,v 1.7 2015/12/19 15:03:01 jullien Exp $
+ * $Id: CRational.cpp,v 1.8 2017/01/28 06:37:39 jullien Exp $
  */
 
 #include <string.h>

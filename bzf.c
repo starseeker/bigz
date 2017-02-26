@@ -1,10 +1,10 @@
 /*
- * $Id: bzf.c,v 1.10 2016/05/11 04:54:46 jullien Exp $
+ * $Id: bzf.c,v 1.11 2017/01/28 06:53:14 jullien Exp $
  */
 
 /*
  * Copyright (c) 1988-1989, Digital Equipment Corporation & INRIA.
- * Copyright (c) 1992-2016, Eligis
+ * Copyright (c) 1992-2017, Eligis
  * All rights reserved.
  *
  * Redistribution and  use in  source and binary  forms, with  or without
@@ -34,7 +34,7 @@
  *      bzf.c :  Miscellaneous functions built on top of BigZ.
  */
 
-extern  BigZ    BzFactorial(BigZ z);
+extern BigZ BzFactorial(BigZ z);
 
 BigZ
 BzFactorial(BigZ z)

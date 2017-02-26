@@ -29,7 +29,7 @@
  */
 
 /*
- * $Id: CBignum.cpp,v 1.24 2017/02/07 14:09:55 jullien Exp $
+ * $Id: CBignum.cpp,v 1.25 2017/01/28 06:37:38 jullien Exp $
  */
 
 #include <string.h>

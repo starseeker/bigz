@@ -1,5 +1,5 @@
 #
-# Autoconf script for OpenLisp.
+# Autoconf script for bigz.
 # By Christian Jullien (jullien@eligis.com)
 # $Id: configure.ac,v 1.2 2016/05/05 07:44:16 jullien Exp $
 #
@@ -20,6 +20,8 @@ AC_CONFIG_HEADER(./config.h)
 # make sure we are using a recent autoconf version
 
 AC_PREREQ(2.63)
+
+AC_CONFIG_MACRO_DIR([m4])
 
 NAME=bignum
 VERSION=`grep VERSION bigz.h | sed -e "s/.*\"\(.*\)\"/\1/g"`
@@ -47,15 +49,10 @@ then
    NOCXX=""
    AC_MSG_RESULT(yes)
    AC_PROG_CXX
-   AC_LANG(C++)
-   AX_CHECK_COMPILE_FLAG([-std=c++14], [
-                           CXXFLAGS="$CXXFLAGS -std=c++14"])
-   if test x"$ax_cv_check_cxxflags___std_cpp14" = x"no"
-   then
-     AX_CHECK_COMPILE_FLAG([-std=c++11], [
-                             CXXFLAGS="$CXXFLAGS -std=c++11"])
-   fi
-   AC_LANG(C)
+   AC_LANG([C])
+   AC_LANG([C++])
+   AX_CXX_COMPILE_STDCXX(11, noext, optional)
+   AC_LANG([C])
 else
    NOCXX="# "
    AC_MSG_RESULT(no)

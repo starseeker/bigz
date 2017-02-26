@@ -186,6 +186,7 @@ MASTER		= \
 		pdf/RR-1016.pdf		      \
 		pdf/RR-1016.ps		      \
 	        m4/ax_check_compile_flag.m4   \
+		m4/ax_cxx_compile_stdcxx.m4   \
 		Makefile.in		      \
 		makefile.clang		      \
 		makefile.gnu		      \

@@ -29,7 +29,7 @@
  */
 
 /*
- * $Id: tCBignum.cpp,v 1.44 2016/05/08 06:40:29 jullien Exp $
+ * $Id: tCBignum.cpp,v 1.45 2017/01/28 06:37:39 jullien Exp $
  */
 
 #include <stdio.h>
