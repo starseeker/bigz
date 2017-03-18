@@ -108,14 +108,6 @@ class CBignum {
     // steal m_bz from rhs
     rhs.m_bz = 0;
   }
-
-  /**
-   * user-defined integer literals.
-   * @param [in] init initial litteral CBignum string.
-   */
-  friend CBignum operator""_bn(const char* init, size_t) {
-    return CBignum(init);
-  }
 #endif
 
   /**
@@ -812,4 +804,22 @@ BN_BIN_OP(>>)
 BN_BIN_OP(<<)
 
 } /* namespace bignum */
+
+#if defined(BN_CPP11)
+/**
+ * user-defined integer literals from string.
+ * @param [in] init initial litteral string that represent a CBignum.
+ */
+static inline bignum::CBignum operator"" _bn(const char* init, size_t) {
+  return bignum::CBignum(init);
+}
+
+/**
+ * user-defined integer literals from unsigned long.
+ * @param [in] init initial litteral string that represent a CBignum.
+ */
+static inline bignum::CBignum operator"" _bn(unsigned long long init) {
+  return bignum::CBignum(init);
+}
+#endif
 #endif  /* __CBIGNUM_H */
