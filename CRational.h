@@ -1,5 +1,5 @@
 //
-// $Id: CRational.h,v 1.34 2017/03/05 06:19:59 jullien Exp $
+// $Id: CRational.h,v 1.35 2017/03/19 16:05:16 jullien Exp $
 //
 
 /*
@@ -38,7 +38,7 @@
 #if     !defined(__CRATIONAL_H)
 #define __CRATIONAL_H
 
-#if __cplusplus >= 201103L
+#if !defined(BN_CPP11) && (__cplusplus >= 201103L)
 #define BN_CPP11
 #endif
 
@@ -80,7 +80,7 @@ class CRational {
   explicit CRational(const char* s)
     : m_q(BqFromString(static_cast<const BzChar *>(s), 10)) {
   }
-#if     defined(HAVE_BQ_FROM_DOUBLE)
+#if defined(HAVE_BQ_FROM_DOUBLE)
   explicit CRational(double n)
     : m_q(BqFromDouble(n)) {
   }
@@ -235,4 +235,30 @@ CRational::operator--() {
   return *this;
 }
 } /* namespace rational */
+#if defined(BN_CPP11)
+/**
+ * user-defined rational literals from string.
+ * @param [in] init initial litteral string that represent a CRational.
+ */
+static inline rational::CRational operator"" _br(const char* init, size_t) {
+  return rational::CRational(init);
+}
+
+/**
+ * user-defined rational literals from unsigned long.
+ * @param [in] init initial litteral string that represent a CRational.
+ */
+static inline rational::CRational operator"" _br(unsigned long long init) {
+  return rational::CRational(init);
+}
+#if defined(HAVE_BQ_FROM_DOUBLE)
+/**
+ * user-defined rational literals from double.
+ * @param [in] init initial litteral string that represent a CRational.
+ */
+static inline rational::CRational operator"" _br(long double init) {
+  return rational::CRational(init);
+}
+#endif
+#endif
 #endif  /* __CRATIONAL_H */

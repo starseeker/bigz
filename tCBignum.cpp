@@ -29,7 +29,7 @@
  */
 
 /*
- * $Id: tCBignum.cpp,v 1.45 2017/01/28 06:37:39 jullien Exp $
+ * $Id: tCBignum.cpp,v 1.47 2017/03/19 16:05:16 jullien Exp $
  */
 
 #include <stdio.h>
@@ -255,10 +255,8 @@ main()
     CBignum x4(-333);           /* -333                         */
 
 #if defined(BN_CPP11)
-//    std::cout << "0x100"_bn << std::endl;
-    //  std::cout << 0100_bn << std::endl;
-    std::cout << "100"_bn << std::endl;
     std::cout << 200_bn << std::endl;
+    std::cout << "-2000000000000000000000000000000000000000000"_bn << std::endl;
 
     unsigned int seed = 0;
     std::cout << CBignum(1000, &seed) << std::endl;

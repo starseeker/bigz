@@ -1,5 +1,5 @@
 //
-// $Id: CBignum.h,v 1.55 2017/01/28 06:37:38 jullien Exp $
+// $Id: CBignum.h,v 1.56 2017/03/18 07:01:31 jullien Exp $
 //
 
 /*
@@ -38,7 +38,7 @@
 #if     !defined(__CBIGNUM_H)
 #define __CBIGNUM_H
 
-#if (__cplusplus >= 201103L) || (defined(_MSC_VER) && (_MSC_VER >= 1800))
+#if !defined(BN_CPP11) && (__cplusplus >= 201103L)
 #define BN_CPP11
 #endif
 
@@ -47,6 +47,9 @@
 #include <string>
 #include <utility>
 #include <stdexcept>
+#if defined(BN_CPP11)
+#include <type_traits>
+#endif
 #include "bigz.h"
 
 namespace rational {
@@ -75,9 +78,15 @@ class CBignum {
    */
   template<typename T>
   CBignum(T init)
+#if defined(BN_CPP11)
+          : m_bz(std::is_signed<T>::value
+           ? BzFromInteger(static_cast<BzInt>(init))
+           : BzFromUnsignedInteger(static_cast<BzUInt>(init))) {
+#else
     : m_bz(signedType<T>(init)
            ? BzFromInteger(static_cast<BzInt>(init))
            : BzFromUnsignedInteger(static_cast<BzUInt>(init))) {
+#endif
   }
   /**
    * Constructs a randomly generated positive CBignum with the specified
