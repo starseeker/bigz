@@ -64,6 +64,11 @@
 extern  "C"     {
 #endif
 
+#if     defined(BN_EXPERIMENTAL_128BIT)
+#define BN_NUM_DIGIT_TYPE
+typedef __uint128_t             BigNumDigit;
+#endif
+
 /*
  *      Internal digit type.
  */
@@ -100,7 +105,11 @@ typedef unsigned long           BigNumDigit;
 
 typedef BigNumDigit *   BigNum;         /* A big number is a digit pointer */
 typedef BigNumDigit     BigNumProduct;  /* The product of two digits       */
+#if     defined(BN_EXPERIMENTAL_128BITX)
+typedef __uint128_t     BigNumLength;   /* The length of a bignum          */
+#else
 typedef unsigned int    BigNumLength;   /* The length of a bignum          */
+#endif
 
 typedef enum    {
         BN_FALSE   = 0,

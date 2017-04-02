@@ -315,7 +315,12 @@ BzCreate(BigNumLength Size) {
         BigZ    z;
         size_t  chunk;
 
-        chunk = sizeof(BigZHeader) + Size * sizeof(BigNumDigit);
+        /*
+         * Compute BigZ allocation size taking care of aligment.
+         */
+        chunk = sizeof(struct BigZStruct)
+              - (BZ_DUMMY_SIZE * sizeof(BigNumDigit))
+              + (Size * sizeof(BigNumDigit));
 
         if ((z = (BigZ)(BzAlloc(chunk))) != BZNULL) {
                 /*

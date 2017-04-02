@@ -106,7 +106,7 @@ struct BigZStruct {
          * Digit vector should be the last field to allow allocation
          * of the real size (BZ_DUMMY_SIZE is never used).
          */
-        BigNumDigit       Digits[ BZ_DUMMY_SIZE ];
+        BigNumDigit Digits[BZ_DUMMY_SIZE];
 };
 
 typedef struct BigZStruct * __BigZ;
@@ -126,6 +126,18 @@ typedef __BigZ                          BigZ;
 #define BZ_CHAR_TYPE
 typedef char                            BzChar;
 #endif
+
+#if     defined(BZ_EXPERIMENTAL_128BIT)
+/*
+ * No really need to use those types. The most important thing to have is
+ * bucket size of 128bit as provided by BN_EXPERIMENTAL_128BIT.
+ */
+#define BZ_INT_TYPE
+typedef __int128_t                      BzInt;
+#define BZ_UINT_TYPE
+typedef __uint128_t                     BzUInt;
+#endif
+
 
 #if     !defined(BZ_INT_TYPE)
 #define BZ_INT_TYPE
