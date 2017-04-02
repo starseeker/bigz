@@ -257,12 +257,27 @@ main()
 #if defined(BN_CPP11)
     std::cout << 200_bn << std::endl;
     std::cout << "-2000000000000000000000000000000000000000000"_bn << std::endl;
-
-    unsigned int seed = 0;
-    std::cout << CBignum(1000, &seed) << std::endl;
-    std::cout << CBignum(1000, &seed) << std::endl;
-    std::cout << CBignum(1000, &seed) << std::endl;
 #endif
+
+    {
+      unsigned int seed = 0;
+      {
+       CBignum e("4293477470364796637605348376907280527179390514708751899648");
+       CBignum r(196, &seed);
+       if (e != r) {
+        std::cout << "Bad random number at line: " << __LINE__ << std::endl;
+        std::cout << r << std::endl;
+       }
+      }
+      {
+       CBignum e("43916836036880674428149376504745447042525179885274067597382");
+       CBignum r(196, &seed);
+       if (e != r) {
+        std::cout << "Bad random number at line: " << __LINE__ << std::endl;
+        std::cout << r << std::endl;
+       }
+     }
+    }
 
     CRational r1("0123456789/333");
 

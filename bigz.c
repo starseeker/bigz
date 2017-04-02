@@ -2439,7 +2439,7 @@ BzRandom(const BigZ n, BzSeed *seed) {
                 BigNumLength j;
                 BigNumDigit  *d = BzToBn(r) + i;
 
-                for (j = 0; j < (BigNumLength)sizeof(d); ++j) {
+                for (j = 0; j < (BigNumLength)sizeof(BigNumDigit); ++j) {
                         BigNumDigit chunk = (BzInternalRandom(seed) & 0xff);
                         *d += (chunk << (j * BN_BYTE_SIZE));
                 }
