@@ -1192,6 +1192,7 @@ main(int argc, char **argv)
         TestEnv realenv, *e = &realenv;
         int     i, j, nbtest, SizeAllTest;
 
+#if     !defined(BN_EXPERIMENTAL_128BIT)
         int digit_size = (int)sizeof(BigNumDigit);
         int word_size  = (int)sizeof(int *);
 
@@ -1203,6 +1204,7 @@ main(int argc, char **argv)
                         "Verify BnnDoesDigitFitInWord and BnnDivideDigit\n");
                 exit( 0 );
         }
+#endif
 
         printf("sizeof(BigNumDigit) == %d\n", (int)sizeof(BigNumDigit));
 

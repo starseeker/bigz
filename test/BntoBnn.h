@@ -36,7 +36,11 @@
 
                 /* old types of Bn */
 
+#if     defined(BN_EXPERIMENTAL_128BIT)
+typedef __uint128_t     BigNumType;     /* A BigNum's type */
+#else
 typedef unsigned int    BigNumType;     /* A BigNum's type */
+#endif
 
 struct BigNumHeader                     /* The header of a BigNum */
 {
