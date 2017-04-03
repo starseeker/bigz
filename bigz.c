@@ -32,7 +32,7 @@
  *      bigz.c : provides an implementation of "unlimited-precision"
  *               arithmetic for signed integers.
  *
- *      $Id: bigz.c,v 1.140 2017/01/28 06:37:39 jullien Exp $
+ *      $Id: bigz.c,v 1.144 2017/04/03 04:45:40 jullien Exp $
  */
 
 /*
@@ -49,6 +49,9 @@
 #endif
 
 #include <stdlib.h>
+#if     defined(_WIN64) || defined(HAVE_STDINT_H)
+#include <stdint.h>
+#endif
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -2394,8 +2397,17 @@ BzGcd(const BigZ y, const BigZ z) {
 
 static BigNumDigit BzInternalRandom(BzSeed *seed);
 
+#if     defined(_WIN64) || defined(HAVE_STDINT_H)
+typedef uint32_t BzUInt32;
+#else
+typedef unsigned int BzUInt32;
+#endif
+
 static BigNumDigit
 BzInternalRandom(BzSeed *seed) {
+        BzUInt32 s;
+
+
         if (seed == (BzSeed *)0) {
                 /*
                  * Should not happen. Returns 0 instead of hanging.
@@ -2412,8 +2424,11 @@ BzInternalRandom(BzSeed *seed) {
          * (32768 is multiple of 4, and 1103515244 too)
          */
 
-        *seed = *seed * 1103515245 + 12345;
-        return (((BigNumDigit)*seed) / 65536) % 32768;
+        s = *seed;
+
+        *seed = (BzSeed)(s * 1103515245 + 12345);
+
+        return (BigNumDigit)(((BzUInt32)*seed / 65536) % 32768);
 }
 
 BigZ
@@ -2422,6 +2437,7 @@ BzRandom(const BigZ n, BzSeed *seed) {
         BigZ r;
         BigNumLength len;
         BigNumLength i;
+        BigNumLength bytes;
 
         /*
          * Algo: make a copy of n and call BzInternalRandom() to replace all
@@ -2433,15 +2449,23 @@ BzRandom(const BigZ n, BzSeed *seed) {
                 return (BZNULL);
         }
 
-        len = BzGetSize(n);
+        len = BzLength(n);
+        bytes = len / BN_BYTE_SIZE;
 
-        for (i = 0; i < len; ++i) {
+        if (len % BN_BYTE_SIZE) {
+                ++bytes;
+        }
+
+        for (i = 0; bytes > 0; ++i) {
                 BigNumLength j;
                 BigNumDigit  *d = BzToBn(r) + i;
 
-                for (j = 0; j < (BigNumLength)sizeof(BigNumDigit); ++j) {
+                for (j = 0;
+                     bytes > 0 && j < (BigNumLength)sizeof(BigNumDigit);
+                     ++j) {
                         BigNumDigit chunk = (BzInternalRandom(seed) & 0xff);
                         *d += (chunk << (j * BN_BYTE_SIZE));
+                        --bytes;
                 }
         }
 

@@ -29,7 +29,7 @@
  */
 
 /*
- * $Id: tCBignum.cpp,v 1.47 2017/03/19 16:05:16 jullien Exp $
+ * $Id: tCBignum.cpp,v 1.49 2017/04/02 16:44:45 jullien Exp $
  */
 
 #include <stdio.h>
@@ -269,14 +269,16 @@ main()
         std::cout << r << std::endl;
        }
       }
+#if 1
       {
-       CBignum e("43916836036880674428149376504745447042525179885274067597382");
+       CBignum e("33170393148165351999300431415612879831503576205081336087581");
        CBignum r(196, &seed);
        if (e != r) {
         std::cout << "Bad random number at line: " << __LINE__ << std::endl;
         std::cout << r << std::endl;
        }
      }
+#endif
     }
 
     CRational r1("0123456789/333");
