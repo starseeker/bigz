@@ -1,0 +1,195 @@
+
+                                README
+              for the source code accompanying the work
+
+                        Classroom Examples of
+            Robustness Problems in Geometric Computations
+                                  by
+              Lutz Kettner, Kurt Mehlhorn, Sylvain Pion,
+                     Stefan Schirra, and Chee Yap
+
+         <http://www.mpi-sb.mpg.de/~kettner/proj/NonRobust/>
+
+
+The source code contains the working implementation of the incremental
+convex hull algorithm, the Jarvis wrap convex hull algorithm, the
+delaunay triangulation programs described in the paper and auxiliary
+programs that help in manipulating the data sets and to create the
+images used in the paper.
+
+
+License
+-------
+Copyright 2003, 2004, 2006 Lutz Kettner, Max-Planck-Institute 
+fuer Informatik, Saarbruecken (Germany).
+Distributed under the Boost Software License, Version 1.0. (See accompanying 
+file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+
+The Files
+---------
+README               This file.
+
+LICENSE_1_0.txt      Boost Software License text.
+
+Makefile             Makefile for building program targets that are independent
+                     of the CGAL and LEDA libraries. 
+                     Additional targets: all, clean, depend
+
+Makefile_CGAL        Makefile for building all program targets, those that are
+                     dependent on the CGAL and LEDA libraries and those that
+                     are not. Additional targets: all, clean, depend
+
+Makefile_depend      File dependency rules for make. 
+
+Experiments.txt      A description of how to run the experiments that are
+                     described in the paper.
+
+ieee_double.h        Helper functions for IEEE double.
+ieee_double.C        Test program for these helper functions.
+
+add_mantissa.C       Program to add an integer to the mantissa of a double, 
+                     which allows the manipulation of double's in small exact 
+                     increments.
+
+points2bin.C         Program to convert ASCII input files of 2d point data
+                     into little-endian binary files.
+
+bin2points.C         Program to convert binary input files of 2d point data
+                     into ASCII files.
+
+circular_list.h      STL based implementation of a circular list (very limited,
+                     just complete enough for the convex hull algorithm)
+
+points.h             2d points, predicates, file IO support
+
+cgal_leda_support.h  CGAL and LEDA support for exact computation, checking,
+                     and visualization on screen and in PostScript files.
+
+incr_convex_hull.h   Incremental convex hull algorithm.
+
+incr_convex_hull.C   Program for the incremental convex hull algorithm
+                     that reads a sequence of points and writes the sequence
+                     of convex hull points. Provides some optional trace
+                     informations to follow the algorithms progress.
+
+gift_wrapping_hull.h Gift wrapping convex hull algorithm.
+
+gift_wrapping_hull.C Program for the incremental convex hull algorithm
+                     that reads a sequence of points and writes the sequence
+                     of convex hull points. Provides some optional trace
+                     informations to follow the algorithms progress.
+
+incr_convex_hull_vis.C
+gift_wrapping_hull_vis.C
+                     CGAL and LEDA based versions of the incremental and the
+                     gift wrapping algorithm that check correctness of results
+                     and visualize the result on screen or in PostScript file
+                     output.
+
+delaunay_loop.C      Program for point location near an internal edge of a
+                     small 3d Delaunay triangulation in CGAL.
+
+ppm_image.h          Class to represent, manipulate, load and save ppm 
+                     (portable pixmap file format) images supported by the
+                     tools of Jef Poskanzer and many tools.
+
+fp_scope.C           Program that shows the result of the floating-point (fp)
+                     orientation test around a small neighborhood of one point
+                     visualized as a ppm-image of the 2D grid of floating
+                     point (double) numbers. 
+                        This is a stripped down version of fp_scope_ext.C 
+                     (which is for expert use only). This program can serve 
+                     as starting point in class to repeat our visualization 
+                     experiments. This program is on purpose short and very
+                     easy to allow quick understanding and then changes and
+                     further experiments.
+
+fp_scope_off.C       Program that shows the result of the floating-point (fp)
+                     orientation test around a small neighborhood of one point
+                     visualized as an OFF 3d mesh file of the 2D grid of
+                     floating point (double) numbers. Writes an fp_mesh.off
+                     file that can be viewed with geomview, see
+                     http://www.geomview.org/, or can be converted into
+                     other common formats with tools in the CGAL distribution
+                     in the examples/Polyhedron_IO/ directory.
+                         This program can serve as starting point in class 
+                     to do more and other types of visualization experiments.
+                     This program is also short and allows quick understanding.
+
+fp_scope_ext.C       Program that hows the result of the floating-point (fp) 
+                     orientation test (or some combination of several of those
+                     tests) around a small neighborhood of one point visualized
+                     as a ppm-image of the 2D grid of floating point (double)
+                     numbers.  Main program for visualization and experimental
+                     research, based on CGAL.
+                        Note: Expert use only. This program was used to explore
+                     many examples and options. It is highly modularized and 
+                     factored into components, and, besides the usage help 
+                     text, not much documented. It is not intended as primary
+                     class material. However, we include it here for the 
+                     interested users that want to explore more images or to
+                     study in detail how we did our experiments.
+
+
+Installation
+------------
+
+Several programs are independent of any external library and can be just 
+compiled with the accompanying Makefile. Some programs depend on CGAL
+(and then maybe also on GMP or LEDA) as external library. For them, a
+Makefile_CGAL is provided. The dependent programs are:
+
+
+  - incr_convex_hull_vis   CGAL and LEDA for exact computing and visualization
+  - gift_wrapping_hull_vis
+
+  - delaunay_loop          CGAL for the 3d Delaunay triangulation.
+
+  - fp_scope_ext           CGAL for some support, GMP or LEDA for exact
+                           number type
+
+We list the external libraries with web addresses and tested version numbers.
+Other version might work as well but have not been tested. All programs have
+been tested on Linux with g++ version 3.3.2.
+
+  - CGAL 3.0,   see <http://www.cgal.org>
+  - LEDA 4.4.1  see <http://www.algorithmic-solutions.com/enleda.htm>
+  - GMP  4.1.3  see <http://swox.com/gmp/>
+
+After unpacking the tar archive, the ./src/ directory contains these files.
+Either of the two makefiles, Makefile or Makefile_CGAL can be used to 
+build all programs, either for all programs independent of external libraries 
+or all programs including those dependent on CGAL etc., respectively.
+For the latter case, either the environment variable CGAL_MAKEFILE should
+be set properly (following common CGAL installation guidelines) or the makefile
+Makefile_CGAL needs to be edited in its first lines.
+
+The following make targets are supported:
+
+  - all         builds all programs
+
+  - depend      generates a new Makefile_depend, useful after editing sources
+
+  - <program>   each program name is a separate target
+
+  - clean       removes all built programs and intermediate files
+
+
+Program Usage
+-------------
+
+All programs understand the -h option to print a small usage help
+message explaining supported options, etc.. ieee_double.C is just a
+test and does not support any parameters.
+
+Read the paper.
+
+Read and run the experiments described in Experiments.txt.
+
+Read the documented source code to understand details.
+
+Check <http://www.mpi-sb.mpg.de/~kettner/proj/NonRobust/> for the 
+data sets and more.
+
+

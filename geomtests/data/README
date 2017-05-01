@@ -1,0 +1,81 @@
+
+                                README
+               for the data sets accompanying the work
+
+                        Classroom Examples of
+            Robustness Problems in Geometric Computations
+                                  by
+              Lutz Kettner, Kurt Mehlhorn, Sylvain Pion,
+                     Stefan Schirra, and Chee Yap
+
+         <http://www.mpi-sb.mpg.de/~kettner/proj/NonRobust/>
+
+
+This directory contains the data sets provided to repeat the experiments
+with the programs in the ../src/ directory described in detail in the
+../src/Experiments.txt file.
+
+
+License for the data sets in this directory
+-------------------------------------------
+
+Copyright 2003, 2004, 2006 Lutz Kettner, Max-Planck-Institute 
+fuer Informatik, Saarbruecken (Germany).
+
+Copyright 2003, 2004 Stefan Schirra, Faculty of Computer Science,  
+University of Magdeburg, Magdeburg (Germany).
+
+Permission is hereby granted, free of charge, to any person or organization 
+obtaining a copy of the data and accompanying documentation (the "Files") 
+to use, reproduce, display, distribute, execute, and transmit the Files, 
+and to prepare derivative works of the Files, and to permit third-parties 
+to whom the Files are furnished to do so.
+
+THE FILES ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO EVENT
+SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE FILES BE LIABLE
+FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE FILES OR THE USE OR OTHER
+DEALINGS IN THE FILES.
+
+
+File Formats
+------------
+
+All data files are offered in human readable ASCII (.txt suffix) and in
+binary format (.bin suffix). All programs are able to read both formats.
+Two small helper programs, points2bin and bin2points, are able to
+convert between the two formats.
+
+ASCII Format:
+
+Points are stored as pairs of doubles, first the x- and then the y-coordinate, 
+with 18 digits precision separated by white spaces. A file is read until
+the end-of-file (EOF) condition holds.
+
+Binary Format:
+
+The file starts with an 8 byte magic header to identify it as a binary file
+and to make it automatically detectable for the file parser whether to 
+read a file as ASCII or as binary data. The magic header string is in 
+C string notation: "BINARY\nB". It needs to be written and read in 
+binary file IO mode, otherwise the "\n" might be converted and the 
+binary format will be corrupted (and an error message will be printed
+when attempting to read the file).
+
+After the header string, points are stored as pairs of doubles, first the 
+x- and then the y-coordinate, in 8 byte binary representation in
+little-endian format (Intel processors are little endian). The supporting
+function in the src directory automatically detect the endianness of the
+current machine and convert the data automatically if necessary.
+A file is read until the end-of-file (EOF) condition holds.
+
+The Files
+---------
+README               This file.
+
+vis_fp_pts_*.txt     Data sets for use with the fp_scope* programs
+fail_incr_*.txt      Data sets for use with the incr_convex_hull* programs
+fail_gift_wrap_*.txt Data sets for use with the gift_wrapping_hull* programs
+

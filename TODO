@@ -1,0 +1,40 @@
+
+TODO - need to determine requirements.  Good start would be to take the
+examples from here:
+
+https://web-beta.archive.org/web/20090808184952/http://www.mpi-inf.mpg.de/departments/d1/ClassroomExamples/
+
+(mirrored in repo under geomtests directory)
+
+and set them up to 1) confirm the floating point calculation problems are
+reproducible and 2) test each library's ability to set up calculations that
+*do* provide the correct answers.  Need to read more papers on the necessary
+techniques and their applications...  snap rounding, for example, sounds
+interesting but may not be enough... can we fall back on arbitrary precision
+only in those (hopefully rare) cases when nothing else will suffice?  However,
+the whole point of this is to robustly solve such problems, so that's the sort
+of test case needed...
+
+
+
+Candidate libraries to check out (besides bigz...)
+
+Criteria are: C/C++, liberal license, (reasonably) small and self contained,
+portable without massive headaches in the build system and/or code.
+
+Fast is nice, but convenience is more important - if performance looks
+necessary later for real-world cases, it will then become the responsibility of
+the OS to provide something like GMP/MPFR.  Accuracy is of course a must.
+
+
+https://github.com/wbhart/bsdnt
+
+http://crd-legacy.lbl.gov/~dhbailey/mpdist/ (specifically ARPREC)
+
+http://www.ttmath.org/
+
+https://github.com/sercantutar/infint (license workable (MPL2) but not ideal...)
+
+https://github.com/fredrik-johansson/arb (license *may* be workable (LGPL2) now that they've switched from GPL... - this one looks relatively complicated, but is also being actively maintained...)
+
+http://www.di-mgt.com.au/bigdigits.html (license workable (MPL2) but not ideal...)

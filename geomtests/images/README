@@ -1,0 +1,45 @@
+
+                                README
+                 for the images accompanying the work
+
+                        Classroom Examples of
+            Robustness Problems in Geometric Computations
+                                  by
+              Lutz Kettner, Kurt Mehlhorn, Sylvain Pion,
+                     Stefan Schirra, and Chee Yap
+
+         <http://www.mpi-sb.mpg.de/~kettner/proj/NonRobust/>
+
+
+This directory contains the images in PNG format resulting from the
+experiments done with the ../src/fp_scope_ext program as explained in 
+the ../src/Experiments.txt file. 
+
+
+License for the images in this directory
+----------------------------------------
+
+Copyright 2003, 2004, 2006 Lutz Kettner, Max-Planck-Institute 
+fuer Informatik, Saarbruecken (Germany).
+
+Permission is hereby granted, free of charge, to any person or organization 
+obtaining a copy of the data and accompanying documentation (the "Files") 
+to use, reproduce, display, distribute, execute, and transmit the Files, 
+and to prepare derivative works of the Files, and to permit third-parties 
+to whom the Files are furnished to do so.
+
+THE FILES ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO EVENT
+SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE FILES BE LIABLE
+FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE FILES OR THE USE OR OTHER
+DEALINGS IN THE FILES.
+
+The Files
+---------
+README           This file.
+
+fig*.png         Images numbered according to the corresponding journal paper
+fign*.png        New images that were not used in the corresponding paper
+

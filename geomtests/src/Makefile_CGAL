@@ -1,0 +1,172 @@
+# Copyright 2003, 2004, 2006 Lutz Kettner, Max-Planck-Institute 
+# fuer Informatik, Saarbruecken (Germany).
+# Distributed under the Boost Software License, Version 1.0. (See accompany-
+# ing file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#
+# This file is part of 'Classroom Examples of Robustness Problems in Geometric
+# Computations', <http://www.mpi-sb.mpg.de/~kettner/proj/NonRobust/>.
+#
+# Makefile_CGAL
+# Important targets: all, depend, clean, images, and all in $(TARGETS)
+
+#---------------------------------------------------------------------#
+#                    include platform specific settings
+#---------------------------------------------------------------------#
+# Choose the right include file from the <cgalroot>/make directory.
+
+# CGAL_MAKEFILE = ENTER_YOUR_INCLUDE_MAKEFILE_HERE
+include $(CGAL_MAKEFILE)
+
+#---------------------------------------------------------------------#
+#                    compiler flags
+#---------------------------------------------------------------------#
+
+CXXFLAGS = -I. \
+           $(CGAL_CXXFLAGS) \
+           $(DEBUG_OPT)  # don't use optimizations, they may change 
+                         # the intended IEEE double behavior
+
+#---------------------------------------------------------------------#
+#                    linker flags
+#---------------------------------------------------------------------#
+
+LIBPATH = \
+          $(CGAL_WINDOW_LIBPATH)
+#          $(CGAL_LIBPATH)
+
+LDFLAGS = \
+          $(CGAL_WINDOW_LDFLAGS)
+#          $(CGAL_LDFLAGS)
+
+#---------------------------------------------------------------------#
+#                    target entries
+#---------------------------------------------------------------------#
+TARGETS =       add_mantissa 			\
+		points2bin			\
+		bin2points			\
+                incr_convex_hull 		\
+                incr_convex_hull_vis 		\
+                gift_wrapping_hull 		\
+                gift_wrapping_hull_vis 		\
+		fp_scope			\
+		fp_scope_off			\
+		fp_scope_ext			\
+                ieee_double			\
+		delaunay_loop
+
+DEPENDSRC = 	add_mantissa.C 			\
+		points2bin.C			\
+		bin2points.C			\
+                incr_convex_hull.C 		\
+                incr_convex_hull_vis.C 		\
+                gift_wrapping_hull.C	 	\
+                gift_wrapping_hull_vis.C 	\
+		fp_scope.C			\
+		fp_scope_off.C			\
+		fp_scope_ext.C			\
+                ieee_double.C			\
+		delaunay_loop.C
+
+
+all: $(TARGETS)
+
+
+include Makefile_depend
+
+depend: $(DEPENDSRC)
+	$(CGAL_CXX) -MM -I. $(CXXFLAGS) $(DEPENDSRC) | sed 's/[^ ]*[/]CGAL[/]include[^ ]* *//g'  | sed 's/[^ ]*[/]LEDA[/]incl[^ ]* *//g'  | sed 's/[^ ]*[/]gmp[/]include[^ ]* *//g' | grep -v '^ *[\\] *$$' > Makefile_depend
+
+
+add_mantissa$(EXE_EXT): add_mantissa$(OBJ_EXT)
+	$(CGAL_CXX) $(LIBPATH) $(EXE_OPT)add_mantissa add_mantissa$(OBJ_EXT) $(LDFLAGS)
+
+points2bin$(EXE_EXT): points2bin$(OBJ_EXT)
+	$(CGAL_CXX) $(LIBPATH) $(EXE_OPT)points2bin points2bin$(OBJ_EXT) $(LDFLAGS)
+
+bin2points$(EXE_EXT): bin2points$(OBJ_EXT)
+	$(CGAL_CXX) $(LIBPATH) $(EXE_OPT)bin2points bin2points$(OBJ_EXT) $(LDFLAGS)
+
+incr_convex_hull$(EXE_EXT): incr_convex_hull$(OBJ_EXT)
+	$(CGAL_CXX) $(LIBPATH) $(EXE_OPT)incr_convex_hull incr_convex_hull$(OBJ_EXT) $(LDFLAGS)
+
+incr_convex_hull_vis$(EXE_EXT): incr_convex_hull_vis$(OBJ_EXT)
+	$(CGAL_CXX) $(LIBPATH) $(EXE_OPT)incr_convex_hull_vis incr_convex_hull_vis$(OBJ_EXT) $(LDFLAGS)
+
+gift_wrapping_hull$(EXE_EXT): gift_wrapping_hull$(OBJ_EXT)
+	$(CGAL_CXX) $(LIBPATH) $(EXE_OPT)gift_wrapping_hull gift_wrapping_hull$(OBJ_EXT) $(LDFLAGS)
+
+gift_wrapping_hull_vis$(EXE_EXT): gift_wrapping_hull_vis$(OBJ_EXT)
+	$(CGAL_CXX) $(LIBPATH) $(EXE_OPT)gift_wrapping_hull_vis gift_wrapping_hull_vis$(OBJ_EXT) $(LDFLAGS)
+
+fp_scope$(EXE_EXT): fp_scope$(OBJ_EXT)
+	$(CGAL_CXX) $(LIBPATH) $(EXE_OPT)fp_scope fp_scope$(OBJ_EXT) $(LDFLAGS)
+
+fp_scope_off$(EXE_EXT): fp_scope_off$(OBJ_EXT)
+	$(CGAL_CXX) $(LIBPATH) $(EXE_OPT)fp_scope_off fp_scope_off$(OBJ_EXT) $(LDFLAGS)
+
+fp_scope_ext$(EXE_EXT): fp_scope_ext$(OBJ_EXT)
+	$(CGAL_CXX) $(LIBPATH) $(EXE_OPT)fp_scope_ext fp_scope_ext$(OBJ_EXT) $(LDFLAGS)
+
+ieee_double$(EXE_EXT): ieee_double$(OBJ_EXT)
+	$(CGAL_CXX) $(LIBPATH) $(EXE_OPT)ieee_double ieee_double$(OBJ_EXT) $(LDFLAGS)
+
+delaunay_loop$(EXE_EXT): delaunay_loop$(OBJ_EXT)
+	$(CGAL_CXX) $(LIBPATH) $(EXE_OPT)delaunay_loop delaunay_loop$(OBJ_EXT) $(LDFLAGS)
+
+clean:		add_mantissa.clean		\
+		points2bin.clean		\
+		bin2points.clean		\
+		incr_convex_hull.clean		\
+		incr_convex_hull_vis.clean	\
+		gift_wrapping_hull.clean	\
+		gift_wrapping_hull_vis.clean	\
+		fp_scope.clean			\
+		fp_scope_off.clean		\
+		fp_scope_ext.clean		\
+		ieee_double.clean		\
+		delaunay_loop.clean
+
+
+#---------------------------------------------------------------------#
+#                    suffix rules
+#---------------------------------------------------------------------#
+
+.C$(OBJ_EXT):
+	$(CGAL_CXX) $(CXXFLAGS) $(OBJ_OPT) $<
+
+.cpp$(OBJ_EXT):
+	$(CGAL_CXX) $(CXXFLAGS) $(OBJ_OPT) $<
+
+
+#---------------------------------------------------------------------#
+#                    images from fp_scope_ext used in paper
+#---------------------------------------------------------------------#
+
+# Customize these variables to your setting of directories
+SRCDIR=.
+DATDIR=../data
+IMGDIR=../images
+TOPNG=pnmtopng
+
+images: fp_scope_ext
+	$(SRCDIR)/fp_scope_ext -exact $(DATDIR)/vis_fp_pts_1.bin -o - | $(TOPNG) > $(IMGDIR)/fig2a.png
+	$(SRCDIR)/fp_scope_ext -exact $(DATDIR)/vis_fp_pts_2.bin -o - | $(TOPNG) > $(IMGDIR)/fig2b.png
+	$(SRCDIR)/fp_scope_ext -exact $(DATDIR)/vis_fp_pts_3.bin -o - | $(TOPNG) > $(IMGDIR)/fig2c.png
+	$(SRCDIR)/fp_scope_ext -pivot p -exact $(DATDIR)/vis_fp_pts_2.bin -o - | $(TOPNG) > $(IMGDIR)/fig3_p.png
+	$(SRCDIR)/fp_scope_ext -pivot q -exact $(DATDIR)/vis_fp_pts_2.bin -o - | $(TOPNG) > $(IMGDIR)/fig3_q.png
+	$(SRCDIR)/fp_scope_ext -pivot r -exact $(DATDIR)/vis_fp_pts_2.bin -o - | $(TOPNG) > $(IMGDIR)/fig3_r.png
+	$(SRCDIR)/fp_scope_ext -ext  -exact $(DATDIR)/vis_fp_pts_2.bin -o - | $(TOPNG) > $(IMGDIR)/fig4a.png
+	$(SRCDIR)/fp_scope_ext -extm -exact $(DATDIR)/vis_fp_pts_2.bin -o - | $(TOPNG) > $(IMGDIR)/fig4b.png
+	$(SRCDIR)/fp_scope_ext -pivot q -exact $(DATDIR)/vis_fp_pts_4.bin -o - | $(TOPNG) > $(IMGDIR)/fig6a.png
+	$(SRCDIR)/fp_scope_ext -pivot q -exact $(DATDIR)/vis_fp_pts_5.bin -o - | $(TOPNG) > $(IMGDIR)/fig6b.png
+	$(SRCDIR)/fp_scope_ext -sf4 -exact $(DATDIR)/vis_fp_pts_4.bin -o - | $(TOPNG) > $(IMGDIR)/fig8b.png
+	$(SRCDIR)/fp_scope_ext -pivot q -dim 40 -blowup -offx -5 -offy -5 -border 0 -exact $(DATDIR)/vis_fp_pts_6.bin -o - | $(TOPNG) > $(IMGDIR)/fig9.png
+	$(SRCDIR)/fp_scope_ext -eps 0.0000000001 -exact $(DATDIR)/vis_fp_pts_7.bin -o - | $(TOPNG) > $(IMGDIR)/fig13a.png
+	$(SRCDIR)/fp_scope_ext -eps 0.0000000001 -exact $(DATDIR)/vis_fp_pts_8.bin -o - | $(TOPNG) > $(IMGDIR)/fig13b.png
+	$(SRCDIR)/fp_scope_ext -exact $(DATDIR)/vis_fp_pts_n1.bin -o - | $(TOPNG) > $(IMGDIR)/fign1.png
+	$(SRCDIR)/fp_scope_ext -exact $(DATDIR)/vis_fp_pts_n2.bin -o - | $(TOPNG) > $(IMGDIR)/fign2.png
+	$(SRCDIR)/fp_scope_ext -exact $(DATDIR)/vis_fp_pts_n3.bin -o - | $(TOPNG) > $(IMGDIR)/fign3.png
+	$(SRCDIR)/fp_scope_ext $(DATDIR)/vis_fp_pts_n4.bin -o - | $(TOPNG) > $(IMGDIR)/fign4.png
+	$(SRCDIR)/fp_scope_ext $(DATDIR)/vis_fp_pts_n5.bin -o - | $(TOPNG) > $(IMGDIR)/fign5.png
+	$(SRCDIR)/fp_scope_ext -pivot q -exact -dim 700 $(DATDIR)/vis_fp_pts_n6.bin -o - | $(TOPNG) > $(IMGDIR)/fign6.png
+	$(SRCDIR)/fp_scope_ext -pivot r -exact -dim 700 $(DATDIR)/vis_fp_pts_n6.bin -o - | $(TOPNG) > $(IMGDIR)/fign7.png

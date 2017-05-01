@@ -1,0 +1,27 @@
+add_mantissa.o: add_mantissa.C ieee_double.h
+points2bin.o: points2bin.C points.h
+bin2points.o: bin2points.C points.h
+incr_convex_hull.o: incr_convex_hull.C points.h incr_convex_hull.h \
+  circular_list.h
+incr_convex_hull_vis.o: incr_convex_hull_vis.C \
+  points.h \
+  incr_convex_hull.h circular_list.h \
+  cgal_leda_support.h \
+  
+gift_wrapping_hull.o: gift_wrapping_hull.C points.h gift_wrapping_hull.h \
+  circular_list.h
+gift_wrapping_hull_vis.o: gift_wrapping_hull_vis.C \
+  points.h \
+  gift_wrapping_hull.h circular_list.h \
+  cgal_leda_support.h \
+  
+fp_scope.o: fp_scope.C points.h ppm_image.h ieee_double.h
+fp_scope_off.o: fp_scope_off.C points.h ieee_double.h
+fp_scope_ext.o: fp_scope_ext.C \
+  points.h \
+  ppm_image.h \
+  ieee_double.h \
+  
+ieee_double.o: ieee_double.C ieee_double.h
+delaunay_loop.o: delaunay_loop.C \
+  

@@ -1,0 +1,352 @@
+
+                           Experiments.txt
+         for the data sets and programs accompanying the work
+
+                        Classroom Examples of
+            Robustness Problems in Geometric Computations
+                                  by
+              Lutz Kettner, Kurt Mehlhorn, Sylvain Pion,
+                     Stefan Schirra, and Chee Yap
+
+         <http://www.mpi-sb.mpg.de/~kettner/proj/NonRobust/>
+
+
+The corresponding paper describes two kinds of experiments: visualization 
+of the 'geometry' of a floating point implementation of the orientation 
+test for three points in the plane and the study of failures of three 
+different algorithms when confronted with special malformed inputs. The
+different algorithms that we consider are an incremental convex hull
+algorithm in the plane, a gift wrapping convex hull algorithm in the plane,
+and a 3d Delaunay triangulation. All programs are provided in source code
+and with a very generous Open Source License (Boost Software License 1.0),
+except that the Delaunay triangulation is part of CGAL, the Computational
+Geometry Software Library, www.cgal.org, which is also under an Open Source
+License, but a more restrictive one.
+
+All programs and input data sets mentioned in the paper are provided to 
+help in teaching the difficulties in implementing geometric algorithms. 
+The programs are easy to understand and can be studied in detail. The 
+users are invited to change and modify them to their liking and to 
+experiment with new data sets. We explain now in detail how the two kinds 
+of experiments mentioned in the paper can be repeated with the programs. 
+
+We assume that the distribution of programs and data sets have been copied 
+from our web page (see above), unpacked into subdirectories ./src/ for the 
+programs and ./data/ for the data sets, and the programs are built
+following the instructions in ./src/README .
+
+All data files are offered in human readable ASCII (.txt suffix) and in
+binary format (.bin suffix). All programs are able to read both formats.
+Two small helper programs, points2bin and bin2points, are able to
+convert between the two formats. The file formats are explained in
+./data/README .
+
+
+-----------------------------------------------------------------------------
+1. Experiments to visualize the geometry of a floating point implementation
+   of the orientation test for three points in the plane
+-----------------------------------------------------------------------------
+
+The visualization in the paper was done with the fp_scope_ext program.
+Since it depends on CGAL and other external libraries, we also list the 
+analogous use of the fp_scope program where possible. Since the fp_scope
+program is a simplified (and thus limited) version of the fp_scope_ext
+program, only few experiments can be repeated with the fp_scope program, 
+and some more with only small changes in the source code of the fp_scope 
+program. Furthermore, the images will not look identical, since, for 
+example, the black border is missing and the exact arithmetic is not 
+available that is used to draw the exact lines in the images.
+
+The fp_scope_off program can be used jointly with a 3d viewer, such as 
+geomview, see http://www.geomview.org/, to get three-dimensional
+visualizations.
+
+We list for each experiment the command line calls of the program(s) 
+and the corresponding figure in the paper.
+
+
+1.1  Orientation test for three points, cf. Fig. 2(a)
+
+./src/fp_scope            data/vis_fp_pts_1.txt -o fig2a.ppm
+./src/fp_scope_ext -exact data/vis_fp_pts_1.txt -o fig2a.ppm
+
+
+1.2  Orientation test for three points, cf. Fig. 2(b)
+
+./src/fp_scope            data/vis_fp_pts_2.txt -o fig2b.ppm
+./src/fp_scope_ext -exact data/vis_fp_pts_2.txt -o fig2b.ppm
+
+
+1.3  Orientation test for three points, cf. Fig. 2(c)
+
+./src/fp_scope            data/vis_fp_pts_3.txt -o fig2c.ppm
+./src/fp_scope_ext -exact data/vis_fp_pts_3.txt -o fig2c.ppm
+
+
+1.4  Orientation tests for three points with different pivots, cf. Fig. 3
+
+./src/fp_scope_ext -pivot p -exact data/vis_fp_pts_2.txt -o fig3_p.ppm
+./src/fp_scope_ext -pivot q -exact data/vis_fp_pts_2.txt -o fig3_q.ppm
+./src/fp_scope_ext -pivot r -exact data/vis_fp_pts_2.txt -o fig3_r.ppm
+
+The scope_fp program can be easily changed to perform these pivot experiments;
+only the implementation of the float_orient function needs to be changed.
+
+
+1.5  Orientation tests if the evaluation uses extended doubles, cf. Fig. 4
+
+A warning on this experiment: the availability of extended double precision
+depends on the CPU, such as Pentium CPU's by Intel, and also on the compiler
+and its optimization settings whether the extended precision is really used
+and operands kept in registers. So, we offer the program that we used to
+create the images, but it is likely that different compiler/hardware 
+settings will not create the same images. In fact, my current setting with 
+g++-3.3.2 does not use the extended precision anymore. Also in general, 
+enabling optimization in compiling these programs is likely to affect the 
+results.
+
+./src/fp_scope_ext -ext  -exact data/vis_fp_pts_2.txt -o fig4a.ppm
+./src/fp_scope_ext -extm -exact data/vis_fp_pts_2.txt -o fig4b.ppm
+
+
+1.6  Search for Failure A_1, cf. Fig. 6
+
+./src/fp_scope_ext -pivot q -exact data/vis_fp_pts_4.txt -o fig6a.ppm
+./src/fp_scope_ext -pivot q -exact data/vis_fp_pts_5.txt -o fig6b.ppm
+
+
+1.7  Search for Failure B_2, cf. Fig. 8
+
+The masking used for Figure 8(b) is coded into the fp_scope_ext
+program and the unmasked image is not directly available anymore with
+this program.
+
+./src/fp_scope_ext -sf4 -exact data/vis_fp_pts_4.txt -o fig8b.ppm
+
+
+1.8  Closeup of search for Failure B_2, cf. Fig. 9
+
+./src/fp_scope_ext -pivot q -dim 40 -blowup -offx -5 -offy -5 -border 0 -exact data/vis_fp_pts_6.txt -o fig9.ppm
+
+We use here the offsets in x- and y- direction to have the point of interest,
+(17.3, 17.3) not in the lower left corner of the image but slightly shifted
+into the image, such that we can see its neighborhood. We could have added
+those offsets directly into the (17.3, 17.3) coordinates, but then the
+data would have been harder to match with the construction data set 
+vis_fp_pts_4.txt.
+
+
+1.9  Effect of epsilon-tweaking, cf. Fig. 13:
+
+./src/fp_scope_ext -eps 0.0000000001 -exact data/vis_fp_pts_7.txt -o fig13a.ppm
+./src/fp_scope_ext -eps 0.0000000001 -exact data/vis_fp_pts_8.txt -o fig13b.ppm
+
+The fp_scope program can be easily changed to perform these epsilon-tweaking
+experiments; only the implementation of the float_orient function needs to 
+be changed.
+
+
+1.10  More examples that have not been used in the paper
+
+./src/fp_scope data/vis_fp_pts_n1.txt -o fign1.ppm
+./src/fp_scope data/vis_fp_pts_n2.txt -o fign2.ppm
+./src/fp_scope data/vis_fp_pts_n3.txt -o fign3.ppm
+
+Nice figures.
+
+
+./src/fp_scope data/vis_fp_pts_n4.txt -o fign4.ppm
+./src/fp_scope data/vis_fp_pts_n5.txt -o fign5.ppm
+
+Examples, where the errors extend quite far from the line.
+
+
+./src/fp_scope_ext -pivot q -exact -dim 700 data/vis_fp_pts_n6.txt -o fign6.ppm
+./src/fp_scope_ext -pivot r -exact -dim 700 data/vis_fp_pts_n6.txt -o fign7.ppm
+
+Example used to derive the failure examples C1, C2, and D1 for the gift 
+wrapping convex hull algorithm. The region of interest is in the upper 
+right corner where the blue and red region are adjacent and cross the exact
+line horizontally. This region needs to be compared with the same place 
+when the point r is chosen as pivot respectively, to construct the 
+failure example for failure C1 and C2. The points considered for failure
+C1 have pixel coordinates (252,237), for C2 they have pixel coordinates
+(240,240), and for D1 they have pixel coordinates (593,591) and (623,592).
+
+See the src/add_mantissa program to convert from pixel coordinates 
+(interpreted as double mantissa values for a 0.5 double value) into double
+values.
+
+
+-----------------------------------------------------------------------------
+2. Experiments to study the failures of three different geometric algorithms
+-----------------------------------------------------------------------------
+
+For each of the two planar convex hull algorithms two program versions exists:
+one that is text based and one that opens a graphical window for visualization
+denoted with a suffix '_vis' in its name (which requires therefore CGAL and 
+LEDA to compile). We list program calls to both versions. Note that, unlike
+C convention, we report points in the output of the programs with the indices 
+starting at 1 following the notation in the paper. These programs support
+command line options v1, v2, ... that enable program trace outputs that 
+can help in understanding the programs behavior.
+
+The third geometric algorithm is the 3d Delaunay triangulation of CGAL. A 
+single program is provided for one type of experiment on point location 
+in such triangulations.
+
+
+-----------------------------------------------------------------------------
+2.1  Incremental convex hull algorithm in the plane
+
+2.1.1  A point outside the current hull sees no edge of the current hull,
+       cf. Fail. A1
+
+./src/incr_convex_hull      data/fail_incr_a1.txt
+./src/incr_convex_hull_vis  data/fail_incr_a1.txt
+
+In this example the point p4 is missing on the convex hull but is clearly
+an extreme point and belongs on the convex hull.
+
+
+2.1.2  A point inside the current hull sees an edge of the current hull,
+       cf. Fail. A2
+
+./src/incr_convex_hull      data/fail_incr_a2.txt
+./src/incr_convex_hull_vis  data/fail_incr_a2.txt
+
+In this example all four points are reported on the convex hull, but 
+point p4 is not an extreme point and does not belong on the convex hull.
+
+
+2.1.3  A point outside the current hull sees all edges of the convex hull,
+       cf. Fail. B1
+
+./src/incr_convex_hull      -v1 data/fail_incr_b1.txt
+./src/incr_convex_hull_vis  -v1 data/fail_incr_b1.txt
+
+Be prepared to stop the program externally, e.g., with Ctrl-C, because it
+will not terminate. The insertion of point p4 will lead the algorithm 
+into an endless search for a non-visible edge, which can be studied in the
+program trace that we enable with the verbose option -v1. The trace shows 
+the endless search in counterclockwise (ccw) order along points p1, p2,
+and p3.
+
+
+2.1.4  A point outside the current hull sees a non-contiguous set of edges,
+       cf. Fail. B2
+
+./src/incr_convex_hull      data/fail_incr_b2.txt
+./src/incr_convex_hull_vis  data/fail_incr_b2.txt
+
+In this example point p5 is reported on the convex hull, which is correct 
+since it sees the edge p3-p2. But the algorithm first detects that p5 also
+sees edge p1-p4, which is false and which leads the algorithm into inserting
+point p5 in the wrong place. The diagnostics of the exact arithmetic solution
+in the ./src/incr_convex_hull_vis program documents this with the error
+messages that the convex hull is not convex and has self-intersections.
+
+
+2.1.5  The algorithm misses some of the extreme points, 
+       cf. Sect. 4.3 on global effects
+
+./src/incr_convex_hull      data/fail_incr_g1.txt
+./src/incr_convex_hull_vis  data/fail_incr_g1.txt
+
+In this example the point p4 is missing on the convex hull but is clearly
+an extreme point and belongs on the convex hull. In contrast to the example
+2.1.1 above (cf. Fail. A1) this example shows that the missing outlier 
+point p4 can be arbitrarily far away from the convex hull.
+
+
+2.1.6  The algorithm computes a non-convex polygon,
+       cf. Sect. 4.3 on global effects and Fig. 10(a-c)
+
+./src/incr_convex_hull      data/fail_incr_g2a.txt
+./src/incr_convex_hull      data/fail_incr_g2b.txt
+./src/incr_convex_hull      data/fail_incr_g2c.txt
+
+./src/incr_convex_hull_vis  data/fail_incr_g2a.txt
+./src/incr_convex_hull_vis  data/fail_incr_g2b.txt
+./src/incr_convex_hull_vis  data/fail_incr_g2c.txt
+
+Example 2.1.2 computes already a slightly non-convex polygon as result, but 
+the failure is not visible to the naked eye. This example exaggerates the 
+effect. It works in three steps; (a), (b), and (c). Step (a) is a preparation 
+of a slightly non-convex hull, which step (b) and step (c) exploit in slightly
+different manners to achieve grossly non-convex and self-intersecting convex
+hulls. In fact, step (c) uses a slightly modified version of the step (a), see
+the paper for an explanation.
+
+As an exercise, the example of step (b) can be changed to work (i.e., fail) 
+also an incremental convex hull algorithm that first picks the 
+lexicographically smallest and largest point to span an initial hull
+edge before insertion. The provided incremental convex hull implementation
+can be used for such an experiment, if the two extreme points are placed 
+first and second respectively in the input file.
+
+
+-----------------------------------------------------------------------------
+2.2  Gift wrapping convex hull algorithm in the plane
+
+2.2.1  The circular order induced by an extreme point is not a total order,
+       cf. Fail. C1
+
+./src/gift_wrapping_hull     -v1 data/fail_gift_wrap_c1.txt
+./src/gift_wrapping_hull_vis -v1 data/fail_gift_wrap_c1.txt
+
+Be prepared to stop the program externally, e.g., with Ctrl-C, because it
+will not terminate. The algorithm reports in an endless loop the sequence of
+extreme points p1, p2, and p4, but it fails to find the extreme point p3 
+again. But because point p3 is the lexicographically smallest point, the
+algorithm will not terminate.
+
+
+2.2.2  The circular order induced by a non-extreme point is not a total order,
+       cf. Fail. C2
+
+./src/gift_wrapping_hull     -v1 data/fail_gift_wrap_c2.txt
+./src/gift_wrapping_hull_vis -v1 data/fail_gift_wrap_c2.txt
+
+Be prepared to stop the program externally, e.g., with Ctrl-C, because it
+will not terminate. The algorithm reports in an endless loop the sequence of
+extreme points p1, p2, and p4, but it fails to find the extreme point p3 
+again. But because point p3 is the lexicographically smallest point, the
+algorithm will not terminate.
+
+
+2.2.3  A non-consecutive pair of points wraps all other points,
+       cf. Fail. D1
+
+./src/gift_wrapping_hull     -v1 data/fail_gift_wrap_d1.txt
+./src/gift_wrapping_hull_vis -v1 data/fail_gift_wrap_d1.txt
+
+Be prepared to stop the program externally, e.g., with Ctrl-C, because it
+will not terminate. The algorithm reports in an endless loop the sequence of
+extreme points p1, p5, and p4, but it fails to find the extreme point p3 
+again. But because point p3 is the lexicographically smallest point, the
+algorithm will not terminate.
+
+
+-----------------------------------------------------------------------------
+2.3  3d Delaunay triangulation
+
+./src/delaunay_loop
+./src/delaunay_loop 2
+
+This program differs from the others in that it does not read point
+data from input files but always generates random points for a new
+experiment. The program can be run without arguments for a new experiment
+with a random number generator initialized with the current time to get
+different experiment in each program run, or it can be run with an integer
+number as argument that will be used as a seed number for the random number
+generator to have a deterministic and repeatable experiment.
+
+The example is based on CGAL's 3D Delaunay triangulation, which has 
+internal checks, such as precondition checks and assertions, that might 
+catch inconsistencies in the computation before the point location actually
+loops. If the experiment terminates with such an error message, just restart
+it with a different seed value.
+
+
+End of Experiments.txt

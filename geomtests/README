@@ -1,0 +1,27 @@
+
+                                README
+          for the distributed material accompanying the work
+
+                        Classroom Examples of
+            Robustness Problems in Geometric Computations
+                                  by
+              Lutz Kettner, Kurt Mehlhorn, Sylvain Pion,
+                     Stefan Schirra, and Chee Yap
+
+         <http://www.mpi-sb.mpg.de/~kettner/proj/NonRobust/>
+
+
+The distribution is organized in subdirectories, each with its own README:
+
+  ./src/        programs, makefiles, installation and experiment instructions
+  ./data/       input data for the experiments and programs
+  ./images/     result images used in paper and more
+
+See in particular the following files for more information:
+
+  ./src/README           introduction to the programs and installation
+  ./src/Experiments.txt  instructions how to run the experiments
+  ./data/README          input data file formats
+
+
+
