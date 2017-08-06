@@ -23,8 +23,8 @@ configure_file(config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 add_definitions(-DHAVE_CONFIG_H=1)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-add_library(bigz SHARED bigq.c bigz.c bign.c)
-add_library(bigz-static STATIC bigq.c bigz.c bign.c)
+add_library(bigz SHARED bignum.c)
+add_library(bigz-static STATIC bignum.c)
 
 include(CheckCCompilerFlag)
 function(add_flag target flag)
@@ -35,7 +35,7 @@ function(add_flag target flag)
 endfunction(add_flag flag)
 
 # Optimization and Warnings options
-set(tflags m64 O3 Wall Wextra Wshadow Wunused Wunused-value 
+set(tflags m64 O3 Wall Wextra Wshadow Wunused Wunused-value
 	Wunused-variable Wunused-parameter Wunused-label Wunused-function
 	fomit-frame-pointer)
 foreach(tf ${tflags})

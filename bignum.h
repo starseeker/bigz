@@ -1,8 +1,4 @@
 /*
- * $Id: bigz.h,v 1.92 2017/04/02 09:50:55 jullien Exp $
- */
-
-/*
  * Simplified BSD License
  *
  * Copyright (c) 1988-1989, Digital Equipment Corporation & INRIA.
@@ -18,7 +14,7 @@
  * o Redistributions  in  binary form  must reproduce the above copyright
  *   notice, this list of conditions and  the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE  IS PROVIDED BY  THE COPYRIGHT HOLDERS  AND CONTRIBUTORS
  * "AS  IS" AND  ANY EXPRESS  OR IMPLIED  WARRANTIES, INCLUDING,  BUT NOT
  * LIMITED TO, THE IMPLIED  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -32,30 +28,186 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#if     !defined(__BIGZ_H)
-#define __BIGZ_H
+/*
+ *      Agglomeration header of the n/z/q headers from bigz:
+ *
+ *      bign.h - Types and structures for clients of BigNum
+ *      bigz.h - Types and structures for clients of BigZ
+ *      bigq.h - Types and structures for clients of BigQ
+ */
 
-#if     !defined(__BIGN_H)
-#include "bign.h"
+#if !defined(__BIGNUM_H)
+#  define __BIGNUM_H
+
+#if defined(HAVE_CONFIG_H)
+#  include "config.h"
 #endif
+
+#include <stdlib.h>
+#if defined(_WIN64) || (defined(HAVE_STDINT_H) && (SIZEOF_VOID_P >= 8))
+#  include <stdint.h>
+#endif
+
+/*
+ *  Bignum representation
+ *
+ *  <--------------------------- nl ---------------------------->
+ *  |   Least                                           Most    |
+ *  |Significant|           |           |           |Significant|
+ *  |BigNumDigit|           |           |           |BigNumDigit|
+ *  |___________|___________|___________|___________|___________|
+ *        ^                                          (sometimes
+ *        |                                            is zero)
+ *       nn
+ */
 
 #if     defined(__cplusplus)
 extern  "C"     {
 #endif
 
-#include <stdlib.h>
-
-#if     defined(_WIN64) || (defined(HAVE_STDINT_H) && (SIZEOF_VOID_P >= 8))
-#include <stdint.h>
+#if     defined(BN_EXPERIMENTAL_128BIT)
+#define BN_NUM_DIGIT_TYPE
+typedef __uint128_t             BigNumDigit;
 #endif
 
-#define BZ_PURE_FUNCTION                BN_PURE_FUNCTION
-#define BZ_CONST_FUNCTION               BN_CONST_FUNCTION
+/*
+ *      Internal digit type.
+ */
+
+#if     !defined(BN_NUM_DIGIT_TYPE)
+#define BN_NUM_DIGIT_TYPE
+#if     defined(_WIN64) || (defined(HAVE_STDINT_H) && (SIZEOF_VOID_P >= 8))
+typedef uint64_t                BigNumDigit;
+#else
+typedef unsigned long           BigNumDigit;
+#endif
+#endif
+
+#if     defined(__GNUC__) && (__GNUC__ >= 3)
+#if     !defined(BN_CONST_FUNCTION)
+#define BN_CONST_FUNCTION       __attribute__((const))
+#endif
+#if     !defined(BN_PURE_FUNCTION)
+#define BN_PURE_FUNCTION        __attribute__((pure))
+#endif
+#endif  /* __GNUC__ >= 3 */
+
+#if     !defined(BN_PURE_FUNCTION)
+#define BN_PURE_FUNCTION
+#endif
+
+#if     !defined(BN_CONST_FUNCTION)
+#define BN_CONST_FUNCTION
+#endif
+
+/*
+ *      bignum types: digits, big numbers, carries ...
+ */
+
+typedef BigNumDigit *   BigNum;         /* A big number is a digit pointer */
+typedef BigNumDigit     BigNumProduct;  /* The product of two digits       */
+#if     defined(BN_EXPERIMENTAL_128BITX)
+typedef __uint128_t     BigNumLength;   /* The length of a bignum          */
+#else
+typedef unsigned int    BigNumLength;   /* The length of a bignum          */
+#endif
+
+typedef enum    {
+        BN_FALSE   = 0,
+        BN_TRUE    = 1
+} BigNumBool;
+
+/*
+ *      Results of compare functions
+ */
+
+typedef enum    {
+        BN_LT      = -1,
+        BN_EQ      = 0,
+        BN_GT      = 1
+} BigNumCmp;
+
+/*
+ *      Carry enum type.
+ */
+
+typedef enum    {
+        BN_NOCARRY = 0,
+        BN_CARRY   = 1
+} BigNumCarry;
+
+/*
+ *      sizes
+ *
+ *      BN_BYTE_SIZE:   number of bits in a byte
+ *      BN_DIGIT_SIZE:  number of bits in a digit of a BigNum
+ */
+
+#if     !defined(BN_BYTE_SIZE)
+#define BN_BYTE_SIZE    ((BigNumLength)8) /* may be 9! on 36bit computers. */
+#endif
+
+#define BN_DIGIT_SIZE   (sizeof(BigNumDigit) * BN_BYTE_SIZE)
+
+/*
+ *      some constants
+ */
+
+#define BN_ZERO         ((BigNumDigit)0)
+#define BN_ONE          ((BigNumDigit)1)
+#define BN_COMPLEMENT   (~(BigNumDigit)0)
+
+/*
+ *      functions of bign.c
+ */
+
+extern BigNumCarry  BnnAdd(BigNum mm, BigNumLength ml, const BigNum nn, BigNumLength nl, BigNumCarry carryin);
+extern BigNumCarry  BnnAddCarry(BigNum nn, BigNumLength nl, BigNumCarry carryin);
+extern void         BnnAndDigits(BigNum n, BigNumDigit d);
+extern void         BnnAssign(BigNum mm, const BigNum nn, BigNumLength nl);
+extern BigNumCmp    BnnCompare(const BigNum mm, BigNumLength ml, const BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
+extern BigNumCmp    BnnCompareDigits(BigNumDigit d1, BigNumDigit d2) BN_CONST_FUNCTION;
+extern void         BnnComplement(BigNum nn, BigNumLength nl);
+extern void         BnnComplement2(BigNum nn, BigNumLength nl);
+extern void         BnnDivide(BigNum nn, BigNumLength nl, BigNum dd, BigNumLength dl);
+extern BigNumDigit  BnnDivideDigit(BigNum qq, BigNum nn, BigNumLength nl, BigNumDigit d);
+extern BigNumDigit  BnnGetDigit(const BigNum nn) BN_PURE_FUNCTION;
+extern BigNumBool   BnnIsPower2(const BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
+extern BigNumBool   BnnIsDigitEven(BigNumDigit d) BN_CONST_FUNCTION;
+extern BigNumBool   BnnIsDigitOdd(BigNumDigit d) BN_CONST_FUNCTION;
+extern BigNumBool   BnnIsDigitNormalized(BigNumDigit d) BN_CONST_FUNCTION;
+extern BigNumBool   BnnIsDigitZero(BigNumDigit d) BN_CONST_FUNCTION;
+extern BigNumBool   BnnIsZero(const BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
+extern BigNumCarry  BnnMultiply(BigNum pp, BigNumLength pl, const BigNum mm, BigNumLength ml, const BigNum nn, BigNumLength nl);
+extern BigNumCarry  BnnMultiplyDigit(BigNum pp, BigNumLength pl, const BigNum mm, BigNumLength ml, BigNumDigit d);
+extern BigNumLength BnnNumDigits(const BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
+extern BigNumLength BnnNumLength(const BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
+extern BigNumLength BnnNumCount(const BigNum nn, BigNumLength nl) BN_PURE_FUNCTION;
+extern BigNumLength BnnNumLeadingZeroBitsInDigit(BigNumDigit d) BN_CONST_FUNCTION;
+extern void         BnnOrDigits(BigNum n, BigNumDigit d);
+extern void         BnnSetDigit(BigNum nn, BigNumDigit d);
+extern void         BnnSetToZero(BigNum nn, BigNumLength nl);
+extern BigNumDigit  BnnShiftLeft(BigNum mm, BigNumLength ml, BigNumLength nbits);
+extern BigNumDigit  BnnShiftRight(BigNum mm, BigNumLength ml, BigNumLength nbits);
+extern BigNumCarry  BnnSubtract(BigNum mm, BigNumLength ml, const BigNum nn, BigNumLength nl, BigNumCarry carryin);
+extern BigNumCarry  BnnSubtractBorrow(BigNum nn, BigNumLength nl, BigNumCarry carryin);
+extern void         BnnXorDigits(BigNum n, BigNumDigit d);
+
+#if     defined(__cplusplus)
+}
+#endif
 
 /*
  * BigZ.h: Types and structures for clients of BigZ
  */
 
+#if     defined(__cplusplus)
+extern  "C"     {
+#endif
+
+
+#define BZ_PURE_FUNCTION                BN_PURE_FUNCTION
+#define BZ_CONST_FUNCTION               BN_CONST_FUNCTION
 #define BZ_VERSION                      "1.6.2"
 
 /*
@@ -262,4 +414,80 @@ extern void         BzDebug(const char *m, const BigZ y);
 }
 #endif
 
-#endif  /* __BIGZ_H */
+/*
+ * BigQ.h: Types and structures for clients of BigQ
+ */
+
+#if     defined(__cplusplus)
+extern  "C"     {
+#endif
+
+#define BQ_PURE_FUNCTION                BN_PURE_FUNCTION
+#define BQ_CONST_FUNCTION               BN_CONST_FUNCTION
+
+/*
+ * BigQ compare result
+ */
+
+typedef enum {
+        BQ_LT    = BN_LT,
+        BQ_EQ    = BN_EQ,
+        BQ_GT    = BN_GT,
+        BQ_ERR   = 100
+} BqCmp;
+
+/*
+ * BigQ number
+ */
+
+struct BigQStruct {
+        BigZ    N;
+        BigZ    D;
+};
+
+typedef struct BigQStruct * __BigQ;
+
+#if     !defined(BQ_RATIONAL_TYPE)
+#define BQ_RATIONAL_TYPE
+typedef __BigQ                          BigQ;
+#endif
+
+#if     !defined(__EXTERNAL_BIGQ_MEMORY)
+#define __toBqObj(q)                    ((__BigQ)q)
+#define BQNULL                          ((BigQ)0)
+#define BqAlloc()                       malloc(sizeof(struct BigQStruct))
+#define BqFree(q)                     free(q) /* free(__toBqObj(q)) */
+#define BqGetNumerator(q)               (__toBqObj(q)->N)
+#define BqGetDenominator(q)             (__toBqObj(q)->D)
+#define BqSetNumerator(q,n)             (__toBqObj(q)->N = (n))
+#define BqSetDenominator(q,d)           (__toBqObj(q)->D = (d))
+#endif
+
+/*
+ *      functions of bigq.c
+ */
+
+extern BigQ         BqAbs(const BigQ a);
+extern BigQ         BqAdd(const BigQ a, const BigQ b);
+extern BigQ         BqCreate(const BigZ n, const BigZ d);
+extern BqCmp        BqCompare(const BigQ a, const BigQ b) BQ_PURE_FUNCTION;
+extern void         BqDelete(const BigQ a);
+extern BigQ         BqDiv(const BigQ a, const BigQ b);
+extern BigQ         BqFromString(const BzChar *s, int base);
+extern BigQ         BqInverse(const BigQ a);
+extern BigQ         BqMultiply(const BigQ a, const BigQ b);
+extern BigQ         BqNegate(const BigQ a);
+extern BigQ         BqSubtract(const BigQ a, const BigQ b);
+extern BzChar *     BqToString(const BigQ q, int sign);
+extern BigQ         BqFromDouble(double num, BzInt maxd);
+extern double       BqToDouble(const BigQ a);
+
+#if 0
+extern BzChar *     BqToStringBuffer(const BigQ q, int sign, BzChar *buf, size_t *len);
+#endif
+
+#if     defined(__cplusplus)
+}
+#endif
+
+#endif  /* __BIGNUM_H */
